@@ -14,7 +14,7 @@
 #include <sstream>
 #include <unordered_map>
 #include "transitionTableNode.hpp"
-#include "syntaxTree.hpp"
+#include "../syntaxTree.hpp"
 
 using namespace std;
 

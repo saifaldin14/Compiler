@@ -5,7 +5,7 @@
  Created: 2023-03-19
 */
 
-#include "../headers/parser.hpp"
+#include "../../headers/syntaxAnalysis/parser.hpp"
 
 /*
  Description:

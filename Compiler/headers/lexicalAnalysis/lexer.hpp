@@ -12,10 +12,10 @@
 #include <vector>
 #include <string>
 #include <sstream>
-#include "token.hpp"
-#include "tokenType.hpp"
-#include "id.hpp"
-#include "reserved.hpp"
+#include "../tokens/token.hpp"
+#include "../tokens/tokenType.hpp"
+#include "../tokens/id.hpp"
+#include "../tokens/reserved.hpp"
 #include "transitionTableStates.hpp"
 #include "transitionTableEntry.hpp"
 

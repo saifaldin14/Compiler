@@ -17,9 +17,9 @@
 #include <stdexcept>
 #include <execinfo.h>
 #include <unordered_map>
-#include "lexer.hpp"
+#include "../lexicalAnalysis/lexer.hpp"
 #include "syntaxTree.hpp"
-#include "token.hpp"
+#include "../tokens/token.hpp"
 
 using namespace std;
 

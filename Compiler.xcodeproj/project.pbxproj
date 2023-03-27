@@ -77,6 +77,75 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		D506EB5A29D1F3C60041A30A /* lexicalAnalysis */ = {
+			isa = PBXGroup;
+			children = (
+				D501FE3629C9221200F56BF4 /* lexer.hpp */,
+				D501FE3C29C9221200F56BF4 /* transitionTableStates.hpp */,
+				D501FE3829C9221200F56BF4 /* transitionTableNode.hpp */,
+				D501FE3929C9221200F56BF4 /* transitionTableEntry.hpp */,
+			);
+			path = lexicalAnalysis;
+			sourceTree = "<group>";
+		};
+		D506EB5B29D1F4220041A30A /* tokens */ = {
+			isa = PBXGroup;
+			children = (
+				D501FE3729C9221200F56BF4 /* fileReader.hpp */,
+				D501FE3F29C9221200F56BF4 /* token.hpp */,
+				D501FE3B29C9221200F56BF4 /* tokenType.hpp */,
+				D501FE3A29C9221200F56BF4 /* id.hpp */,
+				D501FE3D29C9221200F56BF4 /* reserved.hpp */,
+				D501FE3329C9221200F56BF4 /* number.hpp */,
+			);
+			path = tokens;
+			sourceTree = "<group>";
+		};
+		D578368129D1F8B100B45206 /* syntaxAnalysis */ = {
+			isa = PBXGroup;
+			children = (
+				D501FE3229C9221200F56BF4 /* parser.hpp */,
+				D501FE3429C9221200F56BF4 /* syntaxTree.hpp */,
+				D501FE3E29C9221200F56BF4 /* syntaxTreeNode.hpp */,
+				D501FE3529C9221200F56BF4 /* syntaxProp.hpp */,
+				D501FE4029C9221200F56BF4 /* leaf.hpp */,
+			);
+			path = syntaxAnalysis;
+			sourceTree = "<group>";
+		};
+		D578368229D1FA5900B45206 /* tokens */ = {
+			isa = PBXGroup;
+			children = (
+				D501FE2129C921FF00F56BF4 /* fileReader.cpp */,
+				D501FE1929C921FF00F56BF4 /* tokenType.cpp */,
+				D501FE2029C921FF00F56BF4 /* number.cpp */,
+			);
+			path = tokens;
+			sourceTree = "<group>";
+		};
+		D578368329D1FA8A00B45206 /* lexicalAnalysis */ = {
+			isa = PBXGroup;
+			children = (
+				D501FE1829C921FF00F56BF4 /* lexer.cpp */,
+				D501FE1F29C921FF00F56BF4 /* transitionTableStates.cpp */,
+				D501FE1B29C921FF00F56BF4 /* transitionTableNode.cpp */,
+				D501FE1C29C921FF00F56BF4 /* transitionTableEntry.cpp */,
+			);
+			path = lexicalAnalysis;
+			sourceTree = "<group>";
+		};
+		D578368429D1FABA00B45206 /* syntaxAnalysis */ = {
+			isa = PBXGroup;
+			children = (
+				D501FE1D29C921FF00F56BF4 /* parser.cpp */,
+				D501FE1729C921FF00F56BF4 /* syntaxTree.cpp */,
+				D501FE1A29C921FF00F56BF4 /* syntaxTreeNode.cpp */,
+				D501FE1629C921FF00F56BF4 /* syntaxProp.cpp */,
+				D501FE2229C921FF00F56BF4 /* leaf.cpp */,
+			);
+			path = syntaxAnalysis;
+			sourceTree = "<group>";
+		};
 		D5B4A3362999D8E600D8C783 = {
 			isa = PBXGroup;
 			children = (
@@ -105,19 +174,10 @@
 		D5B4A349299DA40C00D8C783 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				D578368429D1FABA00B45206 /* syntaxAnalysis */,
+				D578368329D1FA8A00B45206 /* lexicalAnalysis */,
+				D578368229D1FA5900B45206 /* tokens */,
 				D501FE1E29C921FF00F56BF4 /* main.cpp */,
-				D501FE2129C921FF00F56BF4 /* fileReader.cpp */,
-				D501FE1829C921FF00F56BF4 /* lexer.cpp */,
-				D501FE1D29C921FF00F56BF4 /* parser.cpp */,
-				D501FE1929C921FF00F56BF4 /* tokenType.cpp */,
-				D501FE2029C921FF00F56BF4 /* number.cpp */,
-				D501FE1F29C921FF00F56BF4 /* transitionTableStates.cpp */,
-				D501FE1B29C921FF00F56BF4 /* transitionTableNode.cpp */,
-				D501FE1C29C921FF00F56BF4 /* transitionTableEntry.cpp */,
-				D501FE1729C921FF00F56BF4 /* syntaxTree.cpp */,
-				D501FE1A29C921FF00F56BF4 /* syntaxTreeNode.cpp */,
-				D501FE1629C921FF00F56BF4 /* syntaxProp.cpp */,
-				D501FE2229C921FF00F56BF4 /* leaf.cpp */,
 			);
 			path = src;
 			sourceTree = "<group>";
@@ -125,21 +185,9 @@
 		D5B4A34A299DA41900D8C783 /* headers */ = {
 			isa = PBXGroup;
 			children = (
-				D501FE3729C9221200F56BF4 /* fileReader.hpp */,
-				D501FE3629C9221200F56BF4 /* lexer.hpp */,
-				D501FE3229C9221200F56BF4 /* parser.hpp */,
-				D501FE3F29C9221200F56BF4 /* token.hpp */,
-				D501FE3B29C9221200F56BF4 /* tokenType.hpp */,
-				D501FE3A29C9221200F56BF4 /* id.hpp */,
-				D501FE3D29C9221200F56BF4 /* reserved.hpp */,
-				D501FE3329C9221200F56BF4 /* number.hpp */,
-				D501FE3C29C9221200F56BF4 /* transitionTableStates.hpp */,
-				D501FE3829C9221200F56BF4 /* transitionTableNode.hpp */,
-				D501FE3929C9221200F56BF4 /* transitionTableEntry.hpp */,
-				D501FE3429C9221200F56BF4 /* syntaxTree.hpp */,
-				D501FE3E29C9221200F56BF4 /* syntaxTreeNode.hpp */,
-				D501FE3529C9221200F56BF4 /* syntaxProp.hpp */,
-				D501FE4029C9221200F56BF4 /* leaf.hpp */,
+				D578368129D1F8B100B45206 /* syntaxAnalysis */,
+				D506EB5B29D1F4220041A30A /* tokens */,
+				D506EB5A29D1F3C60041A30A /* lexicalAnalysis */,
 			);
 			path = headers;
 			sourceTree = "<group>";

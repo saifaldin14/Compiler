@@ -5,7 +5,7 @@
  Created: 2023-02-25
  */
 
-#include "../headers/transitionTableEntry.hpp"
+#include "../../headers/lexicalAnalysis/transitionTableEntry.hpp"
 #include <sstream>
 
 /*
