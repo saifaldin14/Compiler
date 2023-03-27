@@ -14,7 +14,7 @@
 #include <sstream>
 #include <unordered_map>
 #include "transitionTableNode.hpp"
-#include "../syntaxTree.hpp"
+#include "syntaxTree.hpp"
 
 using namespace std;
 
@@ -46,8 +46,8 @@ private:
     TransitionTableEntry<ValueType> transitionTableEntry;
 };
 
-#include "../src/transitionTableNode.cpp"
-#include "../src/transitionTableEntry.cpp"
+#include "../../src/lexicalAnalysis/transitionTableNode.cpp"
+#include "../../src/lexicalAnalysis/transitionTableEntry.cpp"
 
 #endif /* transitionTableStates_hpp */
 
