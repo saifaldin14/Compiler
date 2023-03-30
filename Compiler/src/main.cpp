@@ -28,11 +28,11 @@ int main() {
     parser.getLexer().transitionTableStates2.printTransitionTablesWithoutHeaders();
         
     if (parser.getParsed()) {
-        cout << parser.getLexer().getLines().size() << endl;
-        for (auto i : parser.getLexer().getLines()) {
+        for (auto i : parser.getLines()) {
             for (Token t : i) {
-                cout << t.toString() << endl;
+                cout << t.toString() << ", ";
             }
+            cout << endl;
         }
     }
     return 0;

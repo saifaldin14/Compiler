@@ -30,6 +30,7 @@ public:
     SyntaxTreeNode<const char*> parse();
     
     bool getParsed() { return parsed; }
+    vector<vector<Token>> getLines();
 
     void setLexer(Lexer lexCopy);
     void error();

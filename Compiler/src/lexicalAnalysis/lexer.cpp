@@ -186,6 +186,18 @@ bool Lexer::isDigit(char c) { return (isdigit(c)); }
 
 /*
  Description:
+    Return the lines table.
+ 
+ Parameters:
+    - None
+ 
+ Returns:
+    - lines: The table of read lines tokens (vector<vector<Token>>)
+ */
+vector<vector<Token>> Lexer::getLines() { return lines; }
+
+/*
+ Description:
     Retrieve the corresponding line number of the token.
  
  Parameters:

@@ -29,7 +29,7 @@ public:
     Lexer(const Lexer& other);
     Lexer& operator=(const Lexer& other);
     
-    vector<vector<Token>> getLines() { return lines; }
+    vector<vector<Token>> getLines();
     
     Token getNextToken();
     

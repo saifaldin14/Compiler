@@ -1387,3 +1387,15 @@ void Parser::printSyntaxTree() {
     for (auto i : syntaxTree.getTraversalList())
         cout << i.toString() << ", Type: " << endl;
 }
+
+/*
+ Description:
+    Return the lines table.
+ 
+ Parameters:
+    - None
+ 
+ Returns:
+    - lines: The table of read lines tokens (vector<vector<Token>>)
+*/
+vector<vector<Token>> Parser::getLines() { return lex.getLines(); }
