@@ -30,7 +30,9 @@ public:
     void analyzeSemantics();
 
 private:
+    void handleScopes(Token token);
+    
     vector<vector<Token>> lines;
-    TokenType returnType;
+    vector<string> scopes; // Stack to keep track of the current scope we are in
 };
 #endif /* analyzer_hpp */
