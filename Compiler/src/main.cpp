@@ -26,6 +26,14 @@ int main() {
     
     parser.getLexer().transitionTableStates.printTransitionTables();
     parser.getLexer().transitionTableStates2.printTransitionTablesWithoutHeaders();
-    
+        
+    if (parser.getParsed()) {
+        cout << parser.getLexer().getLines().size() << endl;
+        for (auto i : parser.getLexer().getLines()) {
+            for (Token t : i) {
+                cout << t.toString() << endl;
+            }
+        }
+    }
     return 0;
 }

@@ -29,6 +29,8 @@ public:
     Lexer(const Lexer& other);
     Lexer& operator=(const Lexer& other);
     
+    vector<vector<Token>> getLines() { return lines; }
+    
     Token getNextToken();
     
     TransitionTableStates<double> transitionTableStates{TransitionTableStates<double>()};
