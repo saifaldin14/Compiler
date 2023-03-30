@@ -101,6 +101,20 @@
 			path = tokens;
 			sourceTree = "<group>";
 		};
+		D51FC19329D62D6F004AB4B5 /* semanticAnalysis */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = semanticAnalysis;
+			sourceTree = "<group>";
+		};
+		D51FC19429D62D7A004AB4B5 /* semanticAnalysis */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = semanticAnalysis;
+			sourceTree = "<group>";
+		};
 		D578368129D1F8B100B45206 /* syntaxAnalysis */ = {
 			isa = PBXGroup;
 			children = (
@@ -174,6 +188,7 @@
 		D5B4A349299DA40C00D8C783 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				D51FC19429D62D7A004AB4B5 /* semanticAnalysis */,
 				D578368429D1FABA00B45206 /* syntaxAnalysis */,
 				D578368329D1FA8A00B45206 /* lexicalAnalysis */,
 				D578368229D1FA5900B45206 /* tokens */,
@@ -185,6 +200,7 @@
 		D5B4A34A299DA41900D8C783 /* include */ = {
 			isa = PBXGroup;
 			children = (
+				D51FC19329D62D6F004AB4B5 /* semanticAnalysis */,
 				D578368129D1F8B100B45206 /* syntaxAnalysis */,
 				D506EB5B29D1F4220041A30A /* tokens */,
 				D506EB5A29D1F3C60041A30A /* lexicalAnalysis */,
