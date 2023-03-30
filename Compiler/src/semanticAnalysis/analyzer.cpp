@@ -60,18 +60,21 @@ void Analyzer::handleFunctionScope(Token token, vector<Token> line) {
     string functionType = determineType(line[1]);
     returnTypes.push_back(functionType); // Add the return type of the function to the returnType stack
     functionDefinition[line[2].getRepresentation()] = functionType;
-    ScopeVariable scopeVariable;
+    ScopeVariable variable;
+    unordered_map<string, string> scopeVariables;
     
+    // Save input parameters as scope variables 
     for (int i = 4; i < line.size() - 1; i++) {
         if (line[i].getType().toString() == "id") {
             if (isVariableType(line[i]))
-                scopeVariable.setType(determineType(line[i]));
-            else
-                scopeVariable.setVarName(line[i].getRepresentation());
-        }
-            
-        if (line[i].getRepresentation() == ",") {
-            
+                variable.setType(determineType(line[i]));
+            else {
+                variable.setVarName(line[i].getRepresentation());
+                scopeVariables[variable.getVarName()] = variable.getType();
+            }
+        } else if (line[i].getRepresentation() == ",") {
+            variable.setEmptyValues();
         }
     }
+    
 }

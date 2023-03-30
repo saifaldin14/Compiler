@@ -35,8 +35,9 @@ public:
     void setScope(string input) { scope = input; }
     void setType(string input) { type = input; }
 
-    
     string toString();
+    void setEmptyValues();
+    void clearScope();
 
 private:
     string varName;

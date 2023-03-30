@@ -38,5 +38,6 @@ private:
     vector<string> scopes; // Stack to keep track of the current scope we are in
     vector<string> returnTypes; // Stack to keep track of the return types of functions (if we want to have nested functions)
     unordered_map<string, string> functionDefinition; // Used to define recursive method return types
+    unordered_map<string, string> variableDefinition;
 };
 #endif /* analyzer_hpp */

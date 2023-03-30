@@ -18,3 +18,10 @@ string ScopeVariable::toString() {
     
     return ret;
 }
+
+void ScopeVariable::setEmptyValues() {
+    varName = "";
+    type = "";
+}
+
+void ScopeVariable::clearScope() { scope = ""; }

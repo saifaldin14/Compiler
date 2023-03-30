@@ -4,6 +4,7 @@
 #include "../include/tokens/tokenType.hpp"
 #include "../include/tokens/fileReader.hpp"
 #include "../include/syntaxAnalysis/parser.hpp"
+#include "../include/semanticAnalysis/analyzer.hpp"
 
 using namespace std;
 
@@ -28,13 +29,15 @@ int main() {
     parser.getLexer().transitionTableStates2.printTransitionTablesWithoutHeaders();
         
     if (parser.getParsed()) {
-        for (auto i : parser.getLines()) {
-            for (Token t : i) {
-//                cout << t.toString() << ", ";
-                cout << t.getType().toString() << ", ";
-            }
-            cout << endl;
-        }
+//        for (auto i : parser.getLines()) {
+//            for (Token t : i) {
+////                cout << t.toString() << ", ";
+//                cout << t.getType().toString() << ", ";
+//            }
+//            cout << endl;
+//        }
+        Analyzer analyzer(parser.getLines());
+        analyzer.analyzeSemantics();
     }
     return 0;
 }
