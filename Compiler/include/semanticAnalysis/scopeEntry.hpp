@@ -5,9 +5,29 @@
 //  Created by Saif Al-Din Ali on 2023-03-30.
 //
 
-#ifndef scopeEntry_hpp
-#define scopeEntry_hpp
+#ifndef SCOPE_ENTRY_H
+#define SCOPE_ENTRY_H
 
-#include <stdio.h>
+#include <iostream>
+#include <vector>
+#include <string>
+#include <sstream>
+#include <cstdlib>
+#include <sstream>
+#include <stdexcept>
+#include <execinfo.h>
+#include <unordered_map>
+#include "../lexicalAnalysis/lexer.hpp"
+#include "syntaxTree.hpp"
+#include "../tokens/token.hpp"
 
+using namespace std;
+
+class ScopeEntry
+{
+public:
+
+private:
+    
+};
 #endif /* scopeEntry_hpp */
