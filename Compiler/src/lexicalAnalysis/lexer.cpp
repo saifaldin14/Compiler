@@ -5,9 +5,9 @@
  Created: 2023-02-15
 */
 
-#include "../../headers/lexicalAnalysis/lexer.hpp"
-#include "../../headers/lexicalAnalysis/transitionTableEntry.hpp"
-#include "../../headers/lexicalAnalysis/transitionTableStates.hpp"
+#include "../../include/lexicalAnalysis/lexer.hpp"
+#include "../../include/lexicalAnalysis/transitionTableEntry.hpp"
+#include "../../include/lexicalAnalysis/transitionTableStates.hpp"
 
 /*
  Description:

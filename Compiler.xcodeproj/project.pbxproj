@@ -165,7 +165,7 @@
 		D5B4A3412999D8E600D8C783 /* Compiler */ = {
 			isa = PBXGroup;
 			children = (
-				D5B4A34A299DA41900D8C783 /* headers */,
+				D5B4A34A299DA41900D8C783 /* include */,
 				D5B4A349299DA40C00D8C783 /* src */,
 			);
 			path = Compiler;
@@ -182,14 +182,14 @@
 			path = src;
 			sourceTree = "<group>";
 		};
-		D5B4A34A299DA41900D8C783 /* headers */ = {
+		D5B4A34A299DA41900D8C783 /* include */ = {
 			isa = PBXGroup;
 			children = (
 				D578368129D1F8B100B45206 /* syntaxAnalysis */,
 				D506EB5B29D1F4220041A30A /* tokens */,
 				D506EB5A29D1F3C60041A30A /* lexicalAnalysis */,
 			);
-			path = headers;
+			path = include;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

@@ -5,7 +5,7 @@
  Created: 2023-03-01
  */
 
-#include "../../headers/syntaxAnalysis/syntaxProp.hpp"
+#include "../../include/syntaxAnalysis/syntaxProp.hpp"
 
 /*
  Description:

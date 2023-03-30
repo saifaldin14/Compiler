@@ -5,7 +5,7 @@
  Created: 2023-02-25
 */
 
-#include "../../headers/lexicalAnalysis/transitionTableStates.hpp"
+#include "../../include/lexicalAnalysis/transitionTableStates.hpp"
 
 /*
  Description:

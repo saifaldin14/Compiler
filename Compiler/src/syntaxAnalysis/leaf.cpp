@@ -5,7 +5,7 @@
  Created: 2023-03-01
  */
 
-#include "../../headers/syntaxAnalysis/leaf.hpp"
+#include "../../include/syntaxAnalysis/leaf.hpp"
 
 /*
  Description:

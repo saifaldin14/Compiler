@@ -5,7 +5,7 @@
  Created: 2023-03-01
  */
 
-#include "../../headers/syntaxAnalysis/syntaxTreeNode.hpp"
+#include "../../include/syntaxAnalysis/syntaxTreeNode.hpp"
 
 /*
  Description:

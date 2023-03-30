@@ -5,7 +5,7 @@
  Created: 2023-02-24
 */
 
-#include "../../headers/tokens/tokenType.hpp"
+#include "../../include/tokens/tokenType.hpp"
 
 /*
  Description:

@@ -1,9 +1,9 @@
 #include <iostream>
-#include "../headers/lexicalAnalysis/lexer.hpp"
-#include "../headers/tokens/token.hpp"
-#include "../headers/tokens/tokenType.hpp"
-#include "../headers/tokens/fileReader.hpp"
-#include "../headers/syntaxAnalysis/parser.hpp"
+#include "../include/lexicalAnalysis/lexer.hpp"
+#include "../include/tokens/token.hpp"
+#include "../include/tokens/tokenType.hpp"
+#include "../include/tokens/fileReader.hpp"
+#include "../include/syntaxAnalysis/parser.hpp"
 
 using namespace std;
 

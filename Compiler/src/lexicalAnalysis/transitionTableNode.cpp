@@ -6,7 +6,7 @@
 */
 
 #include <fstream>
-#include "../../headers/lexicalAnalysis/transitionTableNode.hpp"
+#include "../../include/lexicalAnalysis/transitionTableNode.hpp"
 
 template<typename ValueType>
 string TransitionTableNode<ValueType>::GLOBAL_SCOPE = "GLOBAL";
