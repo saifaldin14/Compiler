@@ -22,6 +22,7 @@
 		D501FE3029C921FF00F56BF4 /* leaf.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D501FE2229C921FF00F56BF4 /* leaf.cpp */; };
 		D51FC19729D62DBA004AB4B5 /* analyzer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D51FC19529D62DBA004AB4B5 /* analyzer.cpp */; };
 		D51FC19A29D63B49004AB4B5 /* scopeEntry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D51FC19829D63B49004AB4B5 /* scopeEntry.cpp */; };
+		D51FC19D29D63BEA004AB4B5 /* scopeVariable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D51FC19B29D63BEA004AB4B5 /* scopeVariable.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -69,6 +70,8 @@
 		D51FC19629D62DBA004AB4B5 /* analyzer.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = analyzer.hpp; sourceTree = "<group>"; };
 		D51FC19829D63B49004AB4B5 /* scopeEntry.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = scopeEntry.cpp; sourceTree = "<group>"; };
 		D51FC19929D63B49004AB4B5 /* scopeEntry.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = scopeEntry.hpp; sourceTree = "<group>"; };
+		D51FC19B29D63BEA004AB4B5 /* scopeVariable.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = scopeVariable.cpp; sourceTree = "<group>"; };
+		D51FC19C29D63BEA004AB4B5 /* scopeVariable.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = scopeVariable.hpp; sourceTree = "<group>"; };
 		D5B4A33F2999D8E600D8C783 /* Compiler */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Compiler; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -112,6 +115,7 @@
 			children = (
 				D51FC19629D62DBA004AB4B5 /* analyzer.hpp */,
 				D51FC19929D63B49004AB4B5 /* scopeEntry.hpp */,
+				D51FC19C29D63BEA004AB4B5 /* scopeVariable.hpp */,
 			);
 			path = semanticAnalysis;
 			sourceTree = "<group>";
@@ -121,6 +125,7 @@
 			children = (
 				D51FC19529D62DBA004AB4B5 /* analyzer.cpp */,
 				D51FC19829D63B49004AB4B5 /* scopeEntry.cpp */,
+				D51FC19B29D63BEA004AB4B5 /* scopeVariable.cpp */,
 			);
 			path = semanticAnalysis;
 			sourceTree = "<group>";
@@ -277,6 +282,7 @@
 			files = (
 				D501FE2B29C921FF00F56BF4 /* parser.cpp in Sources */,
 				D501FE2529C921FF00F56BF4 /* syntaxTree.cpp in Sources */,
+				D51FC19D29D63BEA004AB4B5 /* scopeVariable.cpp in Sources */,
 				D501FE3029C921FF00F56BF4 /* leaf.cpp in Sources */,
 				D501FE2C29C921FF00F56BF4 /* main.cpp in Sources */,
 				D501FE2729C921FF00F56BF4 /* tokenType.cpp in Sources */,

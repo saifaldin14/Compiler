@@ -17,9 +17,8 @@
 #include <stdexcept>
 #include <execinfo.h>
 #include <unordered_map>
-#include "../lexicalAnalysis/lexer.hpp"
-#include "syntaxTree.hpp"
 #include "../tokens/token.hpp"
+#include "scopeVariable.hpp"
 
 using namespace std;
 
@@ -31,7 +30,9 @@ public:
 
 private:
     void handleScopes(Token token, vector<Token> line);
+    void handleFunctionScope(Token token, vector<Token> line);
     string determineType(Token token);
+    bool isVariableType(Token token);
     
     vector<vector<Token>> lines;
     vector<string> scopes; // Stack to keep track of the current scope we are in

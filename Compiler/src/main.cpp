@@ -30,7 +30,8 @@ int main() {
     if (parser.getParsed()) {
         for (auto i : parser.getLines()) {
             for (Token t : i) {
-                cout << t.toString() << ", ";
+//                cout << t.toString() << ", ";
+                cout << t.getType().toString() << ", ";
             }
             cout << endl;
         }

@@ -25,18 +25,16 @@ string Analyzer::determineType(Token token) {
     return token.getRepresentation();
 }
 
+bool Analyzer::isVariableType(Token token) {
+    if (token.getRepresentation() == "int" or token.getRepresentation() == "double")
+        return true;
+    return false;
+}
+
 void Analyzer::handleScopes(Token token, vector<Token> line) {
     // Handle functions
     if (token.getRepresentation() == "def") {
-        // Line structure is:
-        // <def> <returnType> <name> <(> <arguments> <)>
-        scopes.push_back("FUNCTION");
-        
-        // Since the code is parsed correctly we know after def there will be a return type argument
-        string functionType = determineType(line[1]);
-        // Add the return type of the function to the returnType stack
-        returnTypes.push_back(functionType);
-        functionDefinition[line[2].getRepresentation()] = functionType;
+        handleFunctionScope(token, line);
     }
     // Handle if blocks
     else if (token.getRepresentation() == "if") {
@@ -49,5 +47,31 @@ void Analyzer::handleScopes(Token token, vector<Token> line) {
     // Handle while block
     else if (token.getRepresentation() == "while") {
         scopes.push_back("WHILE");
+    }
+}
+
+void Analyzer::handleFunctionScope(Token token, vector<Token> line) {
+    // Line structure is:
+    // <def> <returnType> <name> <(> <arguments> <)>
+    
+    scopes.push_back("FUNCTION");
+    
+    // Since the code is parsed correctly we know after def there will be a return type argument
+    string functionType = determineType(line[1]);
+    returnTypes.push_back(functionType); // Add the return type of the function to the returnType stack
+    functionDefinition[line[2].getRepresentation()] = functionType;
+    ScopeVariable scopeVariable;
+    
+    for (int i = 4; i < line.size() - 1; i++) {
+        if (line[i].getType().toString() == "id") {
+            if (isVariableType(line[i]))
+                scopeVariable.setType(determineType(line[i]));
+            else
+                scopeVariable.setVarName(line[i].getRepresentation());
+        }
+            
+        if (line[i].getRepresentation() == ",") {
+            
+        }
     }
 }
