@@ -28,6 +28,8 @@ class Parser
 public:
     Parser(Lexer copy);
     SyntaxTreeNode<const char*> parse();
+    
+    bool getParsed() { return parsed; }
 
     void setLexer(Lexer lexCopy);
     void error();
@@ -91,6 +93,8 @@ private:
     unordered_map<string, vector<string>> FOLLOW;
     string currentName, currentFuncName, currentType, currentValue;
     SyntaxTree<const char*> currentFuncBody;
+    
+    bool parsed = false;
     
     void initializeFIRST();
     void initializeFOLLOW();

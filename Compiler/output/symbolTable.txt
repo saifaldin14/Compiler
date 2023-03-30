@@ -39,6 +39,7 @@ constant int -> 6
 gcd function int 
 keyword -> def
 keyword -> else
+keyword -> fed
 keyword -> fi
 keyword -> if
 keyword -> int

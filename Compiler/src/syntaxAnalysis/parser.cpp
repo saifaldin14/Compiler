@@ -149,6 +149,7 @@ SyntaxTreeNode<const char*> Parser::parse() {
         declarations();
         statementSequence(statements);
         match(".");
+        parsed = true;
         return move(statements);
     } else {
         cout << "ERROR CAUSED 1: " << lex.getLineNum() << " " << token.getRepresentation() << endl;
@@ -1384,5 +1385,5 @@ void Parser::error() {
 void Parser::printSyntaxTree() {
     cout << "Syntax Tree:" << endl;
     for (auto i : syntaxTree.getTraversalList())
-        cout << i.toString() << endl;
+        cout << i.toString() << ", Type: " << endl;
 }

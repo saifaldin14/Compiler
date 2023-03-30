@@ -198,6 +198,18 @@ int Lexer::getLineNum() { return lineNum; }
 
 /*
  Description:
+    Get whether or not the file is lexically correct.
+ 
+ Parameters:
+    - None
+
+ Returns:
+    - lexicallyCorrect: Whether the file is lexically correct (bool)
+ */
+bool Lexer::getLexicallyCorrect() { return lexicallyCorrect; }
+
+/*
+ Description:
     Used to recover the token and not crash the program upon an invalid token.
  
  Parameters:
@@ -289,7 +301,11 @@ void Lexer::addEntryToTable(string n, string i, string d, const char* v) {
 Token Lexer::getNextToken() {
     // Skip Whitespace
     while (find(WHITESPACE.begin(), WHITESPACE.end(), next) != WHITESPACE.end()) {
-        if (next == '\n') lineNum += 1;
+        if (next == '\n') {
+            lines.push_back(tempLine);
+            tempLine.clear();
+            lineNum += 1;
+        }
         readChar();
     }
     
@@ -301,30 +317,44 @@ Token Lexer::getNextToken() {
         case '=':
             if (readChar('=')) {
                 addEntryToTable("", entry.OPERATION, "equals", "==");
-                return Token("==", TokenType::COMP);
+                Token token = Token("==", TokenType::COMP);
+                tempLine.push_back(token);
+                return token;
             } else {
                 addEntryToTable("", entry.OPERATION, "assignment", "=");
-                return Token('=', TokenType::TERM);
+                Token token = Token('=', TokenType::TERM);
+                tempLine.push_back(token);
+                return token;
             }
         case '<':
             if (readChar('=')) {
                 addEntryToTable("", entry.OPERATION, "less-than equal", "<=");
-                return Token("<=", TokenType::COMP);
+                Token token = Token("<=", TokenType::COMP);
+                tempLine.push_back(token);
+                return token;
             } else if (next == '>') {
                 readChar();
                 addEntryToTable("", entry.OPERATION, "not equal", "<>");
-                return Token("<>", TokenType::COMP);
+                Token token = Token("<>", TokenType::COMP);
+                tempLine.push_back(token);
+                return token;
             } else {
                 addEntryToTable("", entry.OPERATION, "less than", "<");
-                return Token('<', TokenType::COMP);
+                Token token = Token('<', TokenType::COMP);
+                tempLine.push_back(token);
+                return token;
             }
         case '>':
             if (readChar('=')) {
                 addEntryToTable("", entry.OPERATION, "greater-than equal", ">=");
-                return Token(">=", TokenType::COMP);
+                Token token = Token(">=", TokenType::COMP);
+                tempLine.push_back(token);
+                return token;
             } else {
                 addEntryToTable("", entry.OPERATION, "greater than", ">");
-                return Token('>', TokenType::COMP);
+                Token token = Token('>', TokenType::COMP);
+                tempLine.push_back(token);
+                return token;
             }
     }
         
@@ -344,7 +374,9 @@ Token Lexer::getNextToken() {
         // Valid Integer
         } else if (next != '.') {
             addEntryToTable("", entry.CONSTANT, entry.INT, stoi(num));
-            return Token(num, TokenType::INT);
+            Token token = Token(num, TokenType::INT);
+            tempLine.push_back(token);
+            return token;
         // Double Part
         } else {
             num += next;
@@ -379,7 +411,9 @@ Token Lexer::getNextToken() {
             }
             // Valid Double
             addEntryToTable("", entry.CONSTANT, entry.DOUBLE, stod(num));
-            return Token(num, TokenType::DOUBLE);
+            Token token = Token(num, TokenType::DOUBLE);
+            tempLine.push_back(token);
+            return token;
         }
     // Start Processing ID (or Reserved) Token
     } else if (isLetter(next)) {
@@ -396,18 +430,24 @@ Token Lexer::getNextToken() {
             symbols.push_back(id);
             
             addEntryToTable("", entry.KEYWORD, "", id.c_str());
-
-            return Id(id, TokenType::ID, (int)symbols.size() - 1);
+            
+            Token token = Id(id, TokenType::ID, (int)symbols.size() - 1);
+            tempLine.push_back(token);
+            return token;
         } else {
             int index = (int)distance(symbols.begin(), find(symbols.begin(), symbols.end(), id));
             
             // Return depending on if within Reserved word range
             if (index < RESERVED.size()) {
                 addEntryToTable("", entry.KEYWORD, "", id.c_str());
-                return Reserved(id, TokenType::RESERVED, index);
+                Token token = Reserved(id, TokenType::RESERVED, index);
+                tempLine.push_back(token);
+                return token;
             } else {
                 addEntryToTable("", entry.VARIABLE, "", id.c_str());
-                return Id(id, TokenType::ID, index);
+                Token token = Id(id, TokenType::ID, index);
+                tempLine.push_back(token);
+                return token;
             }
         }
     } else if (find(TERMINALS.begin(), TERMINALS.end(), next) != TERMINALS.end()) {
@@ -416,12 +456,14 @@ Token Lexer::getNextToken() {
         } else {
             addEntryToTable("", entry.TERMINAL, "", new char(next));
             Token token = Token(next, TokenType::TERM);
+            tempLine.push_back(token);
             readChar();
             return token;
         }
     } else {
         saveErrorText(next);
         Token token = Token(next, TokenType::ERR);
+        tempLine.push_back(token);
         readChar();
         return token;
     }

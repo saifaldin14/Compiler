@@ -33,6 +33,7 @@ public:
     
     TransitionTableStates<double> transitionTableStates{TransitionTableStates<double>()};
     TransitionTableStates<const char*> transitionTableStates2{TransitionTableStates<const char*>()};
+    bool getLexicallyCorrect();
     int getLineNum();
     vector<string> getSymbols();
     void setLexer(TransitionTableStates<double> t1, TransitionTableStates<const char*> t2, vector<string> inputSymbols);
@@ -57,6 +58,9 @@ private:
     int sourceFileIndex;
     string source;
     vector<string> symbols;
+    bool lexicallyCorrect = false;
+    vector<vector<Token>> lines;
+    vector<Token> tempLine;
     
     string recover(string token);
     void saveErrorText(char c);

@@ -26,5 +26,6 @@ int main() {
     
     parser.getLexer().transitionTableStates.printTransitionTables();
     parser.getLexer().transitionTableStates2.printTransitionTablesWithoutHeaders();
+    
     return 0;
 }
