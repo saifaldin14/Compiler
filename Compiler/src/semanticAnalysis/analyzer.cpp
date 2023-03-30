@@ -15,15 +15,28 @@ Analyzer::Analyzer(vector<vector<Token>> inputLines) {
 void Analyzer::analyzeSemantics() {
     for (auto line : lines) {
         for (Token token : line) {
-            handleScopes(token);
+            handleScopes(token, line);
         }
     }
 }
 
-void Analyzer::handleScopes(Token token) {
+string Analyzer::determineType(Token token) {
+    if (token.getRepresentation() == "int") return "integer";
+    return token.getRepresentation();
+}
+
+void Analyzer::handleScopes(Token token, vector<Token> line) {
     // Handle functions
     if (token.getRepresentation() == "def") {
+        // Line structure is:
+        // <def> <returnType> <name> <(> <arguments> <)>
         scopes.push_back("FUNCTION");
+        
+        // Since the code is parsed correctly we know after def there will be a return type argument
+        string functionType = determineType(line[1]);
+        // Add the return type of the function to the returnType stack
+        returnTypes.push_back(functionType);
+        functionDefinition[line[2].getRepresentation()] = functionType;
     }
     // Handle if blocks
     else if (token.getRepresentation() == "if") {
