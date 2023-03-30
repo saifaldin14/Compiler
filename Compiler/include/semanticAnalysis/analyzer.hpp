@@ -27,9 +27,10 @@ class Analyzer
 {
 public:
     Analyzer(vector<vector<Token>> inputLines);
-    
+    void analyzeSemantics();
 
 private:
     vector<vector<Token>> lines;
+    TokenType returnType;
 };
 #endif /* analyzer_hpp */
