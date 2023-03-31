@@ -17,10 +17,6 @@ int main() {
     errorFile.close();
     
     Lexer lex = Lexer(fileReader.getFileContents());
-//    while(lex.getNextToken().getType().toString() != TokenType::END.toString())
-//        lex.getNextToken();
-//    lex.transitionTableStates.printTransitionTables();
-//    lex.transitionTableStates2.printTransitionTablesWithoutHeaders();
     
     Parser parser(lex);
     parser.parse();
@@ -32,12 +28,13 @@ int main() {
 //        for (auto i : parser.getLines()) {
 //            for (Token t : i) {
 ////                cout << t.toString() << ", ";
-//                cout << t.getType().toString() << ", ";
+//                cout << t.toString() << " " << t.getType().toString() << ", ";
 //            }
 //            cout << endl;
 //        }
         Analyzer analyzer(parser.getLines());
         analyzer.analyzeSemantics();
+        analyzer.printVariables();
     }
     return 0;
 }

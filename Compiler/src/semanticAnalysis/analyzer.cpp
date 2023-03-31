@@ -14,9 +14,7 @@ Analyzer::Analyzer(vector<vector<Token>> inputLines) {
 
 void Analyzer::analyzeSemantics() {
     for (auto line : lines) {
-        for (Token token : line) {
-            handleScopes(token, line);
-        }
+        handleScopes(line[0], line);
     }
 }
 
@@ -48,33 +46,64 @@ void Analyzer::handleScopes(Token token, vector<Token> line) {
     else if (token.getRepresentation() == "while") {
         scopes.push_back("WHILE");
     }
+    // Handle variable decleration
+    else if (isVariableType(token)) {
+        handleVariableDeclaration(token, line);
+    }
 }
 
 void Analyzer::handleFunctionScope(Token token, vector<Token> line) {
     // Line structure is:
     // <def> <returnType> <name> <(> <arguments> <)>
     
-    scopes.push_back("FUNCTION");
+    scopes.push_back(FUNCTION);
     
     // Since the code is parsed correctly we know after def there will be a return type argument
     string functionType = determineType(line[1]);
     returnTypes.push_back(functionType); // Add the return type of the function to the returnType stack
     functionDefinition[line[2].getRepresentation()] = functionType;
+    variableDefinition[line[2].getRepresentation()] = {functionType, "0", "0"};
     ScopeVariable variable;
-    unordered_map<string, string> scopeVariables;
+    variable.setScope(FUNCTION);
     
-    // Save input parameters as scope variables 
+    // Save input parameters as scope variables
     for (int i = 4; i < line.size() - 1; i++) {
         if (line[i].getType().toString() == "id") {
             if (isVariableType(line[i]))
                 variable.setType(determineType(line[i]));
             else {
                 variable.setVarName(line[i].getRepresentation());
-                scopeVariables[variable.getVarName()] = variable.getType();
+                setVariableInScope(variable);
             }
         } else if (line[i].getRepresentation() == ",") {
             variable.setEmptyValues();
         }
     }
+}
+
+void Analyzer::handleVariableDeclaration(Token token, vector<Token> line) {
+    ScopeVariable variable;
+    variable.setType(determineType(token));
+    variable.setScope(scopes.back()); // Set scope to be the top of stack
+    variable.setVarName(line[1].getRepresentation());
     
+    string key = variable.getScope() + " " + variable.getVarName();
+    if (variableDefinition.find(key) != variableDefinition.end()) {
+        // Variable name already exists within the same scope!
+//        cout << "INVALID! VARIABLE ALREADY EXISTS WITHIN THIS SCOPE" << endl;
+        cout << "INVALID! " << variable.getVarName() << endl;
+    } else {
+        setVariableInScope(variable);
+    }
+}
+
+void Analyzer::setVariableInScope(ScopeVariable variable) {
+    string key = variable.getScope() + " " + variable.getVarName();
+    variableDefinition[key] = { variable.getVarName(), variable.getScope(), variable.getType() };
+}
+
+void Analyzer::printVariables() {
+    for (const auto & [ key, value ] : variableDefinition) {
+        cout << key << ": " << value[0] << ", " << value[1] << ", " << value[2] << endl;
+    }
 }

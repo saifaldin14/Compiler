@@ -503,7 +503,7 @@ SyntaxTreeNode<const char*> Parser::statement() {
             return syntaxTree.makeProp("return", nodesToReturn);
         else
             return currentFuncBody.makeProp("return", nodesToReturn);
-    } else if (lookahead.getRepresentation() == "fed") {
+    } else if (first == "fed" or lookahead.getRepresentation() == "fed") {
         vector<SyntaxTreeNode<const char*>> nodesToReturn = {exprNode};
                         
         if (currentFuncBody.toString().empty())
@@ -512,7 +512,7 @@ SyntaxTreeNode<const char*> Parser::statement() {
             return currentFuncBody.makeProp("fed", nodesToReturn);
     } else if (first == "ID") {
         varNode = var();
-        match("=");
+//        match("=");
         exprNode = expr();
         
         vector<SyntaxTreeNode<const char*>> nodesToReturn = {varNode, exprNode};

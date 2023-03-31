@@ -1,7 +1,9 @@
 def int gcd(int a, int b)
-    if (a==b) then
+    while (a==b) do
         return (a)
-    fi;
+    od;
+
+    int c;
     if (a>b) then
         return(gcd(a-b,b))
     else
