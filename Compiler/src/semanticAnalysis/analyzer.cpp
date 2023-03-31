@@ -98,17 +98,21 @@ void Analyzer::handleFunctionScope(Token token, vector<Token> line) {
 
 void Analyzer::handleVariableDeclaration(Token token, vector<Token> line) {
     ScopeVariable variable;
-    variable.setType(determineType(token));
-    variable.setScope(scopes.back()); // Set scope to be the top of stack
-    variable.setVarName(line[1].getRepresentation());
-    
-    string key = variable.getScope() + " " + variable.getVarName();
-    if (variableDefinition.find(key) != variableDefinition.end()) {
-        // Variable name already exists within the same scope!
-//        cout << "INVALID! VARIABLE ALREADY EXISTS WITHIN THIS SCOPE" << endl;
-        cout << "INVALID! " << variable.getVarName() << ", " << scopes.back() << endl;
-    } else {
-        setVariableInScope(variable);
+    for (int i = 1; i < line.size(); i++) {
+        if (line[i].getRepresentation() != "," and line[i].getRepresentation() != ";") {
+            variable.setType(determineType(token));
+            variable.setScope(scopes.back()); // Set scope to be the top of stack
+            variable.setVarName(line[i].getRepresentation());
+            
+            string key = variable.getScope() + " " + variable.getVarName();
+            if (variableDefinition.find(key) != variableDefinition.end()) {
+                // Variable name already exists within the same scope!
+        //        cout << "INVALID! VARIABLE ALREADY EXISTS WITHIN THIS SCOPE" << endl;
+                cout << "INVALID! " << variable.getVarName() << ", " << scopes.back() << endl;
+            } else {
+                setVariableInScope(variable);
+            }
+        }
     }
 }
 

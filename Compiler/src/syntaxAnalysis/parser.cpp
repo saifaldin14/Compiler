@@ -494,7 +494,7 @@ SyntaxTreeNode<const char*> Parser::statement() {
             return syntaxTree.makeProp("print", nodesToReturn);
         else
             return currentFuncBody.makeProp("print", nodesToReturn);
-    } else if (first == "return" or lookahead.getRepresentation() == "return") {
+    } else if (lookahead.getRepresentation() == "return") {
         match("return");
         exprNode = expr();
         vector<SyntaxTreeNode<const char*>> nodesToReturn = {exprNode};
@@ -503,16 +503,25 @@ SyntaxTreeNode<const char*> Parser::statement() {
             return syntaxTree.makeProp("return", nodesToReturn);
         else
             return currentFuncBody.makeProp("return", nodesToReturn);
-    } else if (first == "fed" or lookahead.getRepresentation() == "fed") {
+    } else if (lookahead.getRepresentation() == "fed") {
         vector<SyntaxTreeNode<const char*>> nodesToReturn = {exprNode};
                         
         if (currentFuncBody.toString().empty())
             return syntaxTree.makeProp("fed", nodesToReturn);
         else
             return currentFuncBody.makeProp("fed", nodesToReturn);
+    } else if (first == "ID" and lookahead.getRepresentation() != "int" and lookahead.getRepresentation() != "double") {
+        varNode = var();
+        match("=");
+        exprNode = expr();
+        
+        vector<SyntaxTreeNode<const char*>> nodesToReturn = {varNode, exprNode};
+        if (currentFuncBody.toString().empty())
+            return syntaxTree.makeProp("=", nodesToReturn);
+        else
+            return currentFuncBody.makeProp("=", nodesToReturn);
     } else if (first == "ID") {
         varNode = var();
-//        match("=");
         exprNode = expr();
         
         vector<SyntaxTreeNode<const char*>> nodesToReturn = {varNode, exprNode};
