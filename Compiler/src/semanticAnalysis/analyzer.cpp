@@ -32,6 +32,7 @@ bool Analyzer::isVariableType(Token token) {
 void Analyzer::handleScopes(Token token, vector<Token> line) {
     // Handle functions
     if (token.getRepresentation() == "def") {
+        scopes.push_back(FUNCTION);
         handleFunctionScope(token, line);
     }
     // Handle if blocks
@@ -46,6 +47,22 @@ void Analyzer::handleScopes(Token token, vector<Token> line) {
     else if (token.getRepresentation() == "while") {
         scopes.push_back("WHILE");
     }
+    // Handle closing scopes
+    else if (token.getRepresentation() == "od" or token.getRepresentation() == "fed") {
+        scopes.pop_back();
+    }
+    else if (token.getRepresentation() == "fi") {
+        vector<string> reverseScopes (scopes.rbegin(), scopes.rend());
+        for (auto i : reverseScopes) {
+            if (i == ELSE)
+                scopes.pop_back();
+            else if (i == IF) {
+                scopes.pop_back();
+                break;
+            }
+        }
+        
+    }
     // Handle variable decleration
     else if (isVariableType(token)) {
         handleVariableDeclaration(token, line);
@@ -55,8 +72,6 @@ void Analyzer::handleScopes(Token token, vector<Token> line) {
 void Analyzer::handleFunctionScope(Token token, vector<Token> line) {
     // Line structure is:
     // <def> <returnType> <name> <(> <arguments> <)>
-    
-    scopes.push_back(FUNCTION);
     
     // Since the code is parsed correctly we know after def there will be a return type argument
     string functionType = determineType(line[1]);
@@ -91,7 +106,7 @@ void Analyzer::handleVariableDeclaration(Token token, vector<Token> line) {
     if (variableDefinition.find(key) != variableDefinition.end()) {
         // Variable name already exists within the same scope!
 //        cout << "INVALID! VARIABLE ALREADY EXISTS WITHIN THIS SCOPE" << endl;
-        cout << "INVALID! " << variable.getVarName() << endl;
+        cout << "INVALID! " << variable.getVarName() << ", " << scopes.back() << endl;
     } else {
         setVariableInScope(variable);
     }

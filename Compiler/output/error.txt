@@ -178,3 +178,12 @@ StackTrace:
 9   Compiler                            0x000000010001344e _ZN6Parser5parseEv + 238
 10  Compiler                            0x00000001000489b9 main + 329
 11  libdyld.dylib                       0x00007fff2043cf3d start + 1
+PARSE ERROR
+Parsing error on Line 2 at token gcd
+StackTrace: 
+0   Compiler                            0x0000000100023b9f _ZN6Parser15writeStackTraceERNSt3__113basic_fstreamIcNS0_11char_traitsIcEEEE + 447
+1   Compiler                            0x0000000100014663 _ZN6Parser5errorEv + 307
+2   Compiler                            0x000000010001447e _ZN6Parser5matchENSt3__112basic_stringIcNS0_11char_traitsIcEENS0_9allocatorIcEEEE + 622
+3   Compiler                            0x00000001000134bb _ZN6Parser5parseEv + 363
+4   Compiler                            0x0000000100048809 main + 329
+5   libdyld.dylib                       0x00007fff2043cf3d start + 1

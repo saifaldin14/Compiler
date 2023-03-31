@@ -10,6 +10,7 @@ def int gcd(int a, int b)
         return(gcd(a,b-a))
     fi;
 fed;
+int c;
 print gcd(21,15);
 print 45;
 print 2*(gcd(21, 28) + 6).
