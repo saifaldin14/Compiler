@@ -41,6 +41,7 @@ void Analyzer::handleScopes(Token token, vector<Token> line) {
     }
     // Handle else block
     else if (token.getRepresentation() == "else") {
+        scopes.pop_back();
         scopes.push_back("ELSE");
     }
     // Handle while block
@@ -52,16 +53,16 @@ void Analyzer::handleScopes(Token token, vector<Token> line) {
         scopes.pop_back();
     }
     else if (token.getRepresentation() == "fi") {
-        vector<string> reverseScopes (scopes.rbegin(), scopes.rend());
-        for (auto i : reverseScopes) {
-            if (i == ELSE)
-                scopes.pop_back();
-            else if (i == IF) {
-                scopes.pop_back();
-                break;
-            }
-        }
-        
+//        vector<string> reverseScopes (scopes.rbegin(), scopes.rend());
+//        for (auto i : reverseScopes) {
+//            if (i == ELSE)
+//                scopes.pop_back();
+//            else if (i == IF) {
+//                scopes.pop_back();
+//                break;
+//            }
+//        }
+        scopes.pop_back();
     }
     // Handle variable decleration
     else if (isVariableType(token)) {

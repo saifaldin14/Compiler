@@ -9,7 +9,7 @@
 using namespace std;
 
 int main() {
-    FileReader fileReader("../input/test8.cp");
+    FileReader fileReader("../input/test9.cp");
     
     string filename = "../output/error.txt";
     fstream errorFile;

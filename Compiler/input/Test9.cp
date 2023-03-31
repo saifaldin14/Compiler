@@ -5,8 +5,11 @@ def int gcd(int a, int b)
 
     int c;
     if (a>b) then
+        int d;
+        double c;
         return(gcd(a-b,b))
     else
+        int r;
         return(gcd(a,b-a))
     fi;
 fed;

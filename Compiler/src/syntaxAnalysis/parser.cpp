@@ -526,9 +526,9 @@ SyntaxTreeNode<const char*> Parser::statement() {
         
         vector<SyntaxTreeNode<const char*>> nodesToReturn = {varNode, exprNode};
         if (currentFuncBody.toString().empty())
-            return syntaxTree.makeProp("=", nodesToReturn);
+            return syntaxTree.makeProp("ID", nodesToReturn);
         else
-            return currentFuncBody.makeProp("=", nodesToReturn);
+            return currentFuncBody.makeProp("ID", nodesToReturn);
     } else {
         // Epsilon
         return epsilon;

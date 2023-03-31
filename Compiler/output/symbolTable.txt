@@ -479,3 +479,479 @@ variable -> max
 variable -> x
 variable -> y
 variable -> z
+GLOBAL
+--------------------------
+constant int -> 1
+constant int -> 2
+constant int -> 3
+a variable int 
+b variable int 
+c variable int 
+d variable int 
+keyword -> def
+keyword -> else
+keyword -> fed
+keyword -> fi
+keyword -> if
+keyword -> int
+keyword -> print
+keyword -> return
+keyword -> then
+max function int 
+operation assignment -> =
+operation greater than -> >
+terminal -> (
+terminal -> )
+terminal -> *
+terminal -> +
+terminal -> ,
+terminal -> -
+terminal -> /
+terminal -> ;
+variable -> a
+variable -> b
+variable -> c
+variable -> d
+variable -> max
+variable -> x
+variable -> y
+variable -> z
+GLOBAL
+--------------------------
+constant int -> 15
+constant int -> 2
+constant int -> 21
+constant int -> 28
+constant int -> 45
+constant int -> 6
+c variable int 
+gcd function int 
+keyword -> def
+keyword -> do
+keyword -> else
+keyword -> fed
+keyword -> fi
+keyword -> if
+keyword -> int
+keyword -> od
+keyword -> print
+keyword -> return
+keyword -> then
+keyword -> while
+operation equals -> ==
+operation greater than -> >
+terminal -> (
+terminal -> )
+terminal -> *
+terminal -> +
+terminal -> ,
+terminal -> -
+terminal -> ;
+variable -> a
+variable -> b
+variable -> c
+variable -> d
+variable -> gcd
+GLOBAL
+--------------------------
+constant int -> 15
+constant int -> 2
+constant int -> 21
+constant int -> 28
+constant int -> 45
+constant int -> 6
+c variable int 
+gcd function int 
+keyword -> def
+keyword -> do
+keyword -> else
+keyword -> fed
+keyword -> fi
+keyword -> if
+keyword -> int
+keyword -> od
+keyword -> print
+keyword -> return
+keyword -> then
+keyword -> while
+operation equals -> ==
+operation greater than -> >
+terminal -> (
+terminal -> )
+terminal -> *
+terminal -> +
+terminal -> ,
+terminal -> -
+terminal -> ;
+variable -> a
+variable -> b
+variable -> c
+variable -> d
+variable -> gcd
+GLOBAL
+--------------------------
+gcd function int 
+keyword -> def
+keyword -> do
+keyword -> else
+keyword -> if
+keyword -> int
+keyword -> od
+keyword -> return
+keyword -> then
+keyword -> while
+operation equals -> ==
+operation greater than -> >
+terminal -> (
+terminal -> )
+terminal -> ,
+terminal -> -
+terminal -> ;
+variable -> a
+variable -> b
+variable -> c
+variable -> d
+variable -> f
+variable -> gcd
+variable -> r
+GLOBAL
+--------------------------
+constant int -> 1
+constant int -> 2
+constant int -> 3
+a variable int 
+b variable int 
+c variable int 
+d variable int 
+keyword -> def
+keyword -> else
+keyword -> fed
+keyword -> fi
+keyword -> if
+keyword -> int
+keyword -> print
+keyword -> return
+keyword -> then
+max function int 
+operation assignment -> =
+operation greater than -> >
+terminal -> (
+terminal -> )
+terminal -> *
+terminal -> +
+terminal -> ,
+terminal -> -
+terminal -> /
+terminal -> ;
+variable -> a
+variable -> b
+variable -> c
+variable -> d
+variable -> max
+variable -> x
+variable -> y
+variable -> z
+GLOBAL
+--------------------------
+gcd function int 
+keyword -> def
+keyword -> do
+keyword -> double
+keyword -> else
+keyword -> if
+keyword -> int
+keyword -> od
+keyword -> return
+keyword -> then
+keyword -> while
+operation equals -> ==
+operation greater than -> >
+terminal -> (
+terminal -> )
+terminal -> ,
+terminal -> -
+terminal -> ;
+variable -> a
+variable -> b
+variable -> c
+variable -> d
+variable -> f
+variable -> gcd
+variable -> r
+GLOBAL
+--------------------------
+constant int -> 15
+constant int -> 2
+constant int -> 21
+constant int -> 28
+constant int -> 45
+constant int -> 6
+c variable int 
+gcd function int 
+keyword -> def
+keyword -> do
+keyword -> double
+keyword -> else
+keyword -> fed
+keyword -> fi
+keyword -> if
+keyword -> int
+keyword -> od
+keyword -> print
+keyword -> return
+keyword -> then
+keyword -> while
+operation equals -> ==
+operation greater than -> >
+terminal -> (
+terminal -> )
+terminal -> *
+terminal -> +
+terminal -> ,
+terminal -> -
+terminal -> ;
+variable -> a
+variable -> b
+variable -> c
+variable -> d
+variable -> gcd
+variable -> r
+GLOBAL
+--------------------------
+gcd function int 
+keyword -> def
+keyword -> do
+keyword -> if
+keyword -> int
+keyword -> od
+keyword -> return
+keyword -> then
+keyword -> while
+operation equals -> ==
+operation greater than -> >
+terminal -> (
+terminal -> )
+terminal -> ,
+terminal -> ;
+variable -> a
+variable -> b
+variable -> c
+variable -> d
+variable -> gcd
+GLOBAL
+--------------------------
+gcd function int 
+keyword -> def
+keyword -> do
+keyword -> if
+keyword -> int
+keyword -> od
+keyword -> return
+keyword -> then
+keyword -> while
+operation equals -> ==
+operation greater than -> >
+terminal -> (
+terminal -> )
+terminal -> ,
+terminal -> ;
+variable -> a
+variable -> b
+variable -> c
+variable -> d
+variable -> gcd
+GLOBAL
+--------------------------
+gcd function int 
+keyword -> def
+keyword -> do
+keyword -> double
+keyword -> else
+keyword -> if
+keyword -> int
+keyword -> od
+keyword -> return
+keyword -> then
+keyword -> while
+operation equals -> ==
+operation greater than -> >
+terminal -> (
+terminal -> )
+terminal -> ,
+terminal -> -
+terminal -> ;
+variable -> a
+variable -> b
+variable -> c
+variable -> d
+variable -> gcd
+variable -> r
+variable -> t
+GLOBAL
+--------------------------
+gcd function int 
+keyword -> def
+keyword -> do
+keyword -> double
+keyword -> else
+keyword -> if
+keyword -> int
+keyword -> od
+keyword -> return
+keyword -> then
+keyword -> while
+operation equals -> ==
+operation greater than -> >
+terminal -> (
+terminal -> )
+terminal -> ,
+terminal -> -
+terminal -> ;
+variable -> a
+variable -> b
+variable -> c
+variable -> d
+variable -> gcd
+variable -> r
+variable -> t
+GLOBAL
+--------------------------
+gcd function int 
+keyword -> def
+keyword -> do
+keyword -> double
+keyword -> else
+keyword -> if
+keyword -> int
+keyword -> od
+keyword -> return
+keyword -> then
+keyword -> while
+operation equals -> ==
+operation greater than -> >
+terminal -> (
+terminal -> )
+terminal -> ,
+terminal -> -
+terminal -> ;
+variable -> a
+variable -> b
+variable -> c
+variable -> d
+variable -> gcd
+variable -> r
+variable -> t
+GLOBAL
+--------------------------
+gcd function int 
+keyword -> def
+keyword -> do
+keyword -> if
+keyword -> int
+keyword -> od
+keyword -> return
+keyword -> then
+keyword -> while
+operation equals -> ==
+operation greater than -> >
+terminal -> (
+terminal -> )
+terminal -> ,
+terminal -> ;
+variable -> a
+variable -> b
+variable -> c
+variable -> d
+variable -> gcd
+GLOBAL
+--------------------------
+gcd function int 
+keyword -> def
+keyword -> do
+keyword -> double
+keyword -> else
+keyword -> if
+keyword -> int
+keyword -> od
+keyword -> return
+keyword -> then
+keyword -> while
+operation equals -> ==
+operation greater than -> >
+terminal -> (
+terminal -> )
+terminal -> ,
+terminal -> -
+terminal -> ;
+variable -> a
+variable -> b
+variable -> c
+variable -> d
+variable -> gcd
+variable -> r
+variable -> t
+GLOBAL
+--------------------------
+gcd function int 
+keyword -> def
+keyword -> do
+keyword -> double
+keyword -> else
+keyword -> if
+keyword -> int
+keyword -> od
+keyword -> return
+keyword -> then
+keyword -> while
+operation equals -> ==
+operation greater than -> >
+terminal -> (
+terminal -> )
+terminal -> ,
+terminal -> -
+terminal -> ;
+variable -> a
+variable -> b
+variable -> c
+variable -> d
+variable -> gcd
+variable -> r
+variable -> t
+GLOBAL
+--------------------------
+constant int -> 15
+constant int -> 2
+constant int -> 21
+constant int -> 28
+constant int -> 45
+constant int -> 6
+c variable int 
+gcd function int 
+keyword -> def
+keyword -> do
+keyword -> double
+keyword -> else
+keyword -> fed
+keyword -> fi
+keyword -> if
+keyword -> int
+keyword -> od
+keyword -> print
+keyword -> return
+keyword -> then
+keyword -> while
+operation equals -> ==
+operation greater than -> >
+terminal -> (
+terminal -> )
+terminal -> *
+terminal -> +
+terminal -> ,
+terminal -> -
+terminal -> ;
+variable -> a
+variable -> b
+variable -> c
+variable -> d
+variable -> gcd
+variable -> r
