@@ -10,6 +10,8 @@
 Analyzer::Analyzer(vector<vector<Token>> inputLines) {
     lines = inputLines;
     scopes.push_back("GLOBAL");
+    printString += "GLOBAL SCOPE";
+    printString += '\n';
 }
 
 void Analyzer::analyzeSemantics() {
@@ -49,21 +51,44 @@ void Analyzer::handleScopes(Token token, vector<Token> line) {
     // Handle functions
     if (tokenValue == "def") {
         scopes.push_back(FUNCTION);
+        
+        for (int i = 0; i < scopes.size(); i++)
+            printString += '\t';
+        printString += "FUNCTION SCOPE";
+        printString += '\n';
+        
         handleFunctionScope(token, line);
     }
     // Handle if blocks
     else if (tokenValue == "if") {
         scopes.push_back("IF");
+        
+        for (int i = 0; i < scopes.size(); i++)
+            printString += '\t';
+        printString += "IF SCOPE";
+        printString += '\n';
+        
         handleCondition(token, line);
     }
     // Handle else block
     else if (tokenValue == "else") {
         scopes.pop_back(); // Remove the existing IF scope
         scopes.push_back("ELSE");
+        
+        for (int i = 0; i < scopes.size(); i++)
+            printString += '\t';
+        printString += "ELSE SCOPE";
+        printString += '\n';
     }
     // Handle while block
     else if (tokenValue == "while") {
         scopes.push_back("WHILE");
+        
+        for (int i = 0; i < scopes.size(); i++)
+            printString += '\t';
+        printString += "WHILE SCOPE";
+        printString += '\n';
+        
         handleCondition(token, line);
     }
     // Handle closing scopes
@@ -88,6 +113,10 @@ void Analyzer::handleScopes(Token token, vector<Token> line) {
             // We are not in a function
             cout << "Invalid! Return keyword added outside of function" << endl;
         }
+    }
+    // Handle print statements
+    else if (tokenValue == "print") {
+        handlePrint(token, line);
     }
     // Handle variable decleration
     else if (isVariableType(token)) {
@@ -143,6 +172,11 @@ void Analyzer::handleVariableDeclaration(Token token, vector<Token> line) {
             }
         }
     }
+    
+    for (int i = 0; i < scopes.size() + 1; i++)
+        printString += '\t';
+    printString += variable.getVarName() + ", " + variable.getType() + ", " + variable.getScope();
+    printString += '\n';
 }
 
 void Analyzer::handleOperations(Token token, vector<Token> line) {
@@ -177,6 +211,15 @@ void Analyzer::handleCondition(Token token, vector<Token> line) {
             bool condition = checkValidCondition(line, openParen, closeParen);
             if (!condition)
                 cout << "Condition has mismatching types" << endl;
+        }
+    }
+}
+
+void Analyzer::handlePrint(Token token, vector<Token> line) {
+    for (auto t : line) {
+        if (t.getRepresentation() != "print" and t.getType().toString() == "id" and !checkVariableExists(t)) {
+            cout << "Invalid! Variable does not exist!" << endl;
+            break;
         }
     }
 }
@@ -230,18 +273,22 @@ string Analyzer::getTypeFromToken(Token token) {
     return "NOT FOUND";
 }
 
-bool Analyzer::checkValidAssignment(vector<Token> line, int tokenNumber, vector<int> arthimeticRange) {
-    Token left = line[tokenNumber - 1];
-    
+bool Analyzer::checkVariableExists(Token token) {
     // Check to see if the left variable is actually defined and in scope
-    bool variableExists = false;
     for (string scope : scopes) {
-        string key = scope + " " + left.getRepresentation();
-        if (variableDefinition.find(key) != variableDefinition.end()) {
-            variableExists = true;
-            break;
+        string tokenValue = token.getRepresentation();
+        string key = scope + " " + token.getRepresentation();
+        if (variableDefinition.find(key) != variableDefinition.end() or variableDefinition.find(tokenValue) != variableDefinition.end()) {
+            return true;
         }
     }
+    
+    return false;
+}
+
+bool Analyzer::checkValidAssignment(vector<Token> line, int tokenNumber, vector<int> arthimeticRange) {
+    Token left = line[tokenNumber - 1];
+    bool variableExists = checkVariableExists(left);
     
     if (variableExists) {
         Token right = line[tokenNumber + 1];
@@ -264,7 +311,8 @@ bool Analyzer::checkValidCondition(vector<Token> line, int openParen, int closeP
 }
 
 void Analyzer::printVariables() {
-    for (const auto & [ key, value ] : variableDefinition) {
-        cout << key << ": " << value[0] << ", " << value[1] << ", " << value[2] << endl;
-    }
+//    for (const auto & [ key, value ] : variableDefinition) {
+//        cout << key << ": " << value[0] << ", " << value[1] << ", " << value[2] << endl;
+//    }
+    cout << printString;
 }

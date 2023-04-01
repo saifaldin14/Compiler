@@ -41,10 +41,12 @@ private:
     void handleVariableDeclaration(Token token, vector<Token> line);
     void handleOperations(Token token, vector<Token> line);
     void handleCondition(Token token, vector<Token> line);
+    void handlePrint(Token token, vector<Token> line);
     Token handleArithmetic(vector<Token> line, vector<int> arthimeticRange);
     bool checkValidReturnType(Token token, vector<Token> line);
     bool checkValidAssignment(vector<Token> line, int tokenNumber, vector<int> arthimeticRange);
     bool checkValidCondition(vector<Token> line, int openParen, int closeParen);
+    bool checkVariableExists(Token token);
     string getTypeFromToken(Token token);
     
     // Utility functions
@@ -59,5 +61,6 @@ private:
     unordered_map<string, vector<string>> variableDefinition;
     
     bool validReturn = true;
+    string printString;
 };
 #endif /* analyzer_hpp */
