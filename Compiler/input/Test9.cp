@@ -1,5 +1,6 @@
 def int gcd(int a, int b)
     while (a==b) do
+        int r;
         return (a)
     od;
 

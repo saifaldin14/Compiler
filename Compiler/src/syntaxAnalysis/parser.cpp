@@ -417,6 +417,7 @@ void Parser::statementSequenceRight(typename SyntaxTreeNode<const char*>::Syntax
 */
 SyntaxTreeNode<const char*> Parser::statement() {
     string first = checkFIRST("statement");
+    string lookaheadToken = lookahead.getRepresentation();
     SyntaxTreeNode<const char*> varNode, exprNode, branchExpressionNode, elseNode, epsilon;
     typename SyntaxTreeNode<const char*>::SyntaxProp statements;
     
@@ -425,7 +426,7 @@ SyntaxTreeNode<const char*> Parser::statement() {
     else
         statements = currentFuncBody.makeProp("statementSequence");
     
-     if (first == "if" or lookahead.getRepresentation() == "if" or lookahead.getRepresentation() == "fi") {
+     if (first == "if" or lookaheadToken == "if") {
          if (lookahead.getRepresentation() != "fi") {
              match("if");
              branchExpressionNode = branchExpression();
@@ -435,100 +436,86 @@ SyntaxTreeNode<const char*> Parser::statement() {
              match("fi");
                      
              if (!elseNode.toString().empty()) {
-                 vector<SyntaxTreeNode<const char*>> nodesToReturn = {branchExpressionNode, statements, elseNode};
-
                  if (currentFuncBody.toString().empty())
-                     return syntaxTree.makeProp("if", nodesToReturn);
+                     return syntaxTree.makeProp("if", { branchExpressionNode, statements, elseNode });
                  else
-                     return currentFuncBody.makeProp("if", nodesToReturn);
+                     return currentFuncBody.makeProp("if", { branchExpressionNode, statements, elseNode });
              } else {
-                 vector<SyntaxTreeNode<const char*>> nodesToReturn = {branchExpressionNode, statements};
-
                  if (currentFuncBody.toString().empty())
-                     return syntaxTree.makeProp("if", nodesToReturn);
+                     return syntaxTree.makeProp("if", { branchExpressionNode, statements });
                  else
-                     return currentFuncBody.makeProp("if", nodesToReturn);
+                     return currentFuncBody.makeProp("if", { branchExpressionNode, statements });
              }
          } else {
              if (!elseNode.toString().empty()) {
                  if (currentFuncBody.toString().empty())
-                     return syntaxTree.makeProp("if", {branchExpressionNode, statements, elseNode});
+                     return syntaxTree.makeProp("if", { branchExpressionNode, statements, elseNode });
                  else
-                     return currentFuncBody.makeProp("if", {branchExpressionNode, statements, elseNode});
+                     return currentFuncBody.makeProp("if", { branchExpressionNode, statements, elseNode });
              } else {
                  if (currentFuncBody.toString().empty())
-                     return syntaxTree.makeProp("if", {branchExpressionNode, statements});
+                     return syntaxTree.makeProp("if", { branchExpressionNode, statements });
                  else
-                     return currentFuncBody.makeProp("if", {branchExpressionNode, statements});
+                     return currentFuncBody.makeProp("if", { branchExpressionNode, statements });
              }
          }
         
-    } else if (first == "while" or lookahead.getRepresentation() == "while" or lookahead.getRepresentation() == "od") {
+    } else if (first == "while" or lookaheadToken == "while") {
         if (lookahead.getRepresentation() != "od") {
             match("while");
             branchExpressionNode = branchExpression();
             match("do");
             statementSequence(statements);
             match("od");
-            vector<SyntaxTreeNode<const char*>> nodesToReturn = {branchExpressionNode, statements};
                             
             if (currentFuncBody.toString().empty())
-                return syntaxTree.makeProp("while", nodesToReturn);
+                return syntaxTree.makeProp("while", { branchExpressionNode, statements });
             else
-                return currentFuncBody.makeProp("while", nodesToReturn);
+                return currentFuncBody.makeProp("while", { branchExpressionNode, statements });
         } else {
-            vector<SyntaxTreeNode<const char*>> nodesToReturn = {branchExpressionNode, statements};
-                            
             if (currentFuncBody.toString().empty())
-                return syntaxTree.makeProp("while", nodesToReturn);
+                return syntaxTree.makeProp("while", { branchExpressionNode, statements });
             else
-                return currentFuncBody.makeProp("while", nodesToReturn);
+                return currentFuncBody.makeProp("while", { branchExpressionNode, statements });
         }
-    } else if (first == "print" or lookahead.getRepresentation() == "print") {
+    } else if (first == "print" or lookaheadToken == "print") {
         match("print");
         exprNode = expr();
-        
-        vector<SyntaxTreeNode<const char*>> nodesToReturn = {exprNode};
-                        
+                                
         if (currentFuncBody.toString().empty())
-            return syntaxTree.makeProp("print", nodesToReturn);
+            return syntaxTree.makeProp("print", { exprNode });
         else
-            return currentFuncBody.makeProp("print", nodesToReturn);
-    } else if (lookahead.getRepresentation() == "return") {
+            return currentFuncBody.makeProp("print", { exprNode });
+    } else if (lookaheadToken == "return") {
         match("return");
         exprNode = expr();
-        vector<SyntaxTreeNode<const char*>> nodesToReturn = {exprNode};
                         
         if (currentFuncBody.toString().empty())
-            return syntaxTree.makeProp("return", nodesToReturn);
+            return syntaxTree.makeProp("return", { exprNode });
         else
-            return currentFuncBody.makeProp("return", nodesToReturn);
-    } else if (lookahead.getRepresentation() == "fed") {
-        vector<SyntaxTreeNode<const char*>> nodesToReturn = {exprNode};
-                        
+            return currentFuncBody.makeProp("return", { exprNode });
+    } else if (lookaheadToken == "fed" or lookaheadToken == "fi" or lookaheadToken == "od") {
         if (currentFuncBody.toString().empty())
-            return syntaxTree.makeProp("fed", nodesToReturn);
+            return syntaxTree.makeProp("fed", { exprNode });
         else
-            return currentFuncBody.makeProp("fed", nodesToReturn);
-    } else if (first == "ID" and lookahead.getRepresentation() != "int" and lookahead.getRepresentation() != "double") {
+            return currentFuncBody.makeProp("fed", { exprNode });
+    } else if (first == "ID" and lookaheadToken != "int" and lookaheadToken != "double") {
         varNode = var();
         match("=");
         exprNode = expr();
         
-        vector<SyntaxTreeNode<const char*>> nodesToReturn = {varNode, exprNode};
         if (currentFuncBody.toString().empty())
-            return syntaxTree.makeProp("=", nodesToReturn);
+            return syntaxTree.makeProp("=", { varNode, exprNode });
         else
-            return currentFuncBody.makeProp("=", nodesToReturn);
+            return currentFuncBody.makeProp("=", { varNode, exprNode });
     } else if (first == "ID") {
         varNode = var();
         exprNode = expr();
         
-        vector<SyntaxTreeNode<const char*>> nodesToReturn = {varNode, exprNode};
         if (currentFuncBody.toString().empty())
-            return syntaxTree.makeProp("ID", nodesToReturn);
+            return syntaxTree.makeProp("ID", { varNode, exprNode });
         else
-            return currentFuncBody.makeProp("ID", nodesToReturn);
+            return currentFuncBody.makeProp("ID", { varNode, exprNode });
     } else {
         // Epsilon
         return epsilon;
