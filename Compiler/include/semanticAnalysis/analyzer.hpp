@@ -41,9 +41,9 @@ private:
     void handleVariableDeclaration(Token token, vector<Token> line);
     void handleOperations(Token token, vector<Token> line);
     void handleCondition(Token token, vector<Token> line);
-    Token handleArithmetic(vector<Token> line, vector<vector<int>> arthimeticIncrement);
+    Token handleArithmetic(vector<Token> line, vector<int> arthimeticRange);
     bool checkValidReturnType(Token token, vector<Token> line);
-    bool checkValidAssignment(vector<Token> line, int tokenNumber);
+    bool checkValidAssignment(vector<Token> line, int tokenNumber, vector<int> arthimeticRange);
     bool checkValidCondition(vector<Token> line, int openParen, int closeParen);
     string getTypeFromToken(Token token);
     

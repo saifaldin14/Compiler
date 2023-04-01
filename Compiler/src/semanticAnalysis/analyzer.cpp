@@ -13,7 +13,21 @@ Analyzer::Analyzer(vector<vector<Token>> inputLines) {
 }
 
 void Analyzer::analyzeSemantics() {
+    vector<vector<Token>> brokenUpLines;
     for (auto line : lines) {
+        vector<Token> tLine;
+        for (Token token : line) {
+            string tokenValue = token.getRepresentation();
+            tLine.push_back(token);
+            if (tokenValue == "do" or tokenValue == "then" or tokenValue == ";") {
+                brokenUpLines.push_back(tLine);
+                tLine.clear();
+            }
+        }
+        brokenUpLines.push_back(tLine);
+    }
+    
+    for (auto line : brokenUpLines) {
         if (line.size() > 0)
             handleScopes(line[0], line);
     }
@@ -143,12 +157,12 @@ void Analyzer::handleOperations(Token token, vector<Token> line) {
             equalOperations.push_back(i);
             arthmeticIncrement.push_back({ i + 1, 0 });
         } else if (t == "+" or t == "-" or t == "/" or t == "*") {
-            arthmeticIncrement.back()[2] = i + 1;
+            arthmeticIncrement.back()[1] = i + 1;
         }
     }
     
     for (int i = 0; i < equalOperations.size(); i++) {
-        bool assignment = checkValidAssignment(line, equalOperations[i]);
+        bool assignment = checkValidAssignment(line, equalOperations[i], arthmeticIncrement[i]);
         if (assignment)
             cout << "Assignment is correct!" << endl;
         else
@@ -170,6 +184,16 @@ void Analyzer::handleCondition(Token token, vector<Token> line) {
         cout << "Condition is correct!" << endl;
     else
         cout << "Condition has mismatching types" << endl;
+}
+
+Token Analyzer::handleArithmetic(vector<Token> line, vector<int> arthimeticRange) {
+    string type = "integer";
+    for (int i = arthimeticRange[0]; i < arthimeticRange[1] - arthimeticRange[0]; i++) {
+        if (line[i].getType().toString() == "double")
+            type = "double";
+    }
+    
+    return Token("Operation", TokenType(type));
 }
 
 void Analyzer::setVariableInScope(ScopeVariable variable) {
@@ -211,9 +235,12 @@ string Analyzer::getTypeFromToken(Token token) {
     return "NOT FOUND";
 }
 
-bool Analyzer::checkValidAssignment(vector<Token> line, int tokenNumber) {
+bool Analyzer::checkValidAssignment(vector<Token> line, int tokenNumber, vector<int> arthimeticRange) {
     Token left = line[tokenNumber - 1];
     Token right = line[tokenNumber + 1];
+    
+    if (arthimeticRange[0] < arthimeticRange[1])
+        right = handleArithmetic(line, arthimeticRange);
     
     return (getTypeFromToken(left) == getTypeFromToken(right));
 }
