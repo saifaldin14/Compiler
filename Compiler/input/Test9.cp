@@ -3,9 +3,9 @@ def int gcd(int a, int b)
         return (a)
     od;
 
-    return 5.1;
+    return 5;
     int c;
-    if (a>b) then
+    if (a>b or b<4 and a==0) then
         a = b;
         int d;
         double c;

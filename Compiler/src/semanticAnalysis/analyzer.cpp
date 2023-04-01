@@ -208,13 +208,20 @@ void Analyzer::handleOperations(Token token, vector<Token> line) {
 void Analyzer::handleCondition(Token token, vector<Token> line) {
     int openParen = 0, closeParen = 0;
     for (int i = 0; i < line.size(); i++) {
-        if (line[i].getRepresentation() == "(")
+        string tokenValue = line[i].getRepresentation();
+        if (tokenValue == "(")
             openParen = i;
-        else if (line[i].getRepresentation() == ")") {
+        else if (tokenValue == ")") {
             closeParen = i;
             bool condition = checkValidCondition(line, openParen, closeParen);
             if (!condition)
                 saveErrorText("Invalid! Conditional statement has mismatching types!");
+        } else if (tokenValue == "and" or tokenValue == "or") {
+            closeParen = i;
+            bool condition = checkValidCondition(line, openParen, closeParen);
+            if (!condition)
+                saveErrorText("Invalid! Conditional statement has mismatching types!");
+            openParen = i;
         }
     }
 }

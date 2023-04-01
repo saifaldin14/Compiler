@@ -465,6 +465,7 @@ SyntaxTreeNode<const char*> Parser::statement() {
         if (lookahead.getRepresentation() != "od") {
             match("while");
             branchExpressionNode = branchExpression();
+            if (lookahead.getRepresentation() == ")") consumeToken();
             match("do");
             statementSequence(statements);
             match("od");
@@ -500,6 +501,12 @@ SyntaxTreeNode<const char*> Parser::statement() {
             return syntaxTree.makeProp(lookaheadToken, { exprNode });
         else
             return currentFuncBody.makeProp(lookaheadToken, { exprNode });
+    } else if (first == ")" or lookahead.getRepresentation() == ")") {
+        match(")");
+        if (currentFuncBody.toString().empty())
+            return syntaxTree.makeProp("branchFactor", {exprNode});
+        else
+            return currentFuncBody.makeProp("branchFactor", {exprNode});
     } else if (first == "ID" and lookaheadToken != "int" and lookaheadToken != "double") {
         varNode = var();
         match("=");
@@ -904,7 +911,7 @@ SyntaxTreeNode<const char*> Parser::branchExpression() {
     if (!first.empty()) {
         branchTermNode = branchTerm();
         branchTermRightNode = branchTermRight();
-        syntaxTree.makeProp(first, {branchTermRightNode});
+        syntaxTree.makeProp(first, { branchTermRightNode });
         return branchTermNode;
     } else {
         return epsilon;
@@ -927,7 +934,7 @@ SyntaxTreeNode<const char*> Parser::branchTerm() {
     if (!first.empty()) {
         branchFactorNode = branchFactor();
         branchFactorRightNode = branchFactorRight();
-        syntaxTree.makeProp(first, {branchFactorRightNode});
+        syntaxTree.makeProp(first, { branchFactorRightNode });
         return branchFactorNode;
     } else {
         cout << "ERROR CAUSED 12: " << lex.getLineNum() << " " << token.getRepresentation() << endl;
@@ -948,18 +955,23 @@ SyntaxTreeNode<const char*> Parser::branchTerm() {
 */
 SyntaxTreeNode<const char*> Parser::branchTermRight() {
     string first = checkFIRST("branchTermRight");
-    SyntaxTreeNode<const char*> branchTermNode, branchTermRightNode, epsilon;
+    SyntaxTreeNode<const char*> e1Node, e2Node, compNode, epsilon;
     if (!first.empty()) {
         match("or");
-        branchTermNode = branchTerm();
-        branchTermRightNode = branchTermRight();
+        e1Node = expr();
+        compNode = comp();
+        e2Node = expr();
+        syntaxTree.makeProp(first, { e1Node, e2Node });
         
-        if (currentFuncBody.toString().empty())
-            return syntaxTree.makeProp("or", {branchTermNode, branchTermRightNode});
-        else
-            return currentFuncBody.makeProp("or", {branchTermNode, branchTermRightNode});
-    }
-    else{
+        if (lookahead.getRepresentation() == "and")
+            branchFactorRight();
+        else if (lookahead.getRepresentation() == "or")
+            branchTermRight();
+        else if (lookahead.getRepresentation() == ")")
+            match(")");
+        
+        return compNode;
+    } else {
         return epsilon;
     }
 }
@@ -976,23 +988,41 @@ SyntaxTreeNode<const char*> Parser::branchTermRight() {
 */
 SyntaxTreeNode<const char*> Parser::branchFactor() {
     string first = checkFIRST("branchFactor");
-    SyntaxTreeNode<const char*> branchFactorParenNode, branchFactorNode, epsilon;
+    SyntaxTreeNode<const char*> branchFactorParenNode, branchFactorNode, branchFactorRightNode, branchTermNode, branchTermRightNode, epsilon;
     
     if (first == "(") {
         match("(");
         branchFactorParenNode = branchFactorParen();
-        match(")");
+//        match(")");
         return branchFactorParenNode;
-    } else if (first == "not") {
+    } else if (first == "not" or lookahead.getRepresentation() == "not") {
         match("not");
         branchFactorNode = branchFactor();
                         
         if (currentFuncBody.toString().empty())
-            return syntaxTree.makeProp("not", {branchFactorNode});
+            return syntaxTree.makeProp("not", { branchFactorNode });
         else
-            return currentFuncBody.makeProp("not", {branchFactorNode});
+            return currentFuncBody.makeProp("not", { branchFactorNode });
+    } else if (first == "and" or lookahead.getRepresentation() == "and") {
+        match("and");
+        branchFactorNode = branchFactor();
+        branchFactorRightNode = branchFactorRight();
+                    
+        return branchFactorRightNode;
+    } else if (first == "or" or lookahead.getRepresentation() == "or") {
+        match("or");
+        branchTermNode = branchTerm();
+        branchTermRightNode = branchTermRight();
+        
+        if (currentFuncBody.toString().empty())
+            return syntaxTree.makeProp("or", { branchTermNode, branchTermRightNode });
+        else
+            return currentFuncBody.makeProp("or", { branchTermNode, branchTermRightNode });
+    } else if (first == ")" or lookahead.getRepresentation() == ")") {
+        match(")");
+        return branchFactorParenNode;
     } else {
-        cout << "ERROR CAUSED 13: " << lex.getLineNum() << " " << token.getRepresentation() << endl;
+        cout << "ERROR CAUSED 13: " << lex.getLineNum() << " " << lookahead.getRepresentation() << endl;
 
         error();
         return epsilon;
@@ -1011,15 +1041,22 @@ SyntaxTreeNode<const char*> Parser::branchFactor() {
 */
 SyntaxTreeNode<const char*> Parser::branchFactorRight() {
     string first = checkFIRST("branchFactorRight");
-    SyntaxTreeNode<const char*> branchFactorNode, branchFactorRightNode, epsilon;
+    SyntaxTreeNode<const char*> branchFactorNode, branchFactorRightNode, e1Node, e2Node, compNode, epsilon;
     if (!first.empty()) {
-        match("and"); branchFactorNode = branchFactor();
-        branchFactorRightNode = branchFactorRight();
-                    
-        if (currentFuncBody.toString().empty())
-            return syntaxTree.makeProp("and", {branchFactorNode, branchFactorRightNode});
-        else
-            return currentFuncBody.makeProp("and", {branchFactorNode, branchFactorRightNode});
+        match("and");
+        e1Node = expr();
+        compNode = comp();
+        e2Node = expr();
+        syntaxTree.makeProp(first, { e1Node, e2Node });
+        
+        if (lookahead.getRepresentation() == "and")
+            branchFactorRight();
+        else if (lookahead.getRepresentation() == "or")
+            branchTermRight();
+        else if (lookahead.getRepresentation() == ")")
+            match(")");
+        
+        return compNode;
     } else {
         return epsilon;
     }
@@ -1042,7 +1079,7 @@ SyntaxTreeNode<const char*> Parser::branchFactorParen() {
         e1Node = expr();
         compNode = comp();
         e2Node = expr();
-        syntaxTree.makeProp(first, {e1Node, e2Node});
+        syntaxTree.makeProp(first, { e1Node, e2Node });
         return compNode;
     } else if (find(FIRST["branchFactorParen"].begin(), FIRST["branchFactorParen"].end(), first) != FIRST["branchFactorParen"].end()) {
         return branchExpression();
