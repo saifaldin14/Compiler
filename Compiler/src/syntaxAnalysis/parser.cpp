@@ -496,9 +496,9 @@ SyntaxTreeNode<const char*> Parser::statement() {
             return currentFuncBody.makeProp("return", { exprNode });
     } else if (lookaheadToken == "fed" or lookaheadToken == "fi" or lookaheadToken == "od") {
         if (currentFuncBody.toString().empty())
-            return syntaxTree.makeProp("fed", { exprNode });
+            return syntaxTree.makeProp(lookaheadToken, { exprNode });
         else
-            return currentFuncBody.makeProp("fed", { exprNode });
+            return currentFuncBody.makeProp(lookaheadToken, { exprNode });
     } else if (first == "ID" and lookaheadToken != "int" and lookaheadToken != "double") {
         varNode = var();
         match("=");
