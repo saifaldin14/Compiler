@@ -1,0 +1,10 @@
+GLOBAL SCOPE
+	FUNCTION SCOPE
+		gcd, integer, FUNCTION
+		a, integer, FUNCTION
+		b, integer, FUNCTION
+		r, integer, FUNCTION
+	x, integer, GLOBAL
+	y, integer, GLOBAL
+	z, integer, GLOBAL
+

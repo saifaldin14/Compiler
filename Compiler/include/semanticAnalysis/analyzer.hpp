@@ -53,6 +53,7 @@ private:
     // Utility functions
     void setVariableInScope(ScopeVariable variable);
     void saveErrorText(string text);
+    void printValue(string text, int incr);
     string determineType(Token token);
     bool isVariableType(Token token);
     
@@ -64,5 +65,6 @@ private:
     
     bool validReturn = true;
     string printString;
+    int scopeCounter = 0;
 };
 #endif /* analyzer_hpp */

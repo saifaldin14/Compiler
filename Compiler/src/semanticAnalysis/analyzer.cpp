@@ -55,20 +55,14 @@ void Analyzer::handleScopes(Token token, vector<Token> line) {
     string tokenValue = token.getRepresentation();
     // Handle functions
     if (tokenValue == "def") {
-        for (int i = 0; i < scopes.size(); i++)
-            printString += '\t';
-        printString += "FUNCTION SCOPE";
-        printString += '\n';
+        scopeCounter = 1;
         
         scopes.push_back(FUNCTION);
         handleFunctionScope(token, line);
     }
     // Handle if blocks
     else if (tokenValue == "if") {
-        for (int i = 0; i < scopes.size(); i++)
-            printString += '\t';
-        printString += "IF SCOPE";
-        printString += '\n';
+        scopeCounter = 1;
         
         scopes.push_back("IF");
         handleCondition(token, line);
@@ -76,20 +70,13 @@ void Analyzer::handleScopes(Token token, vector<Token> line) {
     // Handle else block
     else if (tokenValue == "else") {
         scopes.pop_back(); // Remove the existing IF scope
-        
-        for (int i = 0; i < scopes.size(); i++)
-            printString += '\t';
-        printString += "ELSE SCOPE";
-        printString += '\n';
+        scopeCounter = 1;
         
         scopes.push_back("ELSE");
     }
     // Handle while block
     else if (tokenValue == "while") {
-        for (int i = 0; i < scopes.size(); i++)
-            printString += '\t';
-        printString += "WHILE SCOPE";
-        printString += '\n';
+        scopeCounter = 1;
         
         scopes.push_back("WHILE");
         handleCondition(token, line);
@@ -97,6 +84,7 @@ void Analyzer::handleScopes(Token token, vector<Token> line) {
     // Handle closing scopes
     else if (tokenValue == "od" or tokenValue == "fi") {
         scopes.pop_back();
+        scopeCounter--;
     }
     // Handle function close
     else if (tokenValue == "fed") {
@@ -106,6 +94,7 @@ void Analyzer::handleScopes(Token token, vector<Token> line) {
         validReturn = true; // Reset it for the next function
         returnTypes.pop_back();
         scopes.pop_back();
+        scopeCounter--;
     }
     // Handle Return statements
     else if (tokenValue == "return") {
@@ -116,6 +105,7 @@ void Analyzer::handleScopes(Token token, vector<Token> line) {
             // We are not in a function
             saveErrorText("Invalid! Return keyword added outside of function");
         }
+        scopeCounter--;
     }
     // Handle print statements
     else if (tokenValue == "print") {
@@ -123,6 +113,10 @@ void Analyzer::handleScopes(Token token, vector<Token> line) {
     }
     // Handle variable decleration
     else if (isVariableType(token)) {
+        if (scopeCounter == 1) {
+            printValue(scopes.back() + " SCOPE", 1);
+        }
+        scopeCounter++;
         handleVariableDeclaration(token, line);
     }
     // Assignment operations
@@ -141,6 +135,11 @@ void Analyzer::handleFunctionScope(Token token, vector<Token> line) {
     functionDefinition[functionName] = functionType;
     variableDefinition[functionName] = { functionName, scopes.back(), functionType };
     
+    if (scopeCounter == 1) {
+        printValue(scopes.back() + " SCOPE", 1);
+    }
+    scopeCounter++;
+    
     for (int i = 0; i < scopes.size(); i++)
         printString += '\t';
     printString += functionName + ", " + functionType + ", " + scopes.back();
@@ -157,6 +156,7 @@ void Analyzer::handleFunctionScope(Token token, vector<Token> line) {
             else {
                 variable.setVarName(line[i].getRepresentation());
                 setVariableInScope(variable);
+                printValue(variable.getVarName() + ", " + variable.getType() + ", " + variable.getScope(), 0);
             }
         } else if (line[i].getRepresentation() == ",") {
             variable.setEmptyValues();
@@ -179,13 +179,9 @@ void Analyzer::handleVariableDeclaration(Token token, vector<Token> line) {
             } else {
                 setVariableInScope(variable);
             }
+            printValue(variable.getVarName() + ", " + variable.getType() + ", " + variable.getScope(), 0);
         }
     }
-    
-    for (int i = 0; i < scopes.size(); i++)
-        printString += '\t';
-    printString += variable.getVarName() + ", " + variable.getType() + ", " + variable.getScope();
-    printString += '\n';
 }
 
 void Analyzer::handleOperations(Token token, vector<Token> line) {
@@ -343,6 +339,13 @@ void Analyzer::saveErrorText(string text) {
         appendFileToWorkWith << text << endl;
         appendFileToWorkWith.close();
     }
+}
+
+void Analyzer::printValue(string text, int incr) {
+    for (int i = 0; i < scopes.size() - incr; i++)
+        printString += '\t';
+    printString += text;
+    printString += '\n';
 }
 
 void Analyzer::printVariables() {
