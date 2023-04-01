@@ -172,7 +172,8 @@ string Analyzer::getTypeFromToken(Token token) {
 
 void Analyzer::handleOperations(Token token, vector<Token> line) {
     for (int i = 0; i < line.size(); i++) {
-        if (line[i].getRepresentation() == "=") {
+        string t = line[i].getRepresentation();
+        if (t == "=") {
             bool assignment = checkValidAssignment(line, i);
             if (assignment)
                 cout << "Assignment is correct!" << endl;
