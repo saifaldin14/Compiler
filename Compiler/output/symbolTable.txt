@@ -10,3 +10,27 @@ GLOBAL SCOPE
 			q, integer, ELSE
 	c, integer, GLOBAL
 
+GLOBAL SCOPE
+	FUNCTION SCOPE
+		gcd, integer, FUNCTION
+		WHILE SCOPE
+		c, integer, FUNCTION
+		IF SCOPE
+			d, integer, IF
+			c, double, IF
+		ELSE SCOPE
+			q, integer, ELSE
+	c, integer, GLOBAL
+
+GLOBAL SCOPE
+	FUNCTION SCOPE
+		gcd, integer, FUNCTION
+		WHILE SCOPE
+		c, integer, FUNCTION
+		IF SCOPE
+			d, integer, IF
+			c, double, IF
+		ELSE SCOPE
+			q, integer, ELSE
+	c, integer, GLOBAL
+

@@ -1,0 +1,2 @@
+SEMANTIC ERROR
+Invalid! Function has mismatching return types

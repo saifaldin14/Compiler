@@ -3,7 +3,7 @@ def int gcd(int a, int b)
         return (a)
     od;
 
-    return 5;
+    return 5.1;
     int c;
     if (a>b) then
         a = b;

@@ -96,7 +96,7 @@ void Analyzer::handleScopes(Token token, vector<Token> line) {
     // Handle function close
     else if (tokenValue == "fed") {
         if (!validReturn)
-            cout << "Function has mismatching return types" << endl;
+            saveErrorText("Invalid! Function has mismatching return types");
         
         validReturn = true; // Reset it for the next function
         returnTypes.pop_back();
@@ -109,7 +109,7 @@ void Analyzer::handleScopes(Token token, vector<Token> line) {
             validReturn = validReturn and checkValidReturnType(token, line);
         } else {
             // We are not in a function
-            cout << "Invalid! Return keyword added outside of function" << endl;
+            saveErrorText("Invalid! Return keyword added outside of function");
         }
     }
     // Handle print statements
@@ -170,7 +170,7 @@ void Analyzer::handleVariableDeclaration(Token token, vector<Token> line) {
             string key = variable.getScope() + " " + variable.getVarName();
             if (variableDefinition.find(key) != variableDefinition.end()) {
                 // Variable name already exists within the same scope!
-                cout << "Invalid! Variable already exists within this scope!" << endl;
+                saveErrorText("Invalid! " + variable.getVarName() + " variable already exists within this scope!");
             } else {
                 setVariableInScope(variable);
             }
@@ -201,7 +201,7 @@ void Analyzer::handleOperations(Token token, vector<Token> line) {
     for (int i = 0; i < equalOperations.size(); i++) {
         bool assignment = checkValidAssignment(line, equalOperations[i], arthmeticIncrement[i]);
         if (!assignment)
-            cout << "Assignment has mismatching types" << endl;
+            saveErrorText("Invalid! Assignment operation has mismatching types!");
     }
 }
 
@@ -214,7 +214,7 @@ void Analyzer::handleCondition(Token token, vector<Token> line) {
             closeParen = i;
             bool condition = checkValidCondition(line, openParen, closeParen);
             if (!condition)
-                cout << "Condition has mismatching types" << endl;
+                saveErrorText("Invalid! Conditional statement has mismatching types!");
         }
     }
 }
@@ -222,7 +222,7 @@ void Analyzer::handleCondition(Token token, vector<Token> line) {
 void Analyzer::handlePrint(Token token, vector<Token> line) {
     for (auto t : line) {
         if (t.getRepresentation() != "print" and t.getType().toString() == "id" and !checkVariableExists(t)) {
-            cout << "Invalid! Variable does not exist!" << endl;
+            saveErrorText("Invalid! " + t.getRepresentation() + " variable does not exist!");
             break;
         }
     }
@@ -303,7 +303,8 @@ bool Analyzer::checkValidAssignment(vector<Token> line, int tokenNumber, vector<
         return (getTypeFromToken(left) == getTypeFromToken(right));
     }
     
-    cout << "Invalid! Variable does not exist!" << endl;
+//    cout << "Invalid! Variable does not exist!" << endl;
+    saveErrorText("Invalid! " + left.getRepresentation() + " variable does not exist!");
     return true;
 }
 
@@ -312,6 +313,24 @@ bool Analyzer::checkValidCondition(vector<Token> line, int openParen, int closeP
     Token right = line[closeParen - 1];
     
     return (getTypeFromToken(left) == getTypeFromToken(right));
+}
+
+void Analyzer::saveErrorText(string text) {
+    fstream appendFileToWorkWith;
+    string filename = "../output/error.txt";
+    appendFileToWorkWith.open(filename, std::fstream::in | std::fstream::out | std::fstream::app);
+    
+    // Print errors to file
+    if (!appendFileToWorkWith) {
+        appendFileToWorkWith.open(filename,  fstream::in | fstream::out | fstream::trunc);
+        appendFileToWorkWith << "SEMANTIC ERROR" << endl;
+        appendFileToWorkWith << text << endl;
+        appendFileToWorkWith.close();
+    } else {    // use existing file
+        appendFileToWorkWith << "SEMANTIC ERROR" << endl;
+        appendFileToWorkWith << text << endl;
+        appendFileToWorkWith.close();
+    }
 }
 
 void Analyzer::printVariables() {
