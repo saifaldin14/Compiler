@@ -3,9 +3,10 @@ def int gcd(int a, int b)
         return (a)
     od;
 
+    return 5;
     int c;
     if (a>b) then
-        int z, x;
+        a = b;
         int d;
         double c;
         return(gcd(a-b,b))

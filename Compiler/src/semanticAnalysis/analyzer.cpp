@@ -149,6 +149,10 @@ string Analyzer::getTypeFromToken(Token token) {
         }
     }
     
+    if (token.getType().toString() == TokenType::INT.toString() or token.getType().toString() == TokenType::DOUBLE.toString()) {
+        return token.getType().toString();
+    }
+    
     return "NOT FOUND";
 }
 
