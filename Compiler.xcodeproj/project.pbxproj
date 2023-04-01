@@ -21,7 +21,6 @@
 		D501FE2F29C921FF00F56BF4 /* fileReader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D501FE2129C921FF00F56BF4 /* fileReader.cpp */; };
 		D501FE3029C921FF00F56BF4 /* leaf.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D501FE2229C921FF00F56BF4 /* leaf.cpp */; };
 		D51FC19729D62DBA004AB4B5 /* analyzer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D51FC19529D62DBA004AB4B5 /* analyzer.cpp */; };
-		D51FC19A29D63B49004AB4B5 /* scopeEntry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D51FC19829D63B49004AB4B5 /* scopeEntry.cpp */; };
 		D51FC19D29D63BEA004AB4B5 /* scopeVariable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D51FC19B29D63BEA004AB4B5 /* scopeVariable.cpp */; };
 /* End PBXBuildFile section */
 
@@ -68,8 +67,6 @@
 		D501FE4029C9221200F56BF4 /* leaf.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = leaf.hpp; sourceTree = "<group>"; };
 		D51FC19529D62DBA004AB4B5 /* analyzer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = analyzer.cpp; sourceTree = "<group>"; };
 		D51FC19629D62DBA004AB4B5 /* analyzer.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = analyzer.hpp; sourceTree = "<group>"; };
-		D51FC19829D63B49004AB4B5 /* scopeEntry.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = scopeEntry.cpp; sourceTree = "<group>"; };
-		D51FC19929D63B49004AB4B5 /* scopeEntry.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = scopeEntry.hpp; sourceTree = "<group>"; };
 		D51FC19B29D63BEA004AB4B5 /* scopeVariable.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = scopeVariable.cpp; sourceTree = "<group>"; };
 		D51FC19C29D63BEA004AB4B5 /* scopeVariable.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = scopeVariable.hpp; sourceTree = "<group>"; };
 		D5B4A33F2999D8E600D8C783 /* Compiler */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Compiler; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -114,7 +111,6 @@
 			isa = PBXGroup;
 			children = (
 				D51FC19629D62DBA004AB4B5 /* analyzer.hpp */,
-				D51FC19929D63B49004AB4B5 /* scopeEntry.hpp */,
 				D51FC19C29D63BEA004AB4B5 /* scopeVariable.hpp */,
 			);
 			path = semanticAnalysis;
@@ -124,7 +120,6 @@
 			isa = PBXGroup;
 			children = (
 				D51FC19529D62DBA004AB4B5 /* analyzer.cpp */,
-				D51FC19829D63B49004AB4B5 /* scopeEntry.cpp */,
 				D51FC19B29D63BEA004AB4B5 /* scopeVariable.cpp */,
 			);
 			path = semanticAnalysis;
@@ -293,7 +288,6 @@
 				D501FE2E29C921FF00F56BF4 /* number.cpp in Sources */,
 				D501FE2A29C921FF00F56BF4 /* transitionTableEntry.cpp in Sources */,
 				D501FE2D29C921FF00F56BF4 /* transitionTableStates.cpp in Sources */,
-				D51FC19A29D63B49004AB4B5 /* scopeEntry.cpp in Sources */,
 				D501FE2429C921FF00F56BF4 /* syntaxProp.cpp in Sources */,
 				D501FE2629C921FF00F56BF4 /* lexer.cpp in Sources */,
 			);
