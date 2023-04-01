@@ -382,6 +382,7 @@ void Parser::type() {
 void Parser::statementSequence(typename SyntaxTreeNode<const char*>::SyntaxProp seqList) {
     string first = checkFIRST("statementSequence");
     if(!first.empty()) {
+        declarations();
         seqList.addChild(statement());
         statementSequenceRight(seqList);
     }

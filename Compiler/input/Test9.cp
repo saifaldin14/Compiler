@@ -5,6 +5,7 @@ def int gcd(int a, int b)
 
     int c;
     if (a>b) then
+        int z, x;
         int d;
         double c;
         return(gcd(a-b,b))
@@ -12,7 +13,6 @@ def int gcd(int a, int b)
         int r;
         return(gcd(a,b-a))
     fi;
-    int z, x;
 fed;
 int c;
 print gcd(21,15);
