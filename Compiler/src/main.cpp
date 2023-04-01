@@ -9,7 +9,7 @@
 using namespace std;
 
 int main() {
-    FileReader fileReader("../input/test9.cp");
+    FileReader fileReader("../input/test4.cp");
     
     string filename = "../output/error.txt";
     fstream errorFile;
@@ -34,7 +34,7 @@ int main() {
 //        }
         Analyzer analyzer(parser.getLines());
         analyzer.analyzeSemantics();
-        //analyzer.printVariables();
+        analyzer.printVariables();
     }
     return 0;
 }

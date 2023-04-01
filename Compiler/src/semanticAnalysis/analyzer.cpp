@@ -72,9 +72,7 @@ void Analyzer::handleScopes(Token token, vector<Token> line) {
     }
     // Handle function close
     else if (tokenValue == "fed") {
-        if (validReturn)
-            cout << "Function has a valid return type!" << endl;
-        else
+        if (!validReturn)
             cout << "Function has mismatching return types" << endl;
         
         validReturn = true; // Reset it for the next function
@@ -139,7 +137,7 @@ void Analyzer::handleVariableDeclaration(Token token, vector<Token> line) {
             string key = variable.getScope() + " " + variable.getVarName();
             if (variableDefinition.find(key) != variableDefinition.end()) {
                 // Variable name already exists within the same scope!
-                cout << "INVALID! VARIABLE ALREADY EXISTS WITHIN THIS SCOPE" << endl;
+                cout << "Invalid! Variable already exists within this scope!" << endl;
             } else {
                 setVariableInScope(variable);
             }
@@ -164,9 +162,7 @@ void Analyzer::handleOperations(Token token, vector<Token> line) {
     
     for (int i = 0; i < equalOperations.size(); i++) {
         bool assignment = checkValidAssignment(line, equalOperations[i], arthmeticIncrement[i]);
-        if (assignment)
-            cout << "Assignment is correct!" << endl;
-        else
+        if (!assignment)
             cout << "Assignment has mismatching types" << endl;
     }
 }
@@ -176,15 +172,13 @@ void Analyzer::handleCondition(Token token, vector<Token> line) {
     for (int i = 0; i < line.size(); i++) {
         if (line[i].getRepresentation() == "(")
             openParen = i;
-        else if (line[i].getRepresentation() == ")")
+        else if (line[i].getRepresentation() == ")") {
             closeParen = i;
+            bool condition = checkValidCondition(line, openParen, closeParen);
+            if (!condition)
+                cout << "Condition has mismatching types" << endl;
+        }
     }
-    
-    bool condition = checkValidCondition(line, openParen, closeParen);
-    if (condition)
-        cout << "Condition is correct!" << endl;
-    else
-        cout << "Condition has mismatching types" << endl;
 }
 
 Token Analyzer::handleArithmetic(vector<Token> line, vector<int> arthimeticRange) {
@@ -238,12 +232,28 @@ string Analyzer::getTypeFromToken(Token token) {
 
 bool Analyzer::checkValidAssignment(vector<Token> line, int tokenNumber, vector<int> arthimeticRange) {
     Token left = line[tokenNumber - 1];
-    Token right = line[tokenNumber + 1];
     
-    if (arthimeticRange[0] < arthimeticRange[1])
-        right = handleArithmetic(line, arthimeticRange);
+    // Check to see if the left variable is actually defined and in scope
+    bool variableExists = false;
+    for (string scope : scopes) {
+        string key = scope + " " + left.getRepresentation();
+        if (variableDefinition.find(key) != variableDefinition.end()) {
+            variableExists = true;
+            break;
+        }
+    }
     
-    return (getTypeFromToken(left) == getTypeFromToken(right));
+    if (variableExists) {
+        Token right = line[tokenNumber + 1];
+        
+        if (arthimeticRange[0] < arthimeticRange[1])
+            right = handleArithmetic(line, arthimeticRange);
+        
+        return (getTypeFromToken(left) == getTypeFromToken(right));
+    }
+    
+    cout << "Invalid! Variable does not exist!" << endl;
+    return true;
 }
 
 bool Analyzer::checkValidCondition(vector<Token> line, int openParen, int closeParen) {

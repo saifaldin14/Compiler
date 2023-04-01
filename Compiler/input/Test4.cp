@@ -7,5 +7,6 @@ def int gcd(int a, int b)
 	else 
 		return(gcd(a,b-a)) 
 	fi;
+    z = 3;
 fed;
 print(gcd(21,15));.
