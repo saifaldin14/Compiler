@@ -157,7 +157,8 @@ void Analyzer::handleOperations(Token token, vector<Token> line) {
             equalOperations.push_back(i);
             arthmeticIncrement.push_back({ i + 1, 0 });
         } else if (t == "+" or t == "-" or t == "/" or t == "*") {
-            arthmeticIncrement.back()[1] = i + 1;
+            if (arthmeticIncrement.size() == 2)
+                arthmeticIncrement.back().back() = i + 1;
         }
     }
     
