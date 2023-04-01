@@ -1,9 +1,9 @@
-//
-//  scopeVariable.cpp
-//  Compiler
-//
-//  Created by Saif Al-Din Ali on 2023-03-30.
-//
+/*
+ File: scopeVariable.cpp
+ Project: Compiler
+ Author: Saif Al-Din Ali
+ Created: 2023-03-30
+*/
 
 #include "../../include/semanticAnalysis/scopeVariable.hpp"
 
