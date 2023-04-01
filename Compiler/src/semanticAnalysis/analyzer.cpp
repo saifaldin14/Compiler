@@ -134,15 +134,25 @@ void Analyzer::handleVariableDeclaration(Token token, vector<Token> line) {
 }
 
 void Analyzer::handleOperations(Token token, vector<Token> line) {
+    vector<int> equalOperations; // If we put multiple statement on the same line
+    vector<vector<int>> arthmeticIncrement; // When we have an arithmetic operation we want to handle it as one token
+    
     for (int i = 0; i < line.size(); i++) {
         string t = line[i].getRepresentation();
         if (t == "=") {
-            bool assignment = checkValidAssignment(line, i);
-            if (assignment)
-                cout << "Assignment is correct!" << endl;
-            else
-                cout << "Assignment has mismatching types" << endl;
+            equalOperations.push_back(i);
+            arthmeticIncrement.push_back({ i + 1, 0 });
+        } else if (t == "+" or t == "-" or t == "/" or t == "*") {
+            arthmeticIncrement.back()[2] = i + 1;
         }
+    }
+    
+    for (int i = 0; i < equalOperations.size(); i++) {
+        bool assignment = checkValidAssignment(line, equalOperations[i]);
+        if (assignment)
+            cout << "Assignment is correct!" << endl;
+        else
+            cout << "Assignment has mismatching types" << endl;
     }
 }
 
@@ -202,7 +212,7 @@ string Analyzer::getTypeFromToken(Token token) {
 }
 
 bool Analyzer::checkValidAssignment(vector<Token> line, int tokenNumber) {
-    Token left = line[0];
+    Token left = line[tokenNumber - 1];
     Token right = line[tokenNumber + 1];
     
     return (getTypeFromToken(left) == getTypeFromToken(right));
