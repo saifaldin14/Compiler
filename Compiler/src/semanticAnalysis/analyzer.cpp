@@ -24,6 +24,11 @@ void Analyzer::analyzeSemantics() {
             if (tokenValue == "do" or tokenValue == "then" or tokenValue == ";") {
                 brokenUpLines.push_back(tLine);
                 tLine.clear();
+            } else if (tokenValue == "od" or tokenValue == "fi" or tokenValue == "else") {
+                tLine.pop_back();
+                brokenUpLines.push_back(tLine);
+                tLine.clear();
+                tLine.push_back(token);
             }
         }
         brokenUpLines.push_back(tLine);
