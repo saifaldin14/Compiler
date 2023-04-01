@@ -40,8 +40,10 @@ private:
     void handleFunctionScope(Token token, vector<Token> line);
     void handleVariableDeclaration(Token token, vector<Token> line);
     void handleOperations(Token token, vector<Token> line);
+    void handleCondition(Token token, vector<Token> line);
     bool checkValidReturnType(Token token, vector<Token> line);
     bool checkValidAssignment(vector<Token> line, int tokenNumber);
+    bool checkValidCondition(vector<Token> line, int openParen, int closeParen);
     string getTypeFromToken(Token token);
     
     // Utility functions

@@ -40,6 +40,7 @@ void Analyzer::handleScopes(Token token, vector<Token> line) {
     // Handle if blocks
     else if (tokenValue == "if") {
         scopes.push_back("IF");
+        handleCondition(token, line);
     }
     // Handle else block
     else if (tokenValue == "else") {
@@ -49,6 +50,7 @@ void Analyzer::handleScopes(Token token, vector<Token> line) {
     // Handle while block
     else if (tokenValue == "while") {
         scopes.push_back("WHILE");
+        handleCondition(token, line);
     }
     // Handle closing scopes
     else if (tokenValue == "od" or tokenValue == "fi") {
@@ -131,6 +133,35 @@ void Analyzer::handleVariableDeclaration(Token token, vector<Token> line) {
     }
 }
 
+void Analyzer::handleOperations(Token token, vector<Token> line) {
+    for (int i = 0; i < line.size(); i++) {
+        string t = line[i].getRepresentation();
+        if (t == "=") {
+            bool assignment = checkValidAssignment(line, i);
+            if (assignment)
+                cout << "Assignment is correct!" << endl;
+            else
+                cout << "Assignment has mismatching types" << endl;
+        }
+    }
+}
+
+void Analyzer::handleCondition(Token token, vector<Token> line) {
+    int openParen = 0, closeParen = 0;
+    for (int i = 0; i < line.size(); i++) {
+        if (line[i].getRepresentation() == "(")
+            openParen = i;
+        else if (line[i].getRepresentation() == ")")
+            closeParen = i;
+    }
+    
+    bool condition = checkValidCondition(line, openParen, closeParen);
+    if (condition)
+        cout << "Condition is correct!" << endl;
+    else
+        cout << "Condition has mismatching types" << endl;
+}
+
 void Analyzer::setVariableInScope(ScopeVariable variable) {
     string key = variable.getScope() + " " + variable.getVarName();
     variableDefinition[key] = { variable.getVarName(), variable.getScope(), variable.getType() };
@@ -170,22 +201,16 @@ string Analyzer::getTypeFromToken(Token token) {
     return "NOT FOUND";
 }
 
-void Analyzer::handleOperations(Token token, vector<Token> line) {
-    for (int i = 0; i < line.size(); i++) {
-        string t = line[i].getRepresentation();
-        if (t == "=") {
-            bool assignment = checkValidAssignment(line, i);
-            if (assignment)
-                cout << "Assignment is correct!" << endl;
-            else
-                cout << "Assignment has mismatching types" << endl;
-        }
-    }
-}
-
 bool Analyzer::checkValidAssignment(vector<Token> line, int tokenNumber) {
     Token left = line[0];
     Token right = line[tokenNumber + 1];
+    
+    return (getTypeFromToken(left) == getTypeFromToken(right));
+}
+
+bool Analyzer::checkValidCondition(vector<Token> line, int openParen, int closeParen) {
+    Token left = line[openParen + 1];
+    Token right = line[closeParen - 1];
     
     return (getTypeFromToken(left) == getTypeFromToken(right));
 }
