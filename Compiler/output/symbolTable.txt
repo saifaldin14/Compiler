@@ -41,3 +41,29 @@ GLOBAL SCOPE
 		ELSE SCOPE
 	d, integer, GLOBAL
 
+GLOBAL SCOPE
+	FUNCTION SCOPE
+		gcd, integer, FUNCTION
+		WHILE SCOPE
+		c, integer, FUNCTION
+		IF SCOPE
+			d, integer, IF
+			c, double, IF
+		ELSE SCOPE
+			q, integer, ELSE
+	c, integer, GLOBAL
+
+GLOBAL SCOPE
+	r, integer, GLOBAL
+	WHILE SCOPE
+
+GLOBAL SCOPE
+	FUNCTION SCOPE
+		gcd, integer, FUNCTION
+		r, integer, FUNCTION
+		IF SCOPE
+			IF SCOPE
+				IF SCOPE
+					WHILE SCOPE
+				z, integer, IF
+
