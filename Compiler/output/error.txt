@@ -212,3 +212,241 @@ StackTrace:
 3   Compiler                            0x0000000100012ceb _ZN6Parser5parseEv + 363
 4   Compiler                            0x0000000100048639 main + 329
 5   libdyld.dylib                       0x00007fff2060ef3d start + 1
+PARSE ERROR
+Parsing error on Line 3 at token ,
+StackTrace: 
+0   Compiler                            0x00000001000239ef _ZN6Parser15writeStackTraceERNSt3__113basic_fstreamIcNS0_11char_traitsIcEEEE + 447
+1   Compiler                            0x0000000100013e53 _ZN6Parser5errorEv + 307
+2   Compiler                            0x0000000100013c6e _ZN6Parser5matchENSt3__112basic_stringIcNS0_11char_traitsIcEENS0_9allocatorIcEEEE + 622
+3   Compiler                            0x0000000100018872 _ZN6Parser9statementEv + 7650
+4   Compiler                            0x00000001000138be _ZN6Parser17statementSequenceEN14SyntaxTreeNodeIPKcE10SyntaxPropE + 126
+5   Compiler                            0x0000000100014522 _ZN6Parser7funcDefEv + 530
+6   Compiler                            0x0000000100013681 _ZN6Parser8funcDeclEv + 97
+7   Compiler                            0x0000000100012c2e _ZN6Parser5parseEv + 238
+8   Compiler                            0x0000000100048699 main + 329
+9   libdyld.dylib                       0x00007fff2060ef3d start + 1
+PARSE ERROR
+Parsing error on Line 3 at token ,
+StackTrace: 
+0   Compiler                            0x00000001000239ef _ZN6Parser15writeStackTraceERNSt3__113basic_fstreamIcNS0_11char_traitsIcEEEE + 447
+1   Compiler                            0x0000000100013e53 _ZN6Parser5errorEv + 307
+2   Compiler                            0x0000000100013c6e _ZN6Parser5matchENSt3__112basic_stringIcNS0_11char_traitsIcEENS0_9allocatorIcEEEE + 622
+3   Compiler                            0x000000010001455e _ZN6Parser7funcDefEv + 590
+4   Compiler                            0x0000000100013681 _ZN6Parser8funcDeclEv + 97
+5   Compiler                            0x0000000100012c2e _ZN6Parser5parseEv + 238
+6   Compiler                            0x0000000100048699 main + 329
+7   libdyld.dylib                       0x00007fff2060ef3d start + 1
+PARSE ERROR
+Parsing error on Line 3 at token ,
+StackTrace: 
+0   Compiler                            0x00000001000239ef _ZN6Parser15writeStackTraceERNSt3__113basic_fstreamIcNS0_11char_traitsIcEEEE + 447
+1   Compiler                            0x0000000100013e53 _ZN6Parser5errorEv + 307
+2   Compiler                            0x0000000100013c6e _ZN6Parser5matchENSt3__112basic_stringIcNS0_11char_traitsIcEENS0_9allocatorIcEEEE + 622
+3   Compiler                            0x00000001000136a8 _ZN6Parser8funcDeclEv + 136
+4   Compiler                            0x0000000100012c2e _ZN6Parser5parseEv + 238
+5   Compiler                            0x0000000100048699 main + 329
+6   libdyld.dylib                       0x00007fff2060ef3d start + 1
+PARSE ERROR
+Parsing error on Line 3 at token ,
+StackTrace: 
+0   Compiler                            0x00000001000239ef _ZN6Parser15writeStackTraceERNSt3__113basic_fstreamIcNS0_11char_traitsIcEEEE + 447
+1   Compiler                            0x0000000100013e53 _ZN6Parser5errorEv + 307
+2   Compiler                            0x0000000100013c6e _ZN6Parser5matchENSt3__112basic_stringIcNS0_11char_traitsIcEENS0_9allocatorIcEEEE + 622
+3   Compiler                            0x0000000100012cab _ZN6Parser5parseEv + 363
+4   Compiler                            0x0000000100048699 main + 329
+5   libdyld.dylib                       0x00007fff2060ef3d start + 1
+PARSE ERROR
+Parsing error on Line 3 at token ,
+StackTrace: 
+0   Compiler                            0x0000000100023a0f _ZN6Parser15writeStackTraceERNSt3__113basic_fstreamIcNS0_11char_traitsIcEEEE + 447
+1   Compiler                            0x0000000100013f33 _ZN6Parser5errorEv + 307
+2   Compiler                            0x0000000100013d4e _ZN6Parser5matchENSt3__112basic_stringIcNS0_11char_traitsIcEENS0_9allocatorIcEEEE + 622
+3   Compiler                            0x000000010001463e _ZN6Parser7funcDefEv + 590
+4   Compiler                            0x0000000100013761 _ZN6Parser8funcDeclEv + 97
+5   Compiler                            0x0000000100012d0e _ZN6Parser5parseEv + 238
+6   Compiler                            0x00000001000486b9 main + 329
+7   libdyld.dylib                       0x00007fff2060ef3d start + 1
+PARSE ERROR
+Parsing error on Line 3 at token ,
+StackTrace: 
+0   Compiler                            0x0000000100023a0f _ZN6Parser15writeStackTraceERNSt3__113basic_fstreamIcNS0_11char_traitsIcEEEE + 447
+1   Compiler                            0x0000000100013f33 _ZN6Parser5errorEv + 307
+2   Compiler                            0x0000000100013d4e _ZN6Parser5matchENSt3__112basic_stringIcNS0_11char_traitsIcEENS0_9allocatorIcEEEE + 622
+3   Compiler                            0x0000000100013788 _ZN6Parser8funcDeclEv + 136
+4   Compiler                            0x0000000100012d0e _ZN6Parser5parseEv + 238
+5   Compiler                            0x00000001000486b9 main + 329
+6   libdyld.dylib                       0x00007fff2060ef3d start + 1
+PARSE ERROR
+Parsing error on Line 3 at token ,
+StackTrace: 
+0   Compiler                            0x0000000100023a0f _ZN6Parser15writeStackTraceERNSt3__113basic_fstreamIcNS0_11char_traitsIcEEEE + 447
+1   Compiler                            0x0000000100013f33 _ZN6Parser5errorEv + 307
+2   Compiler                            0x0000000100013d4e _ZN6Parser5matchENSt3__112basic_stringIcNS0_11char_traitsIcEENS0_9allocatorIcEEEE + 622
+3   Compiler                            0x0000000100012d8b _ZN6Parser5parseEv + 363
+4   Compiler                            0x00000001000486b9 main + 329
+5   libdyld.dylib                       0x00007fff2060ef3d start + 1
+PARSE ERROR
+Parsing error on Line 3 at token ,
+StackTrace: 
+0   Compiler                            0x0000000100023a0f _ZN6Parser15writeStackTraceERNSt3__113basic_fstreamIcNS0_11char_traitsIcEEEE + 447
+1   Compiler                            0x0000000100013f83 _ZN6Parser5errorEv + 307
+2   Compiler                            0x0000000100013d9e _ZN6Parser5matchENSt3__112basic_stringIcNS0_11char_traitsIcEENS0_9allocatorIcEEEE + 622
+3   Compiler                            0x00000001000137d8 _ZN6Parser8funcDeclEv + 136
+4   Compiler                            0x0000000100012d5e _ZN6Parser5parseEv + 238
+5   Compiler                            0x00000001000486b9 main + 329
+6   libdyld.dylib                       0x00007fff2060ef3d start + 1
+PARSE ERROR
+Parsing error on Line 3 at token ,
+StackTrace: 
+0   Compiler                            0x0000000100023a0f _ZN6Parser15writeStackTraceERNSt3__113basic_fstreamIcNS0_11char_traitsIcEEEE + 447
+1   Compiler                            0x0000000100013f83 _ZN6Parser5errorEv + 307
+2   Compiler                            0x0000000100013d9e _ZN6Parser5matchENSt3__112basic_stringIcNS0_11char_traitsIcEENS0_9allocatorIcEEEE + 622
+3   Compiler                            0x0000000100012ddb _ZN6Parser5parseEv + 363
+4   Compiler                            0x00000001000486b9 main + 329
+5   libdyld.dylib                       0x00007fff2060ef3d start + 1
+PARSE ERROR
+Parsing error on Line 3 at token ,
+StackTrace: 
+0   Compiler                            0x00000001000239df _ZN6Parser15writeStackTraceERNSt3__113basic_fstreamIcNS0_11char_traitsIcEEEE + 447
+1   Compiler                            0x0000000100013da3 _ZN6Parser5errorEv + 307
+2   Compiler                            0x0000000100013bbe _ZN6Parser5matchENSt3__112basic_stringIcNS0_11char_traitsIcEENS0_9allocatorIcEEEE + 622
+3   Compiler                            0x0000000100018842 _ZN6Parser9statementEv + 7778
+4   Compiler                            0x000000010001380e _ZN6Parser17statementSequenceEN14SyntaxTreeNodeIPKcE10SyntaxPropE + 126
+5   Compiler                            0x0000000100014472 _ZN6Parser7funcDefEv + 530
+6   Compiler                            0x00000001000135d1 _ZN6Parser8funcDeclEv + 97
+7   Compiler                            0x0000000100012b7e _ZN6Parser5parseEv + 238
+8   Compiler                            0x0000000100048689 main + 329
+9   libdyld.dylib                       0x00007fff2060ef3d start + 1
+PARSE ERROR
+Parsing error on Line 3 at token ,
+StackTrace: 
+0   Compiler                            0x00000001000239df _ZN6Parser15writeStackTraceERNSt3__113basic_fstreamIcNS0_11char_traitsIcEEEE + 447
+1   Compiler                            0x0000000100013da3 _ZN6Parser5errorEv + 307
+2   Compiler                            0x0000000100013bbe _ZN6Parser5matchENSt3__112basic_stringIcNS0_11char_traitsIcEENS0_9allocatorIcEEEE + 622
+3   Compiler                            0x00000001000144ae _ZN6Parser7funcDefEv + 590
+4   Compiler                            0x00000001000135d1 _ZN6Parser8funcDeclEv + 97
+5   Compiler                            0x0000000100012b7e _ZN6Parser5parseEv + 238
+6   Compiler                            0x0000000100048689 main + 329
+7   libdyld.dylib                       0x00007fff2060ef3d start + 1
+PARSE ERROR
+Parsing error on Line 3 at token ,
+StackTrace: 
+0   Compiler                            0x00000001000239df _ZN6Parser15writeStackTraceERNSt3__113basic_fstreamIcNS0_11char_traitsIcEEEE + 447
+1   Compiler                            0x0000000100013da3 _ZN6Parser5errorEv + 307
+2   Compiler                            0x0000000100013bbe _ZN6Parser5matchENSt3__112basic_stringIcNS0_11char_traitsIcEENS0_9allocatorIcEEEE + 622
+3   Compiler                            0x00000001000135f8 _ZN6Parser8funcDeclEv + 136
+4   Compiler                            0x0000000100012b7e _ZN6Parser5parseEv + 238
+5   Compiler                            0x0000000100048689 main + 329
+6   libdyld.dylib                       0x00007fff2060ef3d start + 1
+PARSE ERROR
+Parsing error on Line 3 at token ,
+StackTrace: 
+0   Compiler                            0x00000001000239df _ZN6Parser15writeStackTraceERNSt3__113basic_fstreamIcNS0_11char_traitsIcEEEE + 447
+1   Compiler                            0x0000000100013da3 _ZN6Parser5errorEv + 307
+2   Compiler                            0x0000000100013bbe _ZN6Parser5matchENSt3__112basic_stringIcNS0_11char_traitsIcEENS0_9allocatorIcEEEE + 622
+3   Compiler                            0x0000000100012bfb _ZN6Parser5parseEv + 363
+4   Compiler                            0x0000000100048689 main + 329
+5   libdyld.dylib                       0x00007fff2060ef3d start + 1
+PARSE ERROR
+Parsing error on Line 3 at token ,
+StackTrace: 
+0   Compiler                            0x00000001000239ef _ZN6Parser15writeStackTraceERNSt3__113basic_fstreamIcNS0_11char_traitsIcEEEE + 447
+1   Compiler                            0x0000000100013e53 _ZN6Parser5errorEv + 307
+2   Compiler                            0x0000000100013c6e _ZN6Parser5matchENSt3__112basic_stringIcNS0_11char_traitsIcEENS0_9allocatorIcEEEE + 622
+3   Compiler                            0x0000000100018872 _ZN6Parser9statementEv + 7650
+4   Compiler                            0x00000001000138be _ZN6Parser17statementSequenceEN14SyntaxTreeNodeIPKcE10SyntaxPropE + 126
+5   Compiler                            0x0000000100014522 _ZN6Parser7funcDefEv + 530
+6   Compiler                            0x0000000100013681 _ZN6Parser8funcDeclEv + 97
+7   Compiler                            0x0000000100012c2e _ZN6Parser5parseEv + 238
+8   Compiler                            0x0000000100048699 main + 329
+9   libdyld.dylib                       0x00007fff2060ef3d start + 1
+PARSE ERROR
+Parsing error on Line 3 at token ,
+StackTrace: 
+0   Compiler                            0x00000001000239ef _ZN6Parser15writeStackTraceERNSt3__113basic_fstreamIcNS0_11char_traitsIcEEEE + 447
+1   Compiler                            0x0000000100013e53 _ZN6Parser5errorEv + 307
+2   Compiler                            0x0000000100013c6e _ZN6Parser5matchENSt3__112basic_stringIcNS0_11char_traitsIcEENS0_9allocatorIcEEEE + 622
+3   Compiler                            0x000000010001455e _ZN6Parser7funcDefEv + 590
+4   Compiler                            0x0000000100013681 _ZN6Parser8funcDeclEv + 97
+5   Compiler                            0x0000000100012c2e _ZN6Parser5parseEv + 238
+6   Compiler                            0x0000000100048699 main + 329
+7   libdyld.dylib                       0x00007fff2060ef3d start + 1
+PARSE ERROR
+Parsing error on Line 3 at token ,
+StackTrace: 
+0   Compiler                            0x00000001000239ef _ZN6Parser15writeStackTraceERNSt3__113basic_fstreamIcNS0_11char_traitsIcEEEE + 447
+1   Compiler                            0x0000000100013e53 _ZN6Parser5errorEv + 307
+2   Compiler                            0x0000000100013c6e _ZN6Parser5matchENSt3__112basic_stringIcNS0_11char_traitsIcEENS0_9allocatorIcEEEE + 622
+3   Compiler                            0x00000001000136a8 _ZN6Parser8funcDeclEv + 136
+4   Compiler                            0x0000000100012c2e _ZN6Parser5parseEv + 238
+5   Compiler                            0x0000000100048699 main + 329
+6   libdyld.dylib                       0x00007fff2060ef3d start + 1
+PARSE ERROR
+Parsing error on Line 3 at token ,
+StackTrace: 
+0   Compiler                            0x00000001000239ef _ZN6Parser15writeStackTraceERNSt3__113basic_fstreamIcNS0_11char_traitsIcEEEE + 447
+1   Compiler                            0x0000000100013e53 _ZN6Parser5errorEv + 307
+2   Compiler                            0x0000000100013c6e _ZN6Parser5matchENSt3__112basic_stringIcNS0_11char_traitsIcEENS0_9allocatorIcEEEE + 622
+3   Compiler                            0x0000000100012cab _ZN6Parser5parseEv + 363
+4   Compiler                            0x0000000100048699 main + 329
+5   libdyld.dylib                       0x00007fff2060ef3d start + 1
+PARSE ERROR
+Parsing error on Line 14 at token ,
+StackTrace: 
+0   Compiler                            0x00000001000239ef _ZN6Parser15writeStackTraceERNSt3__113basic_fstreamIcNS0_11char_traitsIcEEEE + 447
+1   Compiler                            0x0000000100013e53 _ZN6Parser5errorEv + 307
+2   Compiler                            0x0000000100013c6e _ZN6Parser5matchENSt3__112basic_stringIcNS0_11char_traitsIcEENS0_9allocatorIcEEEE + 622
+3   Compiler                            0x000000010001455e _ZN6Parser7funcDefEv + 590
+4   Compiler                            0x0000000100013681 _ZN6Parser8funcDeclEv + 97
+5   Compiler                            0x0000000100012c2e _ZN6Parser5parseEv + 238
+6   Compiler                            0x0000000100048699 main + 329
+7   libdyld.dylib                       0x00007fff2060ef3d start + 1
+PARSE ERROR
+Parsing error on Line 14 at token ,
+StackTrace: 
+0   Compiler                            0x00000001000239ef _ZN6Parser15writeStackTraceERNSt3__113basic_fstreamIcNS0_11char_traitsIcEEEE + 447
+1   Compiler                            0x0000000100013e53 _ZN6Parser5errorEv + 307
+2   Compiler                            0x0000000100013c6e _ZN6Parser5matchENSt3__112basic_stringIcNS0_11char_traitsIcEENS0_9allocatorIcEEEE + 622
+3   Compiler                            0x00000001000136a8 _ZN6Parser8funcDeclEv + 136
+4   Compiler                            0x0000000100012c2e _ZN6Parser5parseEv + 238
+5   Compiler                            0x0000000100048699 main + 329
+6   libdyld.dylib                       0x00007fff2060ef3d start + 1
+PARSE ERROR
+Parsing error on Line 14 at token ,
+StackTrace: 
+0   Compiler                            0x00000001000239ef _ZN6Parser15writeStackTraceERNSt3__113basic_fstreamIcNS0_11char_traitsIcEEEE + 447
+1   Compiler                            0x0000000100013e53 _ZN6Parser5errorEv + 307
+2   Compiler                            0x0000000100013c6e _ZN6Parser5matchENSt3__112basic_stringIcNS0_11char_traitsIcEENS0_9allocatorIcEEEE + 622
+3   Compiler                            0x0000000100012cab _ZN6Parser5parseEv + 363
+4   Compiler                            0x0000000100048699 main + 329
+5   libdyld.dylib                       0x00007fff2060ef3d start + 1
+PARSE ERROR
+Parsing error on Line 14 at token ,
+StackTrace: 
+0   Compiler                            0x00000001000239ef _ZN6Parser15writeStackTraceERNSt3__113basic_fstreamIcNS0_11char_traitsIcEEEE + 447
+1   Compiler                            0x0000000100013e53 _ZN6Parser5errorEv + 307
+2   Compiler                            0x0000000100013c6e _ZN6Parser5matchENSt3__112basic_stringIcNS0_11char_traitsIcEENS0_9allocatorIcEEEE + 622
+3   Compiler                            0x000000010001455e _ZN6Parser7funcDefEv + 590
+4   Compiler                            0x0000000100013681 _ZN6Parser8funcDeclEv + 97
+5   Compiler                            0x0000000100012c2e _ZN6Parser5parseEv + 238
+6   Compiler                            0x0000000100048699 main + 329
+7   libdyld.dylib                       0x00007fff2060ef3d start + 1
+PARSE ERROR
+Parsing error on Line 14 at token ,
+StackTrace: 
+0   Compiler                            0x00000001000239ef _ZN6Parser15writeStackTraceERNSt3__113basic_fstreamIcNS0_11char_traitsIcEEEE + 447
+1   Compiler                            0x0000000100013e53 _ZN6Parser5errorEv + 307
+2   Compiler                            0x0000000100013c6e _ZN6Parser5matchENSt3__112basic_stringIcNS0_11char_traitsIcEENS0_9allocatorIcEEEE + 622
+3   Compiler                            0x00000001000136a8 _ZN6Parser8funcDeclEv + 136
+4   Compiler                            0x0000000100012c2e _ZN6Parser5parseEv + 238
+5   Compiler                            0x0000000100048699 main + 329
+6   libdyld.dylib                       0x00007fff2060ef3d start + 1
+PARSE ERROR
+Parsing error on Line 14 at token ,
+StackTrace: 
+0   Compiler                            0x00000001000239ef _ZN6Parser15writeStackTraceERNSt3__113basic_fstreamIcNS0_11char_traitsIcEEEE + 447
+1   Compiler                            0x0000000100013e53 _ZN6Parser5errorEv + 307
+2   Compiler                            0x0000000100013c6e _ZN6Parser5matchENSt3__112basic_stringIcNS0_11char_traitsIcEENS0_9allocatorIcEEEE + 622
+3   Compiler                            0x0000000100012cab _ZN6Parser5parseEv + 363
+4   Compiler                            0x0000000100048699 main + 329
+5   libdyld.dylib                       0x00007fff2060ef3d start + 1

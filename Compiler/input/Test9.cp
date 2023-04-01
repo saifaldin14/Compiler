@@ -1,6 +1,5 @@
 def int gcd(int a, int b)
     while (a==b) do
-        int r;
         return (a)
     od;
 
@@ -13,6 +12,7 @@ def int gcd(int a, int b)
         int r;
         return(gcd(a,b-a))
     fi;
+    int z, x;
 fed;
 int c;
 print gcd(21,15);
