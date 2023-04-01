@@ -30,39 +30,38 @@ bool Analyzer::isVariableType(Token token) {
 }
 
 void Analyzer::handleScopes(Token token, vector<Token> line) {
+    string tokenValue = token.getRepresentation();
     // Handle functions
-    if (token.getRepresentation() == "def") {
+    if (tokenValue == "def") {
         scopes.push_back(FUNCTION);
         handleFunctionScope(token, line);
     }
     // Handle if blocks
-    else if (token.getRepresentation() == "if") {
+    else if (tokenValue == "if") {
         scopes.push_back("IF");
     }
     // Handle else block
-    else if (token.getRepresentation() == "else") {
-        scopes.pop_back();
+    else if (tokenValue == "else") {
+        scopes.pop_back(); // Remove the existing IF scope
         scopes.push_back("ELSE");
     }
     // Handle while block
-    else if (token.getRepresentation() == "while") {
+    else if (tokenValue == "while") {
         scopes.push_back("WHILE");
     }
     // Handle closing scopes
-    else if (token.getRepresentation() == "od" or token.getRepresentation() == "fed") {
+    else if (tokenValue == "od" or tokenValue == "fed" or tokenValue == "fi") {
         scopes.pop_back();
     }
-    else if (token.getRepresentation() == "fi") {
-//        vector<string> reverseScopes (scopes.rbegin(), scopes.rend());
-//        for (auto i : reverseScopes) {
-//            if (i == ELSE)
-//                scopes.pop_back();
-//            else if (i == IF) {
-//                scopes.pop_back();
-//                break;
-//            }
-//        }
-        scopes.pop_back();
+    // Handle Return statements
+    else if (tokenValue == "return") {
+        if(find(scopes.begin(), scopes.end(), FUNCTION) != scopes.end()) {
+            // We are currently in a function
+            checkValidReturnType(token, line);
+        } else {
+            // We are not in a function
+            cout << "Invalid! Return keyword added outside of function" << endl;
+        }
     }
     // Handle variable decleration
     else if (isVariableType(token)) {
@@ -75,10 +74,10 @@ void Analyzer::handleFunctionScope(Token token, vector<Token> line) {
     // <def> <returnType> <name> <(> <arguments> <)>
     
     // Since the code is parsed correctly we know after def there will be a return type argument
-    string functionType = determineType(line[1]);
+    string functionType = determineType(line[1]), functionName = line[2].getRepresentation();
     returnTypes.push_back(functionType); // Add the return type of the function to the returnType stack
-    functionDefinition[line[2].getRepresentation()] = functionType;
-    variableDefinition[line[2].getRepresentation()] = {functionType, "0", "0"};
+    functionDefinition[functionName] = functionType;
+    variableDefinition[functionName] = { functionName, scopes.back(), functionType };
     ScopeVariable variable;
     variable.setScope(FUNCTION);
     
@@ -108,8 +107,7 @@ void Analyzer::handleVariableDeclaration(Token token, vector<Token> line) {
             string key = variable.getScope() + " " + variable.getVarName();
             if (variableDefinition.find(key) != variableDefinition.end()) {
                 // Variable name already exists within the same scope!
-        //        cout << "INVALID! VARIABLE ALREADY EXISTS WITHIN THIS SCOPE" << endl;
-                cout << "INVALID! " << variable.getVarName() << ", " << scopes.back() << endl;
+                cout << "INVALID! VARIABLE ALREADY EXISTS WITHIN THIS SCOPE" << endl;
             } else {
                 setVariableInScope(variable);
             }

@@ -508,3 +508,18 @@ StackTrace:
 3   Compiler                            0x0000000100012c9b _ZN6Parser5parseEv + 363
 4   Compiler                            0x0000000100048699 main + 329
 5   libdyld.dylib                       0x00007fff2060ef3d start + 1
+PARSE ERROR
+Parsing error on Line 18 at token fed
+StackTrace: 
+0   Compiler                            0x00000001000239bf _ZN6Parser15writeStackTraceERNSt3__113basic_fstreamIcNS0_11char_traitsIcEEEE + 447
+1   Compiler                            0x00000001000138b3 _ZN6Parser5errorEv + 307
+2   Compiler                            0x00000001000136ce _ZN6Parser5matchENSt3__112basic_stringIcNS0_11char_traitsIcEENS0_9allocatorIcEEEE + 622
+3   Compiler                            0x0000000100016a5c _ZN6Parser9statementEv + 1388
+4   Compiler                            0x000000010001331f _ZN6Parser17statementSequenceEN14SyntaxTreeNodeIPKcE10SyntaxPropE + 143
+5   Compiler                            0x000000010001acfc _ZN6Parser22statementSequenceRightEN14SyntaxTreeNodeIPKcE10SyntaxPropE + 204
+6   Compiler                            0x000000010001336d _ZN6Parser17statementSequenceEN14SyntaxTreeNodeIPKcE10SyntaxPropE + 221
+7   Compiler                            0x0000000100013f82 _ZN6Parser7funcDefEv + 530
+8   Compiler                            0x00000001000130d1 _ZN6Parser8funcDeclEv + 97
+9   Compiler                            0x000000010001267e _ZN6Parser5parseEv + 238
+10  Compiler                            0x0000000100048669 main + 329
+11  libdyld.dylib                       0x00007fff2060ef3d start + 1
