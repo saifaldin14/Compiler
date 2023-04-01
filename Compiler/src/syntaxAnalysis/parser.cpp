@@ -993,7 +993,10 @@ SyntaxTreeNode<const char*> Parser::branchFactor() {
     if (first == "(") {
         match("(");
         branchFactorParenNode = branchFactorParen();
-//        match(")");
+        
+        if (lookahead.getRepresentation() == ")")
+            match(")");
+        
         return branchFactorParenNode;
     } else if (first == "not" or lookahead.getRepresentation() == "not") {
         match("not");

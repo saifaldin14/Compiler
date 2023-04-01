@@ -1,7 +1,6 @@
 def int max(int x, int y)
 int z;
-if (x>y)
-then
+if (x>y) then
   z = x
 else
   z=y
