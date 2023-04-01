@@ -14,6 +14,7 @@
 #include <sstream>
 #include <cstdlib>
 #include <sstream>
+#include <fstream>
 #include <stdexcept>
 #include <execinfo.h>
 #include <unordered_map>
@@ -51,6 +52,7 @@ private:
     
     // Utility functions
     void setVariableInScope(ScopeVariable variable);
+    void saveErrorText(string text);
     string determineType(Token token);
     bool isVariableType(Token token);
     

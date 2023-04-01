@@ -50,45 +50,43 @@ void Analyzer::handleScopes(Token token, vector<Token> line) {
     string tokenValue = token.getRepresentation();
     // Handle functions
     if (tokenValue == "def") {
-        scopes.push_back(FUNCTION);
-        
         for (int i = 0; i < scopes.size(); i++)
             printString += '\t';
         printString += "FUNCTION SCOPE";
         printString += '\n';
         
+        scopes.push_back(FUNCTION);
         handleFunctionScope(token, line);
     }
     // Handle if blocks
     else if (tokenValue == "if") {
-        scopes.push_back("IF");
-        
         for (int i = 0; i < scopes.size(); i++)
             printString += '\t';
         printString += "IF SCOPE";
         printString += '\n';
         
+        scopes.push_back("IF");
         handleCondition(token, line);
     }
     // Handle else block
     else if (tokenValue == "else") {
         scopes.pop_back(); // Remove the existing IF scope
-        scopes.push_back("ELSE");
         
         for (int i = 0; i < scopes.size(); i++)
             printString += '\t';
         printString += "ELSE SCOPE";
         printString += '\n';
+        
+        scopes.push_back("ELSE");
     }
     // Handle while block
     else if (tokenValue == "while") {
-        scopes.push_back("WHILE");
-        
         for (int i = 0; i < scopes.size(); i++)
             printString += '\t';
         printString += "WHILE SCOPE";
         printString += '\n';
         
+        scopes.push_back("WHILE");
         handleCondition(token, line);
     }
     // Handle closing scopes
@@ -138,7 +136,7 @@ void Analyzer::handleFunctionScope(Token token, vector<Token> line) {
     functionDefinition[functionName] = functionType;
     variableDefinition[functionName] = { functionName, scopes.back(), functionType };
     
-    for (int i = 0; i < scopes.size() + 1; i++)
+    for (int i = 0; i < scopes.size(); i++)
         printString += '\t';
     printString += functionName + ", " + functionType + ", " + scopes.back();
     printString += '\n';
@@ -179,7 +177,7 @@ void Analyzer::handleVariableDeclaration(Token token, vector<Token> line) {
         }
     }
     
-    for (int i = 0; i < scopes.size() + 1; i++)
+    for (int i = 0; i < scopes.size(); i++)
         printString += '\t';
     printString += variable.getVarName() + ", " + variable.getType() + ", " + variable.getScope();
     printString += '\n';
@@ -317,8 +315,24 @@ bool Analyzer::checkValidCondition(vector<Token> line, int openParen, int closeP
 }
 
 void Analyzer::printVariables() {
-//    for (const auto & [ key, value ] : variableDefinition) {
-//        cout << key << ": " << value[0] << ", " << value[1] << ", " << value[2] << endl;
-//    }
-    cout << printString;
+//    cout << printString;
+    try {
+        fstream appendFileToWorkWith;
+        string filename = "../output/symbolTable.txt";
+        appendFileToWorkWith.open(filename, std::fstream::in | std::fstream::out | std::fstream::app);
+
+      // If file does not exist, Create new file
+      if (!appendFileToWorkWith) {
+        appendFileToWorkWith.open(filename,  fstream::in | fstream::out | fstream::trunc);
+        appendFileToWorkWith <<"\n";
+        appendFileToWorkWith.close();
+       } else {    // use existing file
+           appendFileToWorkWith << printString <<endl;
+           appendFileToWorkWith.close();
+        }
+    } catch (const std::out_of_range& e) {
+        cerr << "Out of Range error: " << e.what() << endl;
+    } catch (...) {
+        cerr << "Unknown exception caught" << endl;
+    }
 }

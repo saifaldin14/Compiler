@@ -21,9 +21,6 @@ int main() {
     Parser parser(lex);
     parser.parse();
     
-    parser.getLexer().transitionTableStates.printTransitionTables();
-    parser.getLexer().transitionTableStates2.printTransitionTablesWithoutHeaders();
-        
     if (parser.getParsed()) {
 //        for (auto i : parser.getLines()) {
 //            for (Token t : i) {

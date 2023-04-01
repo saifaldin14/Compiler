@@ -5,7 +5,6 @@
  Created: 2023-02-25
 */
 
-#include <fstream>
 #include "../../include/lexicalAnalysis/transitionTableNode.hpp"
 
 template<typename ValueType>

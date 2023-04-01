@@ -12,6 +12,7 @@
 #include <vector>
 #include <string>
 #include <sstream>
+#include <fstream>
 #include <unordered_map>
 #include "transitionTableEntry.hpp"
 
