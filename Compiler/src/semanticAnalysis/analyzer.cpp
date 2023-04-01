@@ -7,6 +7,13 @@
 
 #include "../../include/semanticAnalysis/analyzer.hpp"
 
+/*
+ Description:
+    Construtor for the semantic analyzer
+ 
+ Parameters:
+    - inputLines: The code lines split into Token arrays (vector<vector<Token>> inputLines)
+*/
 Analyzer::Analyzer(vector<vector<Token>> inputLines) {
     lines = inputLines;
     scopes.push_back("GLOBAL");
@@ -14,6 +21,16 @@ Analyzer::Analyzer(vector<vector<Token>> inputLines) {
     printString += '\n';
 }
 
+/*
+ Description:
+    Performs semantic analysis on the code lines
+ 
+ Parameters:
+    - None
+ 
+ Returns:
+    - None
+*/
 void Analyzer::analyzeSemantics() {
     vector<vector<Token>> brokenUpLines;
     for (auto line : lines) {
@@ -40,17 +57,48 @@ void Analyzer::analyzeSemantics() {
     }
 }
 
+/*
+ Description:
+    Gets the type of the variable (ints are cast to integers)
+ 
+ Parameters:
+    - token: The token that will be analyzed (Token)
+ 
+ Returns:
+    - The token type (string)
+*/
 string Analyzer::determineType(Token token) {
     if (token.getRepresentation() == "int") return "integer";
     return token.getRepresentation();
 }
 
+/*
+ Description:
+    Checks to see is an ID token is an int or double declaration
+ 
+ Parameters:
+    - token: The token that will be analyzed (Token)
+ 
+ Returns:
+    - Whether or not the token is an variable declaration
+*/
 bool Analyzer::isVariableType(Token token) {
     if (token.getRepresentation() == "int" or token.getRepresentation() == "double")
         return true;
     return false;
 }
 
+/*
+ Description:
+    Determines and sets the scope for the current code block
+ 
+ Parameters:
+    - token: The token that will be analyzed (Token)
+    - line: The code line of Tokens (vector<Token>)
+ 
+ Returns:
+    - None
+*/
 void Analyzer::handleScopes(Token token, vector<Token> line) {
     string tokenValue = token.getRepresentation();
     // Handle functions
@@ -125,6 +173,17 @@ void Analyzer::handleScopes(Token token, vector<Token> line) {
     }
 }
 
+/*
+ Description:
+    Sets the function scope and populates the symbol table
+ 
+ Parameters:
+    - token: The token that will be analyzed (Token)
+    - line: The code line of Tokens (vector<Token>)
+ 
+ Returns:
+    - None
+*/
 void Analyzer::handleFunctionScope(Token token, vector<Token> line) {
     // Line structure is:
     // <def> <returnType> <name> <(> <arguments> <)>
@@ -139,11 +198,7 @@ void Analyzer::handleFunctionScope(Token token, vector<Token> line) {
         printValue(scopes.back() + " SCOPE", 1);
     }
     scopeCounter++;
-    
-    for (int i = 0; i < scopes.size(); i++)
-        printString += '\t';
-    printString += functionName + ", " + functionType + ", " + scopes.back();
-    printString += '\n';
+    printValue(functionName + ", " + functionType + ", " + scopes.back(), 0);
     
     ScopeVariable variable;
     variable.setScope(FUNCTION);
@@ -164,6 +219,17 @@ void Analyzer::handleFunctionScope(Token token, vector<Token> line) {
     }
 }
 
+/*
+ Description:
+    Sets the variable scope and handles the declaration of a new variable
+ 
+ Parameters:
+    - token: The token that will be analyzed (Token)
+    - line: The code line of Tokens (vector<Token>)
+ 
+ Returns:
+    - None
+*/
 void Analyzer::handleVariableDeclaration(Token token, vector<Token> line) {
     ScopeVariable variable;
     for (int i = 1; i < line.size(); i++) {
@@ -184,6 +250,17 @@ void Analyzer::handleVariableDeclaration(Token token, vector<Token> line) {
     }
 }
 
+/*
+ Description:
+    Handles the assignment operation and checks to make sure that the type of both tokens is the same
+ 
+ Parameters:
+    - token: The token that will be analyzed (Token)
+    - line: The code line of Tokens (vector<Token>)
+ 
+ Returns:
+    - None
+*/
 void Analyzer::handleOperations(Token token, vector<Token> line) {
     vector<int> equalOperations; // If we put multiple statement on the same line
     vector<vector<int>> arthmeticIncrement; // When we have an arithmetic operation we want to handle it as one token
@@ -206,6 +283,18 @@ void Analyzer::handleOperations(Token token, vector<Token> line) {
     }
 }
 
+/*
+ Description:
+    Handles the comparison operations (==, <, >, <=, >=, <>)
+    and makes sure the types of both tokens is the same
+ 
+ Parameters:
+    - token: The token that will be analyzed (Token)
+    - line: The code line of Tokens (vector<Token>)
+ 
+ Returns:
+    - None
+*/
 void Analyzer::handleCondition(Token token, vector<Token> line) {
     int openParen = 0, closeParen = 0;
     for (int i = 0; i < line.size(); i++) {
@@ -227,6 +316,17 @@ void Analyzer::handleCondition(Token token, vector<Token> line) {
     }
 }
 
+/*
+ Description:
+    Handles the print operation and ensures that no new variables are created inside it
+ 
+ Parameters:
+    - token: The token that will be analyzed (Token)
+    - line: The code line of Tokens (vector<Token>)
+ 
+ Returns:
+    - None
+*/
 void Analyzer::handlePrint(Token token, vector<Token> line) {
     for (auto t : line) {
         if (t.getRepresentation() != "print" and t.getType().toString() == "id" and !checkVariableExists(t)) {
@@ -236,6 +336,19 @@ void Analyzer::handlePrint(Token token, vector<Token> line) {
     }
 }
 
+/*
+ Description:
+    Handles arithmetic operationss (+, -, *, /)
+    and sets the type of the final token to be a double
+    if some operation with double has occured, otherwise int
+ 
+ Parameters:
+    - token: The token that will be analyzed (Token)
+    - line: The code line of Tokens (vector<Token>)
+ 
+ Returns:
+    - The operation token (Token)
+*/
 Token Analyzer::handleArithmetic(vector<Token> line, vector<int> arthimeticRange) {
     string type = "integer";
     for (int i = arthimeticRange[0]; i < arthimeticRange[1] - arthimeticRange[0]; i++) {
@@ -246,11 +359,32 @@ Token Analyzer::handleArithmetic(vector<Token> line, vector<int> arthimeticRange
     return Token("Operation", TokenType(type));
 }
 
+/*
+ Description:
+    Sets a variable in the scope of the variable definition table
+ 
+ Parameters:
+    - variable: The variable that will be saved (ScopeVariabl)
+ 
+ Returns:
+    - None
+*/
 void Analyzer::setVariableInScope(ScopeVariable variable) {
     string key = variable.getScope() + " " + variable.getVarName();
     variableDefinition[key] = { variable.getVarName(), variable.getScope(), variable.getType() };
 }
 
+/*
+ Description:
+    Checks to make sure the return type is the same as the function declaration
+ 
+ Parameters:
+    - token: The token that will be analyzed (Token)
+    - line: The code line of Tokens (vector<Token>)
+ 
+ Returns:
+    - Whether or not the types match (bool)
+*/
 bool Analyzer::checkValidReturnType(Token token, vector<Token> line) {
     Token returnedValue;
     
@@ -262,6 +396,16 @@ bool Analyzer::checkValidReturnType(Token token, vector<Token> line) {
     return false;
 }
 
+/*
+ Description:
+    Gets the type of a variable in the symbol table
+ 
+ Parameters:
+    - token: The token that will be analyzed (Token)
+ 
+ Returns:
+    - The type of the variable (string)
+*/
 string Analyzer::getTypeFromToken(Token token) {
     string tokenValue = token.getRepresentation();
     
@@ -285,6 +429,16 @@ string Analyzer::getTypeFromToken(Token token) {
     return "NOT FOUND";
 }
 
+/*
+ Description:
+    Checks whether or not a variable exists in the symbol table
+ 
+ Parameters:
+    - token: The token that will be analyzed (Token)
+ 
+ Returns:
+    - Does the variable exist (bool)
+*/
 bool Analyzer::checkVariableExists(Token token) {
     // Check to see if the left variable is actually defined and in scope
     for (string scope : scopes) {
@@ -298,6 +452,18 @@ bool Analyzer::checkVariableExists(Token token) {
     return false;
 }
 
+/*
+ Description:
+    Checks to make sure the assignment operation has matching types
+ 
+ Parameters:
+    - line: The code line of Tokens (vector<Token>)
+    - tokenNumber: The starting index of the assignment (x = 2, is index: 1) (int)
+    - arthimeticRange: The range of operations on the right hand side (x = 2 * t, is {2, 4}) (vector<int>)
+ 
+ Returns:
+    - Whether or not the assignment is valid (bool)
+*/
 bool Analyzer::checkValidAssignment(vector<Token> line, int tokenNumber, vector<int> arthimeticRange) {
     Token left = line[tokenNumber - 1];
     bool variableExists = checkVariableExists(left);
@@ -311,11 +477,22 @@ bool Analyzer::checkValidAssignment(vector<Token> line, int tokenNumber, vector<
         return (getTypeFromToken(left) == getTypeFromToken(right));
     }
     
-//    cout << "Invalid! Variable does not exist!" << endl;
     saveErrorText("Invalid! " + left.getRepresentation() + " variable does not exist!");
     return true;
 }
 
+/*
+ Description:
+    Checks to make sure the condition operation has matching types
+ 
+ Parameters:
+    - line: The code line of Tokens (vector<Token>)
+    - openParen: The starting index of the condition (int)
+    - closeParen: The ending index of the condition (int)
+ 
+ Returns:
+    - Whether or not the condition is valid (bool)
+*/
 bool Analyzer::checkValidCondition(vector<Token> line, int openParen, int closeParen) {
     Token left = line[openParen + 1];
     Token right = line[closeParen - 1];
@@ -323,6 +500,16 @@ bool Analyzer::checkValidCondition(vector<Token> line, int openParen, int closeP
     return (getTypeFromToken(left) == getTypeFromToken(right));
 }
 
+/*
+ Description:
+    Saves the error text to a file
+ 
+ Parameters:
+    - text: Text to save (string)
+ 
+ Returns:
+    - None
+*/
 void Analyzer::saveErrorText(string text) {
     fstream appendFileToWorkWith;
     string filename = "../output/error.txt";
@@ -341,6 +528,17 @@ void Analyzer::saveErrorText(string text) {
     }
 }
 
+/*
+ Description:
+    Updates the print string symbol table with values
+ 
+ Parameters:
+    - text: Text to update (string)
+    - incr: The increment to have for tabbing (int)
+ 
+ Returns:
+    - None
+*/
 void Analyzer::printValue(string text, int incr) {
     for (int i = 0; i < scopes.size() - incr; i++)
         printString += '\t';
@@ -348,8 +546,17 @@ void Analyzer::printValue(string text, int incr) {
     printString += '\n';
 }
 
+/*
+ Description:
+    Print the symbol table to a file
+ 
+ Parameters:
+    - None
+ 
+ Returns:
+    - None
+*/
 void Analyzer::printVariables() {
-//    cout << printString;
     try {
         fstream appendFileToWorkWith;
         string filename = "../output/symbolTable.txt";
