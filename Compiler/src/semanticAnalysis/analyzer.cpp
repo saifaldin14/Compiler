@@ -137,6 +137,12 @@ void Analyzer::handleFunctionScope(Token token, vector<Token> line) {
     returnTypes.push_back(functionType); // Add the return type of the function to the returnType stack
     functionDefinition[functionName] = functionType;
     variableDefinition[functionName] = { functionName, scopes.back(), functionType };
+    
+    for (int i = 0; i < scopes.size() + 1; i++)
+        printString += '\t';
+    printString += functionName + ", " + functionType + ", " + scopes.back();
+    printString += '\n';
+    
     ScopeVariable variable;
     variable.setScope(FUNCTION);
     
