@@ -500,12 +500,17 @@ SyntaxTreeNode<const char*> Parser::statement() {
             return syntaxTree.makeProp(lookaheadToken, { exprNode });
         else
             return currentFuncBody.makeProp(lookaheadToken, { exprNode });
+    } else if (first == "ID" and lookaheadToken != "int" and lookaheadToken != "double") {
+        varNode = var();
+        match("=");
+        exprNode = expr();
+        
+        if (currentFuncBody.toString().empty())
+            return syntaxTree.makeProp(lookaheadToken, { varNode, exprNode });
+        else
+            return currentFuncBody.makeProp(lookaheadToken, { varNode, exprNode });
     } else if (first == "ID") {
         varNode = var();
-        if (lookaheadToken == "=")
-            match("=");
-        else if (lookaheadToken == ",")
-            match(",");
         exprNode = expr();
         
         if (currentFuncBody.toString().empty())
