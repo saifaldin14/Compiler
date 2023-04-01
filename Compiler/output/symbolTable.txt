@@ -3894,3 +3894,206 @@ variable -> c
 variable -> d
 variable -> gcd
 variable -> q
+GLOBAL
+--------------------------
+constant int -> 0
+gcd function int 
+keyword -> def
+keyword -> if
+keyword -> int
+operation less than -> <
+terminal -> (
+terminal -> )
+terminal -> ,
+terminal -> ;
+variable -> a
+variable -> b
+variable -> gcd
+variable -> r
+GLOBAL
+--------------------------
+constant int -> 0
+gcd function int 
+keyword -> def
+keyword -> if
+keyword -> int
+keyword -> then
+operation assignment -> =
+operation less than -> <
+terminal -> (
+terminal -> )
+terminal -> ,
+terminal -> -
+terminal -> ;
+variable -> a
+variable -> b
+variable -> gcd
+variable -> r
+GLOBAL
+--------------------------
+constant int -> 0
+constant int -> 12
+constant int -> 15
+gcd function int 
+keyword -> def
+keyword -> do
+keyword -> fed
+keyword -> fi
+keyword -> if
+keyword -> int
+keyword -> od
+keyword -> print
+keyword -> return
+keyword -> then
+keyword -> while
+operation assignment -> =
+operation less than -> <
+operation not equal -> <>
+terminal -> %
+terminal -> (
+terminal -> )
+terminal -> +
+terminal -> ,
+terminal -> ;
+variable -> a
+variable -> b
+variable -> gcd
+variable -> r
+variable -> x
+variable -> y
+variable -> z
+x variable int 
+y variable int 
+z variable int 
+GLOBAL
+--------------------------
+constant int -> 0
+gcd function int 
+keyword -> def
+keyword -> if
+keyword -> int
+operation less than -> <
+terminal -> (
+terminal -> )
+terminal -> ,
+terminal -> ;
+variable -> a
+variable -> b
+variable -> gcd
+variable -> r
+GLOBAL
+--------------------------
+constant int -> 0
+constant int -> 12
+constant int -> 15
+gcd function int 
+keyword -> def
+keyword -> do
+keyword -> fed
+keyword -> fi
+keyword -> if
+keyword -> int
+keyword -> od
+keyword -> print
+keyword -> return
+keyword -> then
+keyword -> while
+operation assignment -> =
+operation less than -> <
+operation not equal -> <>
+terminal -> %
+terminal -> (
+terminal -> )
+terminal -> +
+terminal -> ,
+terminal -> ;
+variable -> a
+variable -> b
+variable -> gcd
+variable -> r
+variable -> x
+variable -> y
+variable -> z
+x variable int 
+y variable int 
+z variable int 
+GLOBAL
+--------------------------
+constant int -> 0
+constant int -> 1
+constant int -> 10
+constant int -> 2
+i variable int 
+keyword -> do
+keyword -> else
+keyword -> fi
+keyword -> if
+keyword -> int
+keyword -> od
+keyword -> print
+keyword -> then
+keyword -> while
+operation assignment -> =
+operation greater than -> >
+operation less than -> <
+terminal -> (
+terminal -> )
+terminal -> *
+terminal -> +
+terminal -> ,
+terminal -> ;
+variable -> i
+variable -> x
+x variable int 
+GLOBAL
+--------------------------
+constant int -> 15
+constant int -> 21
+gcd function int 
+keyword -> def
+keyword -> else
+keyword -> fed
+keyword -> fi
+keyword -> if
+keyword -> int
+keyword -> print
+keyword -> return
+keyword -> then
+operation equals -> ==
+operation greater than -> >
+terminal -> (
+terminal -> )
+terminal -> ,
+terminal -> -
+terminal -> ;
+variable -> a
+variable -> b
+variable -> gcd
+GLOBAL
+--------------------------
+constant int -> 0
+constant int -> 1
+constant int -> 10
+constant int -> 2
+i variable int 
+keyword -> do
+keyword -> else
+keyword -> fi
+keyword -> if
+keyword -> int
+keyword -> od
+keyword -> print
+keyword -> then
+keyword -> while
+operation assignment -> =
+operation greater than -> >
+operation less than -> <
+terminal -> (
+terminal -> )
+terminal -> *
+terminal -> +
+terminal -> ,
+terminal -> ;
+variable -> i
+variable -> x
+x variable int 
