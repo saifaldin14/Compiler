@@ -34,7 +34,7 @@ int main() {
 //        }
         Analyzer analyzer(parser.getLines());
         analyzer.analyzeSemantics();
-        analyzer.printVariables();
+        //analyzer.printVariables();
     }
     return 0;
 }

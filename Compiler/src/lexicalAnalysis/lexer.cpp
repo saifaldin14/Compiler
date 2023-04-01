@@ -464,6 +464,8 @@ Token Lexer::getNextToken() {
         }
     } else if (find(TERMINALS.begin(), TERMINALS.end(), next) != TERMINALS.end()) {
         if (next == end) {
+            lines.push_back(tempLine);
+            tempLine.clear();
             return Token(next, TokenType::END);
         } else {
             addEntryToTable("", entry.TERMINAL, "", new char(next));

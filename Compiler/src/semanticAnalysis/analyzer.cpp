@@ -14,7 +14,8 @@ Analyzer::Analyzer(vector<vector<Token>> inputLines) {
 
 void Analyzer::analyzeSemantics() {
     for (auto line : lines) {
-        handleScopes(line[0], line);
+        if (line.size() > 0)
+            handleScopes(line[0], line);
     }
 }
 
@@ -77,6 +78,10 @@ void Analyzer::handleScopes(Token token, vector<Token> line) {
     // Handle variable decleration
     else if (isVariableType(token)) {
         handleVariableDeclaration(token, line);
+    }
+    // Assignment operations
+    else {
+        cout << "CHECK! " << token.getRepresentation() << endl;
     }
 }
 
