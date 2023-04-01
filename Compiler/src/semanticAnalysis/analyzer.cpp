@@ -81,7 +81,7 @@ void Analyzer::handleScopes(Token token, vector<Token> line) {
     }
     // Assignment operations
     else {
-        cout << "CHECK! " << token.getRepresentation() << endl;
+        handleOperations(token, line);
     }
 }
 
@@ -168,6 +168,25 @@ string Analyzer::getTypeFromToken(Token token) {
     }
     
     return "NOT FOUND";
+}
+
+void Analyzer::handleOperations(Token token, vector<Token> line) {
+    for (int i = 0; i < line.size(); i++) {
+        if (line[i].getRepresentation() == "=") {
+            bool assignment = checkValidAssignment(line, i);
+            if (assignment)
+                cout << "Assignment is correct!" << endl;
+            else
+                cout << "Assignment has mismatching types" << endl;
+        }
+    }
+}
+
+bool Analyzer::checkValidAssignment(vector<Token> line, int tokenNumber) {
+    Token left = line[0];
+    Token right = line[tokenNumber + 1];
+    
+    return (getTypeFromToken(left) == getTypeFromToken(right));
 }
 
 void Analyzer::printVariables() {
