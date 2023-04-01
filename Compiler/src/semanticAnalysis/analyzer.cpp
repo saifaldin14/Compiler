@@ -120,6 +120,38 @@ void Analyzer::setVariableInScope(ScopeVariable variable) {
     variableDefinition[key] = { variable.getVarName(), variable.getScope(), variable.getType() };
 }
 
+bool Analyzer::checkValidReturnType(Token token, vector<Token> line) {
+    Token returnedValue;
+    
+    for (Token t : line) {
+        if (getTypeFromToken(t) == returnTypes.back()) {
+            returnedValue = t;
+            break;
+        }
+    }
+    cout << "CHECK! " << returnedValue.getRepresentation() << endl;
+    return false;
+}
+
+string Analyzer::getTypeFromToken(Token token) {
+    string tokenValue = token.getRepresentation();
+    
+    // Mainly used for functions (recursion)
+    if (variableDefinition.find(tokenValue) != variableDefinition.end()) {
+        return variableDefinition[tokenValue][2];
+    }
+    
+    for (string scope : scopes) {
+        // Make sure that the variable is in the complete scope of the application
+        string key = scope + " " + tokenValue;
+        if (variableDefinition.find(key) != variableDefinition.end()) {
+            return variableDefinition[key][2];
+        }
+    }
+    
+    return "NOT FOUND";
+}
+
 void Analyzer::printVariables() {
     for (const auto & [ key, value ] : variableDefinition) {
         cout << key << ": " << value[0] << ", " << value[1] << ", " << value[2] << endl;

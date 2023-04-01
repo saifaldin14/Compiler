@@ -40,6 +40,7 @@ private:
     void handleFunctionScope(Token token, vector<Token> line);
     void handleVariableDeclaration(Token token, vector<Token> line);
     bool checkValidReturnType(Token token, vector<Token> line);
+    string getTypeFromToken(Token token);
     
     // Utility functions
     void setVariableInScope(ScopeVariable variable);
