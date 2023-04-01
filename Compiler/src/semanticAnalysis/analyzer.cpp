@@ -50,14 +50,25 @@ void Analyzer::handleScopes(Token token, vector<Token> line) {
         scopes.push_back("WHILE");
     }
     // Handle closing scopes
-    else if (tokenValue == "od" or tokenValue == "fed" or tokenValue == "fi") {
+    else if (tokenValue == "od" or tokenValue == "fi") {
+        scopes.pop_back();
+    }
+    // Handle function close
+    else if (tokenValue == "fed") {
+        if (validReturn)
+            cout << "Function has a valid return type!" << endl;
+        else
+            cout << "Function has mismatching return types" << endl;
+        
+        validReturn = true; // Reset it for the next function
+        returnTypes.pop_back();
         scopes.pop_back();
     }
     // Handle Return statements
     else if (tokenValue == "return") {
         if(find(scopes.begin(), scopes.end(), FUNCTION) != scopes.end()) {
             // We are currently in a function
-            checkValidReturnType(token, line);
+            validReturn = validReturn and checkValidReturnType(token, line);
         } else {
             // We are not in a function
             cout << "Invalid! Return keyword added outside of function" << endl;
@@ -125,11 +136,9 @@ bool Analyzer::checkValidReturnType(Token token, vector<Token> line) {
     
     for (Token t : line) {
         if (getTypeFromToken(t) == returnTypes.back()) {
-            returnedValue = t;
-            break;
+            return true;
         }
     }
-    cout << "CHECK! " << returnedValue.getRepresentation() << endl;
     return false;
 }
 

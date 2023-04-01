@@ -52,5 +52,7 @@ private:
     vector<string> returnTypes; // Stack to keep track of the return types of functions (if we want to have nested functions)
     unordered_map<string, string> functionDefinition; // Used to define recursive method return types
     unordered_map<string, vector<string>> variableDefinition;
+    
+    bool validReturn = true;
 };
 #endif /* analyzer_hpp */
