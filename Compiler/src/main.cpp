@@ -9,7 +9,7 @@
 using namespace std;
 
 int main() {
-    FileReader fileReader("../input/test8.cp");
+    FileReader fileReader("../input/test6.cp");
     
     string filename = "../output/error.txt";
     fstream errorFile;
@@ -22,13 +22,6 @@ int main() {
     parser.parse();
     
     if (parser.getParsed()) {
-//        for (auto i : parser.getLines()) {
-//            for (Token t : i) {
-////                cout << t.toString() << ", ";
-//                cout << t.toString() << " " << t.getType().toString() << ", ";
-//            }
-//            cout << endl;
-//        }
         Analyzer analyzer(parser.getLines());
         analyzer.analyzeSemantics();
         analyzer.printVariables();
