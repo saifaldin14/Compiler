@@ -1,0 +1,14 @@
+GLOBAL SCOPE
+	FUNCTION SCOPE
+		gcd, integer, FUNCTION
+		a, integer, FUNCTION
+		b, integer, FUNCTION
+		r, integer, FUNCTION
+		IF SCOPE
+			t, integer, IF
+		WHILE SCOPE
+			t, integer, WHILE
+	x, integer, GLOBAL
+	y, integer, GLOBAL
+	z, integer, GLOBAL
+
