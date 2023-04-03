@@ -97,6 +97,7 @@ vector<string> Lexer::getSymbols() { return symbols; }
     - None
  */
 void Lexer::saveErrorText(char c) {
+    lexicallyCorrect = false;
     fstream appendFileToWorkWith;
     string filename = "../output/error.txt";
     appendFileToWorkWith.open(filename, std::fstream::in | std::fstream::out | std::fstream::app);
@@ -237,6 +238,7 @@ string Lexer::recover(string token) {
             readChar();
         }
     } catch (exception const& e) {
+        lexicallyCorrect = false;
         cerr << "Error: " << e.what() << endl;
     }
     return token;

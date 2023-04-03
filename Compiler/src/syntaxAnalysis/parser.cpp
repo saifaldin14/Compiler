@@ -141,20 +141,26 @@ Parser::Parser(Lexer copy) {
     - statements: The parsed statements (or epsilon if nothing is parsed) (SyntaxTreeNode<const char*>)
 */
 SyntaxTreeNode<const char*> Parser::parse() {
-    string first = checkFIRST("program");
     SyntaxTreeNode<const char*> epsilon;
+    
+    if (!lex.getLexicallyCorrect()) {
+        parsed = false;
+        return epsilon;
+    }
+    
+    string first = checkFIRST("program");
     if (!first.empty()) {
         typename SyntaxTreeNode<const char*>::SyntaxProp statements = syntaxTree.makeProp("statementSequence");
         funcDecl();
         declarations();
         statementSequence(statements);
         match(".");
-        parsed = true;
         return move(statements);
     } else {
         cout << "ERROR CAUSED 1: " << lex.getLineNum() << " " << token.getRepresentation() << endl;
         error();
     }
+    
     return epsilon;
 }
 
@@ -169,6 +175,11 @@ SyntaxTreeNode<const char*> Parser::parse() {
     - None
 */
 void Parser::funcDecl() {
+    if (!lex.getLexicallyCorrect()) {
+        parsed = false;
+        return;
+    }
+    
     string first = checkFIRST("funcDecl");
     if(!first.empty()) {
         funcDef();
@@ -296,6 +307,11 @@ void Parser::funcName() {
     - None
 */
 void Parser::declarations() {
+    if (!lex.getLexicallyCorrect()) {
+        parsed = false;
+        return;
+    }
+    
     string first = checkFIRST("declarations");
     if(!first.empty()) {
         decl();
@@ -380,6 +396,11 @@ void Parser::type() {
     - None
 */
 void Parser::statementSequence(typename SyntaxTreeNode<const char*>::SyntaxProp seqList) {
+    if (!lex.getLexicallyCorrect()) {
+        parsed = false;
+        return;
+    }
+    
     string first = checkFIRST("statementSequence");
     if(!first.empty()) {
         declarations();
@@ -613,6 +634,11 @@ SyntaxTreeNode<const char*> Parser::optionElse() {
 SyntaxTreeNode<const char*> Parser::expr() {
     string first = checkFIRST("expr");
     SyntaxTreeNode<const char*> termNode, termRightNode, epsilon;
+    
+    if (!lex.getLexicallyCorrect()) {
+        parsed = false;
+        return epsilon;
+    }
     
     if (!first.empty()) {
         termNode = term();
@@ -1262,6 +1288,11 @@ void Parser::match(char c) {
     - None
 */
 void Parser::match(string s) {
+    if (!lex.getLexicallyCorrect()) {
+        parsed = false;
+        return;
+    }
+    
     bool isMatch = lookahead.getRepresentation() == s;
     if (isMatch) {
         if (s == "fed") {
@@ -1373,6 +1404,7 @@ void Parser::writeStackTrace(fstream& appendFileToWorkWith) {
     - None
 */
 void Parser::error() {
+    parsed = false;
     fstream appendFileToWorkWith;
     string filename = "../output/error.txt";
     appendFileToWorkWith.open(filename, std::fstream::in | std::fstream::out | std::fstream::app);

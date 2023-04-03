@@ -95,7 +95,7 @@ private:
     string currentName, currentFuncName, currentType, currentValue;
     SyntaxTree<const char*> currentFuncBody;
     
-    bool parsed = false;
+    bool parsed = true;
     
     void initializeFIRST();
     void initializeFOLLOW();

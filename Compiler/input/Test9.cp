@@ -5,7 +5,7 @@ def int gcd(int a, int b)
 
     return 5;
     int c;
-    if (a>b or b<4 and a==0) then
+    if (a>b or b<4z and a==0) then
         a = b;
         int d;
         double c;

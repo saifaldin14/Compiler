@@ -60,7 +60,7 @@ private:
     int sourceFileIndex;
     string source;
     vector<string> symbols;
-    bool lexicallyCorrect = false;
+    bool lexicallyCorrect = true;
     vector<vector<Token>> lines;
     vector<Token> tempLine;
     
