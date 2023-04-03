@@ -1,12 +1,12 @@
 int z, y, f;
-def int gcd(int a, int b)
+def double gcd(int a, double b)
     while (a==b) do
         return (a)
     od;
 
     return 5;
     int c;
-    if (a>b or b<4 and a==0) then
+    if (a>b or b<4.5 and a==0) then
         a = b;
         int d;
         double c;
@@ -19,6 +19,10 @@ fed;
 
 def double testDouble()
     int r;
+    double r5, t6, y9;
+    r5 = 3.4;
+    t6 = 1.6;
+    return r5 * t6;
 fed;
 
 int c;

@@ -1,0 +1,8 @@
+SEMANTIC ERROR
+Invalid! Conditional statement has mismatching types!
+SEMANTIC ERROR
+Invalid! Conditional statement has mismatching types!
+SEMANTIC ERROR
+Invalid! Assignment operation has mismatching types!
+SEMANTIC ERROR
+Invalid! Function has mismatching return types
