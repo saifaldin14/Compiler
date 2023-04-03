@@ -94,8 +94,8 @@
             filePath = "Compiler/src/syntaxAnalysis/parser.cpp"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1054"
-            endingLineNumber = "1054"
+            startingLineNumber = "1055"
+            endingLineNumber = "1055"
             landmarkName = "Parser::branchFactor()"
             landmarkType = "7">
          </BreakpointContent>
@@ -110,8 +110,8 @@
             filePath = "Compiler/src/syntaxAnalysis/parser.cpp"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1305"
-            endingLineNumber = "1305"
+            startingLineNumber = "1306"
+            endingLineNumber = "1306"
             landmarkName = "Parser::match(s)"
             landmarkType = "7">
          </BreakpointContent>

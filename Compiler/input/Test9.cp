@@ -1,3 +1,4 @@
+int z, y, f;
 def int gcd(int a, int b)
     while (a==b) do
         return (a)
@@ -5,7 +6,7 @@ def int gcd(int a, int b)
 
     return 5;
     int c;
-    if (a>b or b<4z and a==0) then
+    if (a>b or b<4 and a==0) then
         a = b;
         int d;
         double c;
@@ -15,6 +16,11 @@ def int gcd(int a, int b)
         return(gcd(a,b-a))
     fi;
 fed;
+
+def double testDouble()
+    int r;
+fed;
+
 int c;
 print gcd(21,15);
 print 45;

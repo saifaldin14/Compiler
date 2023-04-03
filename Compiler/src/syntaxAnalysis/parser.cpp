@@ -151,6 +151,7 @@ SyntaxTreeNode<const char*> Parser::parse() {
     string first = checkFIRST("program");
     if (!first.empty()) {
         typename SyntaxTreeNode<const char*>::SyntaxProp statements = syntaxTree.makeProp("statementSequence");
+        declarations();
         funcDecl();
         declarations();
         statementSequence(statements);
