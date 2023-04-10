@@ -114,14 +114,14 @@ void ThreeAddressCode::handleCodeLine(vector<Token> line) {
     // Handle variable decleration
     else if (isVariableType(line[0])) {
         if (scopeCounter == 1) {
-//            printValue(scopes.back() + " SCOPE", 1);
+            printValue(scopes.back() + " SCOPE", 1);
         }
         scopeCounter++;
-//        handleVariableDeclaration(token, line);
+        handleVariableDeclerationCode(line);
     }
     // Assignment operations
     else {
-//        handleOperations(token, line);
+        handleOperationCode(line);
     }
 }
 
@@ -212,6 +212,39 @@ void ThreeAddressCode::handleIfCode(vector<Token> line) {
         functionText += '\n';
         labelCounter++;
         operationLabels.push_back(labelName);
+    }
+}
+
+void ThreeAddressCode::handleVariableDeclerationCode(vector<Token> line) {
+    string variableType = determineType(line[0]);
+    
+    ScopeVariable variable;
+    variable.setScope(scopes.back());
+    vector<ScopeVariable> variables;
+    
+    // Save input parameters as scope variables
+    for (int i = 1; i < line.size() - 1; i++) {
+        if (line[i].getType().toString() == "id") {
+            variable.setVarName(line[i].getRepresentation());
+            variable.setType(variableType);
+            printValue(variable.getVarName() + ", " + variable.getType() + ", " + variable.getScope(), 0);
+            variables.push_back(variable);
+        } else if (line[i].getRepresentation() == ",") {
+            variable.setEmptyValues();
+        }
+    }
+        
+    for (unsigned i = (int)variables.size(); i-- > 0; ) {
+        functionText += variables[i].getVarName() + " = fp + " + to_string(sp);
+        sp += variables[i].getType() == "integer" ? 4 : 8;
+        functionText += '\n';
+        numberOfBytes += 4;
+    }
+}
+
+void ThreeAddressCode::handleOperationCode(vector<Token> line) {
+    if (scopes.back() == "IF") {
+        cout << "We're in an if statement: " + line[0].getRepresentation() << endl;
     }
 }
 
