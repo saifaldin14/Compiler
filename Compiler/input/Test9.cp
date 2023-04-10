@@ -3,8 +3,6 @@ def int gcd(int a, int b)
         return (a)
     fi;
 
-    return 5;
-    int c;
     if (a>b) then
         a = b;
         int d;
