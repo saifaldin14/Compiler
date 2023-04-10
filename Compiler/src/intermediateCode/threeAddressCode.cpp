@@ -70,6 +70,7 @@ void ThreeAddressCode::handleCodeLine(vector<Token> line) {
         scopeCounter = 1;
         
         scopes.push_back("IF");
+        handleIfCode(line);
 //        handleCondition(token, line);
     }
     // Handle else block
@@ -77,6 +78,8 @@ void ThreeAddressCode::handleCodeLine(vector<Token> line) {
         scopes.pop_back(); // Remove the existing IF scope
         scopeCounter = 1;
         
+        functionText += ELSE_LABEL + " " + label + to_string(labelCounter);
+        functionText += '\n';
         scopes.push_back("ELSE");
     }
     // Handle while block
@@ -154,9 +157,61 @@ void ThreeAddressCode::handleFunctionCode(vector<Token> line) {
         
     for (unsigned i = (int)variables.size(); i-- > 0; ) {
         functionText += variables[i].getVarName() + " = fp + " + to_string(sp);
-        sp += 4;
+        sp += variables[i].getType() == "integer" ? 4 : 8;
         functionText += '\n';
         numberOfBytes += 4;
+    }
+}
+
+void ThreeAddressCode::handleIfCode(vector<Token> line) {
+    vector<string> componentsOfIf = {"if", "(", ")", ",", "then"},
+    componentsOfCondition = {"and", "or", ">", "<", "==", ">=", "<="};
+    vector<ScopeVariable> variables;
+    vector<string> operations;
+    int j = 0;
+    ScopeVariable variable;
+    
+    for (Token token : line) {
+        string tokenValue = token.getRepresentation();
+        if(std::find(componentsOfIf.begin(), componentsOfIf.end(), tokenValue) == componentsOfIf.end()) {
+            if(std::find(componentsOfCondition.begin(), componentsOfCondition.end(), tokenValue) != componentsOfCondition.end()) {
+                // Is a boolean operation
+                operations.push_back(tokenValue);
+            } else {
+                // Is a variable
+                variable.setType(token.getType().toString());
+                variable.setScope(scopes.back());
+                variable.setVarName(tokenValue);
+                variables.push_back(variable);
+                variable.setEmptyValues();
+            }
+        }
+    }
+    
+    string tempOperation = COMPARE + " " + variables[j].getVarName() + ", " + variables[j + 1].getVarName();
+    
+    if (tempOperation != compareOperation) {
+        compareOperation = tempOperation;
+        functionText += tempOperation;
+        j += 2;
+        functionText += '\n';
+    }
+    
+    for (string op : operations) {
+        string labelName = label + to_string(labelCounter);
+        if (op == "<")
+            functionText += LESS_THAN + " " + labelName;
+        else if (op == "<=")
+            functionText += LESS_THAN_EQUAL + " " + labelName;
+        else if (op == ">")
+            functionText += GREATER_THAN + " " + labelName;
+        else if (op == ">=")
+            functionText += GREATER_THAN_EQUAL + " " + labelName;
+        else if (op == "==")
+            functionText += EQUAL + " " + labelName;
+        functionText += '\n';
+        labelCounter++;
+        operationLabels.push_back(labelName);
     }
 }
 
