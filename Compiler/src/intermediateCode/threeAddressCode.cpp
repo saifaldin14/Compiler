@@ -217,6 +217,7 @@ void ThreeAddressCode::handleIfCode(vector<Token> line) {
 
 void ThreeAddressCode::handleVariableDeclerationCode(vector<Token> line) {
     string variableType = determineType(line[0]);
+    string generatedCode;
     
     ScopeVariable variable;
     variable.setScope(scopes.back());
@@ -235,11 +236,18 @@ void ThreeAddressCode::handleVariableDeclerationCode(vector<Token> line) {
     }
         
     for (unsigned i = (int)variables.size(); i-- > 0; ) {
-        functionText += variables[i].getVarName() + " = fp + " + to_string(sp);
+        generatedCode += variables[i].getVarName() + " = fp + " + to_string(sp);
         sp += variables[i].getType() == "integer" ? 4 : 8;
-        functionText += '\n';
+        generatedCode += '\n';
         numberOfBytes += 4;
     }
+    
+    if (scopes.back() == FUNCTION)
+        functionText += generatedCode;
+    else if (scopes.back() == GLOBAL)
+        threeAddressCodeText += generatedCode;
+    else
+        generatedOperationCode.push_back(generatedCode);
 }
 
 void ThreeAddressCode::handleOperationCode(vector<Token> line) {
