@@ -5,6 +5,7 @@
 #include "../include/tokens/fileReader.hpp"
 #include "../include/syntaxAnalysis/parser.hpp"
 #include "../include/semanticAnalysis/analyzer.hpp"
+#include "../include/intermediateCode/threeAddressCode.hpp"
 
 using namespace std;
 
@@ -24,7 +25,11 @@ int main() {
     if (parser.getParsed()) {
         Analyzer analyzer(parser.getLines());
         analyzer.analyzeSemantics();
-        analyzer.printVariables();
+//        analyzer.printVariables();
+        
+        ThreeAddressCode threeAddressCode(parser.getLines());
+        threeAddressCode.createCode();
+        threeAddressCode.printThreeAddressCode();
     }
     return 0;
 }
