@@ -19,6 +19,7 @@
 #include <execinfo.h>
 #include <unordered_map>
 #include "../tokens/token.hpp"
+#include "../semanticAnalysis/scopeVariable.hpp"
 
 using namespace std;
 
@@ -26,6 +27,8 @@ class ThreeAddressCode
 {
 public:
     ThreeAddressCode(vector<vector<Token>> inputLines);
+    void createCode();
+    void printThreeAddressCode();
     
 private:
     // Used for the Symbol Table (same as Semantic Analysis)
@@ -51,14 +54,25 @@ private:
     inline static const string LESS_THAN = "blt";
     inline static const string LESS_THAN_EQUAL = "ble";
     inline static const string EQUAL = "beq";
-
+    
+    // Define methods
+    void handleCodeLine(vector<Token> line);
+    void handleFunctionCode(vector<Token> line);
+    bool isVariableType(Token token);
+    vector<vector<Token>> breakUpLines(vector<vector<Token>> lines);
+    void printValue(string text, int incr);
+    string determineType(Token token);
+    
     vector<vector<Token>> lines; // Keep track of the code
     vector<string> scopes; // Stack to keep track of the current scope we are in
     vector<string> labelNames = {"main"};
     string printString; // Used to print the symbolTable
     string threeAddressCodeText; // Used to create new Three Address Code
+    string functionText; // Save the code of the function
     int fp; // Frame Pointer
-    int numberOfBytes;
+    int sp = 0; // Stack Pointer
+    int numberOfBytes = 0;
+    int scopeCounter;
     
     string label = "label";
     string temporaryVariable = "t";
