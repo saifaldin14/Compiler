@@ -12,4 +12,176 @@ ThreeAddressCode::ThreeAddressCode(vector<vector<Token>> inputLines) {
     scopes.push_back("GLOBAL");
     printString += "GLOBAL SCOPE";
     printString += '\n';
+    threeAddressCodeText += BRANCH + " " + labelNames.back();
+    threeAddressCodeText += '\n';
+    threeAddressCodeText += "Begin: ";
+    threeAddressCodeText += '\n';
+    threeAddressCodeText += PUSH + "{" + LR + "}";
+    threeAddressCodeText += '\n';
+    threeAddressCodeText += PUSH + "{" + FP + "}";
+    threeAddressCodeText += '\n';
+    sp += 8;
+}
+
+void ThreeAddressCode::createCode() {
+    vector<vector<Token>> brokenUpLines = breakUpLines(lines);
+    
+    for (auto line : brokenUpLines) {
+        if (line.size() > 0)
+            handleCodeLine(line);
+    }
+}
+
+vector<vector<Token>> ThreeAddressCode::breakUpLines(vector<vector<Token>> lines) {
+    vector<vector<Token>> brokenUpLines;
+    for (auto line : lines) {
+        vector<Token> tLine;
+        for (Token token : line) {
+            string tokenValue = token.getRepresentation();
+            tLine.push_back(token);
+            if (tokenValue == "do" or tokenValue == "then" or tokenValue == ";") {
+                brokenUpLines.push_back(tLine);
+                tLine.clear();
+            } else if (tokenValue == "od" or tokenValue == "fi" or tokenValue == "else") {
+                tLine.pop_back();
+                brokenUpLines.push_back(tLine);
+                tLine.clear();
+                tLine.push_back(token);
+            }
+        }
+        brokenUpLines.push_back(tLine);
+    }
+    return brokenUpLines;
+}
+
+void ThreeAddressCode::handleCodeLine(vector<Token> line) {
+    string tokenValue = line[0].getRepresentation();
+    // Handle functions
+    if (tokenValue == "def") {
+        scopeCounter = 1;
+        
+        scopes.push_back(FUNCTION);
+        handleFunctionCode(line);
+
+//        handleFunctionScope(token, line);
+    }
+    // Handle if blocks
+    else if (tokenValue == "if") {
+        scopeCounter = 1;
+        
+        scopes.push_back("IF");
+//        handleCondition(token, line);
+    }
+    // Handle else block
+    else if (tokenValue == "else") {
+        scopes.pop_back(); // Remove the existing IF scope
+        scopeCounter = 1;
+        
+        scopes.push_back("ELSE");
+    }
+    // Handle while block
+    else if (tokenValue == "while") {
+        scopeCounter = 1;
+        
+        scopes.push_back("WHILE");
+//        handleCondition(token, line);
+    }
+    // Handle closing scopes
+    else if (tokenValue == "od" or tokenValue == "fi") {
+        scopes.pop_back();
+        scopeCounter--;
+    }
+    // Handle function close
+    else if (tokenValue == "fed") {
+        scopes.pop_back();
+        scopeCounter--;
+    }
+    // Handle Return statements
+    else if (tokenValue == "return") {
+//        if(find(scopes.begin(), scopes.end(), FUNCTION) != scopes.end()) {
+//            // We are currently in a function
+//            validReturn = validReturn and checkValidReturnType(token, line);
+//        }
+        scopeCounter--;
+    }
+    // Handle print statements
+    else if (tokenValue == "print") {
+//        handlePrint(token, line);
+    }
+    // Handle variable decleration
+    else if (isVariableType(line[0])) {
+        if (scopeCounter == 1) {
+//            printValue(scopes.back() + " SCOPE", 1);
+        }
+        scopeCounter++;
+//        handleVariableDeclaration(token, line);
+    }
+    // Assignment operations
+    else {
+//        handleOperations(token, line);
+    }
+}
+
+void ThreeAddressCode::handleFunctionCode(vector<Token> line) {
+    string functionType = determineType(line[1]);
+    string functionName = line[2].getRepresentation();
+    labelNames.push_back(functionName + ": "); // Add the function name
+        
+    if (scopeCounter == 1) {
+        printValue(scopes.back() + " SCOPE", 1);
+    }
+    scopeCounter++;
+    printValue(functionName + ", " + functionType + ", " + scopes.back(), 0);
+    
+    ScopeVariable variable;
+    variable.setScope(FUNCTION);
+    vector<ScopeVariable> variables;
+    
+    // Save input parameters as scope variables
+    for (int i = 4; i < line.size() - 1; i++) {
+        if (line[i].getType().toString() == "id") {
+            if (isVariableType(line[i]))
+                variable.setType(determineType(line[i]));
+            else {
+                variable.setVarName(line[i].getRepresentation());
+                printValue(variable.getVarName() + ", " + variable.getType() + ", " + variable.getScope(), 0);
+                variables.push_back(variable);
+            }
+        } else if (line[i].getRepresentation() == ",") {
+            variable.setEmptyValues();
+        }
+    }
+        
+    for (unsigned i = (int)variables.size(); i-- > 0; ) {
+        functionText += variables[i].getVarName() + " = fp + " + to_string(sp);
+        sp += 4;
+        functionText += '\n';
+        numberOfBytes += 4;
+    }
+}
+
+void ThreeAddressCode::printValue(string text, int incr) {
+    for (int i = 0; i < scopes.size() - incr; i++)
+        printString += '\t';
+    printString += text;
+    printString += '\n';
+}
+
+void ThreeAddressCode::printThreeAddressCode() {
+    cout << threeAddressCodeText << endl;
+    cout << "--------" << endl;
+    cout << functionText << endl;
+    cout << "--------" << endl;
+    cout << printString << endl;
+}
+
+string ThreeAddressCode::determineType(Token token) {
+    if (token.getRepresentation() == "int") return "integer";
+    return token.getRepresentation();
+}
+
+bool ThreeAddressCode::isVariableType(Token token) {
+    if (token.getRepresentation() == "int" or token.getRepresentation() == "double")
+        return true;
+    return false;
 }
