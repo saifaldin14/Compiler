@@ -32,6 +32,7 @@ public:
     
 private:
     // Used for the Symbol Table (same as Semantic Analysis)
+    inline static const string GLOBAL = "GLOBAL";
     inline static const string FUNCTION = "FUNCTION";
     inline static const string IF = "IF";
     inline static const string ELSE = "ELSE";
@@ -77,6 +78,7 @@ private:
     string printString; // Used to print the symbolTable
     string threeAddressCodeText; // Used to create new Three Address Code
     string functionText; // Save the code of the function
+    vector<string> generatedOperationCode; // Save the code of an operation block
     string compareOperation; // Save the current comparison operation so we don't write it twice
     int fp; // Frame Pointer
     int sp = 0; // Stack Pointer
