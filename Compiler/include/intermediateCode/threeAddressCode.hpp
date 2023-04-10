@@ -61,6 +61,8 @@ private:
     void handleFunctionCode(vector<Token> line);
     void handleIfCode(vector<Token> line);
     void handleReturnCode(vector<Token> line);
+    void handleVariableDeclerationCode(vector<Token> line);
+    void handleOperationCode(vector<Token> line);
 
     bool isVariableType(Token token);
     vector<vector<Token>> breakUpLines(vector<vector<Token>> lines);
