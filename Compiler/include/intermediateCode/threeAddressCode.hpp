@@ -54,10 +54,14 @@ private:
     inline static const string LESS_THAN = "blt";
     inline static const string LESS_THAN_EQUAL = "ble";
     inline static const string EQUAL = "beq";
+    inline static const string ELSE_LABEL = "b";
     
     // Define methods
     void handleCodeLine(vector<Token> line);
     void handleFunctionCode(vector<Token> line);
+    void handleIfCode(vector<Token> line);
+    void handleReturnCode(vector<Token> line);
+
     bool isVariableType(Token token);
     vector<vector<Token>> breakUpLines(vector<vector<Token>> lines);
     void printValue(string text, int incr);
@@ -66,15 +70,19 @@ private:
     vector<vector<Token>> lines; // Keep track of the code
     vector<string> scopes; // Stack to keep track of the current scope we are in
     vector<string> labelNames = {"main"};
+    vector<string> operationLabels = {}; // Labels for if and while statements within a function
+    
     string printString; // Used to print the symbolTable
     string threeAddressCodeText; // Used to create new Three Address Code
     string functionText; // Save the code of the function
+    string compareOperation; // Save the current comparison operation so we don't write it twice
     int fp; // Frame Pointer
     int sp = 0; // Stack Pointer
     int numberOfBytes = 0;
+    int labelCounter = 1;
     int scopeCounter;
     
-    string label = "label";
+    string label = "lab";
     string temporaryVariable = "t";
 };
 #endif /* threeAddressCode_hpp */
