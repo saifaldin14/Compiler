@@ -25,8 +25,8 @@ using namespace std;
 class ThreeAddressCode
 {
 public:
+    ThreeAddressCode(vector<vector<Token>> inputLines);
     
-
 private:
     // Used for the Symbol Table (same as Semantic Analysis)
     inline static const string FUNCTION = "FUNCTION";
@@ -54,9 +54,13 @@ private:
 
     vector<vector<Token>> lines; // Keep track of the code
     vector<string> scopes; // Stack to keep track of the current scope we are in
-    string printString;
+    vector<string> labelNames = {"main"};
+    string printString; // Used to print the symbolTable
+    string threeAddressCodeText; // Used to create new Three Address Code
+    int fp; // Frame Pointer
+    int numberOfBytes;
     
-    
-    
+    string label = "label";
+    string temporaryVariable = "t";
 };
 #endif /* threeAddressCode_hpp */
