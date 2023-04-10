@@ -1,4 +1,3 @@
-int z, y, f;
 def int gcd(int a, int b)
     if (a==b) then
         return (a)
