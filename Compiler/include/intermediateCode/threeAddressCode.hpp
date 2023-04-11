@@ -78,12 +78,14 @@ private:
     string printString; // Used to print the symbolTable
     string threeAddressCodeText; // Used to create new Three Address Code
     string functionText; // Save the code of the function
+    string operationText; // Save the code of the function
     vector<string> generatedOperationCode; // Save the code of an operation block
     string compareOperation; // Save the current comparison operation so we don't write it twice
     int fp; // Frame Pointer
     int sp = 0; // Stack Pointer
     int numberOfBytes = 0;
     int labelCounter = 1;
+    int temporaryVariableCounter = 1;
     int scopeCounter;
     
     string label = "lab";
