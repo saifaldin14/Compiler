@@ -10,6 +10,7 @@ def int gcd(int a, int b)
         return(gcd(a-b,b))
     else
         int q;
+        b = a;
         return(gcd(a,b-a))
     fi;
 fed;
