@@ -80,6 +80,10 @@ void ThreeAddressCode::handleCodeLine(vector<Token> line) {
         
         functionText += ELSE_LABEL + " " + label + to_string(labelCounter);
         functionText += '\n';
+        
+        // Move this to dedicated function
+        generatedOperationCode.push_back(operationText);
+        operationText = "";
         scopes.push_back("ELSE");
     }
     // Handle while block
@@ -93,6 +97,10 @@ void ThreeAddressCode::handleCodeLine(vector<Token> line) {
     else if (tokenValue == "od" or tokenValue == "fi") {
         scopes.pop_back();
         scopeCounter--;
+        
+        // Move this to dedicated function
+        generatedOperationCode.push_back(operationText);
+        operationText = "";
     }
     // Handle function close
     else if (tokenValue == "fed") {
@@ -247,13 +255,28 @@ void ThreeAddressCode::handleVariableDeclerationCode(vector<Token> line) {
     else if (scopes.back() == GLOBAL)
         threeAddressCodeText += generatedCode;
     else
-        generatedOperationCode.push_back(generatedCode);
+        operationText += generatedCode;
 }
 
 void ThreeAddressCode::handleOperationCode(vector<Token> line) {
-    if (scopes.back() == "IF") {
-        cout << "We're in an if statement: " + line[0].getRepresentation() << endl;
+    string generatedCode;
+    string finalVariable = line[0].getRepresentation(); // The variable we will assign everything to in the end
+    vector<string> arithmeticOperations; // Add or subtract
+    vector<string> geometricOperations; // Multiplication or division
+    vector<string> bracketsOperations; // Brackets
+    vector<Token> beginOp = line, endOp;
+    
+    vector<vector<Token>> mathOperations;
+    
+    // We have a math operation in the assignment
+    if (line.size() > 4) {
+        
     }
+    
+    if (bracketsOperations.size() > 0) {
+        
+    }
+    
 }
 
 void ThreeAddressCode::printValue(string text, int incr) {
@@ -268,6 +291,10 @@ void ThreeAddressCode::printThreeAddressCode() {
     cout << "--------" << endl;
     cout << functionText << endl;
     cout << "--------" << endl;
+    for (auto i : generatedOperationCode) {
+        cout << i << endl;
+        cout << "--------" << endl;
+    }
     cout << printString << endl;
 }
 
