@@ -168,6 +168,7 @@ void ThreeAddressCode::handleFunctionCode(vector<Token> line) {
         sp += variables[i].getType() == "integer" ? 4 : 8;
         functionText += '\n';
         numberOfBytes += 4;
+        variableTypes[variables[i].getVarName()] = variables[i].getType();
     }
 }
 
@@ -236,6 +237,7 @@ void ThreeAddressCode::handleVariableDeclerationCode(vector<Token> line) {
         if (line[i].getType().toString() == "id") {
             variable.setVarName(line[i].getRepresentation());
             variable.setType(variableType);
+            variableTypes[line[i].getRepresentation()] = variableType;
             printValue(variable.getVarName() + ", " + variable.getType() + ", " + variable.getScope(), 0);
             variables.push_back(variable);
         } else if (line[i].getRepresentation() == ",") {
@@ -261,6 +263,7 @@ void ThreeAddressCode::handleVariableDeclerationCode(vector<Token> line) {
 void ThreeAddressCode::handleOperationCode(vector<Token> line) {
     string generatedCode;
     string finalVariable = line[0].getRepresentation(); // The variable we will assign everything to in the end
+    string variableType = variableTypes[finalVariable];
     vector<string> arithmeticOperations; // Add or subtract
     vector<string> geometricOperations; // Multiplication or division
     vector<string> bracketsOperations; // Brackets
@@ -270,13 +273,93 @@ void ThreeAddressCode::handleOperationCode(vector<Token> line) {
     
     // We have a math operation in the assignment
     if (line.size() > 4) {
+        string temp;
+        for (int i = 2; i < line.size() - 1; i++) {
+            if (line[i].getRepresentation() == "(" or line[i].getRepresentation() == ")") {
+                bracketsOperations.push_back(temp);
+                temp = "";
+            } else {
+                temp += line[i].getRepresentation();
+            }
+        }
         
+        cout << "CHECK IT: ";
+        for (auto i : bracketsOperations)
+            cout << i << ", ";
+        cout << endl;
+        
+        cout << "CHECK IT2: ";
+        for (auto i : bracketsOperations)
+            cout << simplifyMultiplicationOperation(i, variableType) << ", ";
+        cout << endl;
     }
     
     if (bracketsOperations.size() > 0) {
         
     }
     
+}
+
+string ThreeAddressCode::simplifyMultiplicationOperation(string exp, string variableType) {
+    string temp = "", generatedCode;
+    int numberOfMultiplcation = 0, numberOfAddition = 0, completeScan = 0;
+    
+    for (auto c : exp) {
+        if (c == '*' or c == '/')
+            numberOfMultiplcation++;
+        else if (c == '+' or c == '-')
+            numberOfAddition++;
+    }
+        
+    if (exp.back() == *"-" or exp.back() == *"+" or exp.back() == *"/" or exp.back() == *"*") {
+        // Incomplete expression
+        completeScan++;
+    }
+    
+    string tempExp = exp;
+    for (int i = 0; i < numberOfMultiplcation; i++) {
+        string newTempExp = "";
+        for (int j = 0; j < tempExp.size() - completeScan; j ++) {
+            if (tempExp[j] == '*' or tempExp[j] == '/') {
+                // Create temporary variable
+                ScopeVariable variable;
+                variable.setScope(scopes.back());
+                variable.setType(variableType);
+                variable.setVarName(temporaryVariable + to_string(temporaryVariableCounter));
+                temporaryVariableCounter++;
+                                
+                // Print temporary variable to symbol table
+                printValue(variable.getVarName() + ", " + variable.getType() + ", " + variable.getScope(), 0);
+                
+                // Create Three Adress Code of temporary variable
+                generatedCode += variable.getVarName() + " = " + tempExp[j - 1] + " " + tempExp[j] + " " + tempExp[j + 1];
+                sp += variable.getType() == "integer" ? 4 : 8;
+                generatedCode += '\n';
+                numberOfBytes += 4;
+                
+                if (scopes.back() == FUNCTION)
+                    functionText += generatedCode;
+                else if (scopes.back() == GLOBAL)
+                    threeAddressCodeText += generatedCode;
+                else
+                    operationText += generatedCode;
+                
+                // Add temporary variable in place of the multiplication operation
+                newTempExp += variable.getVarName();
+            } else if (tempExp[j] == '+' or tempExp[j] == '-') {
+                if (newTempExp.size() > 0) {
+                    // Already added a variable
+                    newTempExp.push_back(tempExp[j]);
+                    newTempExp.push_back(tempExp[j + 1]);
+                } else {
+                    newTempExp.push_back(tempExp[j - 1]);
+                    newTempExp.push_back(tempExp[j]);
+                }
+            }
+        }
+        tempExp = newTempExp;
+    }
+    return tempExp;
 }
 
 void ThreeAddressCode::printValue(string text, int incr) {
