@@ -64,6 +64,7 @@ private:
     void handleReturnCode(vector<Token> line);
     void handleVariableDeclerationCode(vector<Token> line);
     void handleOperationCode(vector<Token> line);
+    string simplifyMultiplicationOperation(string exp, string variableType);
 
     bool isVariableType(Token token);
     vector<vector<Token>> breakUpLines(vector<vector<Token>> lines);
@@ -74,6 +75,7 @@ private:
     vector<string> scopes; // Stack to keep track of the current scope we are in
     vector<string> labelNames = {"main"};
     vector<string> operationLabels = {}; // Labels for if and while statements within a function
+    unordered_map<string, string> variableTypes; // Store the type of each variable
     
     string printString; // Used to print the symbolTable
     string threeAddressCodeText; // Used to create new Three Address Code
