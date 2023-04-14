@@ -196,3 +196,25 @@ GLOBAL SCOPE
 	t11, integer, GLOBAL
 	t12, integer, GLOBAL
 
+GLOBAL SCOPE
+	FUNCTION SCOPE
+		gcd, integer, FUNCTION
+		a, integer, FUNCTION
+		b, integer, FUNCTION
+			t1, id, IF
+			t2, function, IF
+			t3, id, ELSE
+			t4, function, ELSE
+	t1, integer, GLOBAL
+	t2, integer, GLOBAL
+	t3, function, GLOBAL
+	t4, integer, GLOBAL
+	t5, integer, GLOBAL
+	t6, integer, GLOBAL
+	t7, function, GLOBAL
+	t8, integer, GLOBAL
+	t9, integer, GLOBAL
+	t10, integer, GLOBAL
+	t11, integer, GLOBAL
+	t12, integer, GLOBAL
+

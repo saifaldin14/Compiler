@@ -81,18 +81,12 @@ void ThreeAddressCode::handleCodeLine(vector<Token> line) {
         scopes.pop_back(); // Remove the existing IF scope
         scopeCounter = 1;
         
-        if (scopes.back() == FUNCTION) {
-            functionText += NEW_LABEL + " " + label + to_string(labelCounter);
-            functionText += '\n';
-        } else if (scopes.back() == GLOBAL) {
-            globalText += NEW_LABEL + " " + label + to_string(labelCounter);
-            globalText += '\n';
-        } else {
-            operationText += NEW_LABEL + " " + label + to_string(labelCounter);
-            operationText += '\n';
-        }
+        string textToAdd = NEW_LABEL + " " + label + to_string(labelCounter);
+        textToAdd += '\n';
+        addCode(textToAdd, scopes.back());
+        textToAdd = "";
         
-        string textToAdd = labelNames.back() + ":";
+        textToAdd = labelNames.back() + ":";
         textToAdd += '\n';
         textToAdd += operationText;
         labelNames.pop_back();
