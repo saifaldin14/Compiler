@@ -64,8 +64,10 @@ private:
     void handleReturnCode(vector<Token> line);
     void handleVariableDeclerationCode(vector<Token> line);
     void handleOperationCode(vector<Token> line);
+    void handlePrintCode(vector<Token> line);
     string handleInplaceDeclerationCode(vector<Token> line, string variableType);
-    string handleRecursiveCallCode(vector<Token> line);
+    string handleFunctionCallCode(vector<Token> line);
+    
     void addCode(string generatedCode);
     string simplifyMultiplicationOperation(vector<Token> exp, string variableType);
 
@@ -79,10 +81,13 @@ private:
     vector<string> labelNames = {"main"};
     vector<string> operationLabels = {}; // Labels for if and while statements within a function
     unordered_map<string, string> variableTypes; // Store the type of each variable
-    
+    unordered_map<string, string> variableNames; // Store the name and scope of the variables
+    unordered_map<string, string> functionNames; // Store the name and scope of the variables
+
     string printString; // Used to print the symbolTable
     string threeAddressCodeText; // Used to create new Three Address Code
     string functionText; // Save the code of the function
+    string globalText; // Save the code of the function
     string operationText; // Save the code of the function
     string returnLabel;
     string functionName;
