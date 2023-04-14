@@ -266,9 +266,7 @@ void ThreeAddressCode::handleOperationCode(vector<Token> line) {
     string variableType = variableTypes[finalVariable];
     vector<vector<Token>> bracketsOperations; // Brackets
     vector<Token> beginOp = line, endOp;
-    
-    vector<vector<Token>> mathOperations;
-    
+        
     // We have a math operation in the assignment
     vector<Token> temp;
     for (int i = 2; i < line.size() - 1; i++) {
@@ -363,6 +361,43 @@ string ThreeAddressCode::simplifyMultiplicationOperation(vector<Token> exp, stri
         tempExp = newTempExp;
     }
     
+    Token finalAssignment;
+    while (tempExp.size() > 3) {
+        vector<Token> newTempExp;
+        for (int j = 0; j < tempExp.size() - completeScan; j ++) {
+            string curr = tempExp[j].getRepresentation();
+            if (curr == "+" or curr == "-") {
+                finalAssignment = tempExp[j];
+                // Create temporary variable
+                ScopeVariable variable;
+                variable.setScope(scopes.back());
+                variable.setType(variableType);
+                variable.setVarName(temporaryVariable + to_string(temporaryVariableCounter));
+                temporaryVariableCounter++;
+                                
+                // Print temporary variable to symbol table
+                printValue(variable.getVarName() + ", " + variable.getType() + ", " + variable.getScope(), 0);
+                
+                // Create Three Adress Code of temporary variable
+                string front = tempExp[j - 1].getRepresentation(), back = tempExp[j + 1].getRepresentation();
+                generatedCode += variable.getVarName() + " = " + front + " " + curr + " " + back;
+                sp += variable.getType() == "integer" ? 4 : 8;
+                generatedCode += '\n';
+                numberOfBytes += 4;
+                
+                // Add temporary variable in place of the multiplication operation
+                Token varToken(variable.getVarName(), TokenType(variable.getType()));
+                newTempExp.push_back(varToken);
+                for (int k = j + 2; k < tempExp.size(); k++)
+                    newTempExp.push_back(tempExp[k]);
+                tempExp = newTempExp;
+                break;
+            }
+        }
+        
+        tempExp = newTempExp;
+    }
+    vector<Token> finalExp = { tempExp[0], finalAssignment, tempExp[1] };
     string ret = "";
     for (auto token : tempExp)
         ret += token.getRepresentation() + " ";
