@@ -5,7 +5,7 @@ def int gcd(int a, int b)
     
     if (a>b) then
         int c;
-        c = a - b;
+        c = a - b * 10 - 90 + a;
         return(gcd(c,b))
     else
         return(gcd(a,b-a))
