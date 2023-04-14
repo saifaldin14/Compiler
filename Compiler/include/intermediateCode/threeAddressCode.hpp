@@ -55,7 +55,7 @@ private:
     inline static const string LESS_THAN = "blt";
     inline static const string LESS_THAN_EQUAL = "ble";
     inline static const string EQUAL = "beq";
-    inline static const string ELSE_LABEL = "b";
+    inline static const string NEW_LABEL = "b";
     
     // Define methods
     void handleCodeLine(vector<Token> line);
@@ -64,6 +64,8 @@ private:
     void handleReturnCode(vector<Token> line);
     void handleVariableDeclerationCode(vector<Token> line);
     void handleOperationCode(vector<Token> line);
+    string handleInplaceDeclerationCode(vector<Token> line, string variableType);
+    string handleRecursiveCallCode(vector<Token> line);
     void addCode(string generatedCode);
     string simplifyMultiplicationOperation(vector<Token> exp, string variableType);
 
@@ -82,6 +84,9 @@ private:
     string threeAddressCodeText; // Used to create new Three Address Code
     string functionText; // Save the code of the function
     string operationText; // Save the code of the function
+    string returnLabel;
+    string functionName;
+    string functionType;
     vector<string> generatedOperationCode; // Save the code of an operation block
     string compareOperation; // Save the current comparison operation so we don't write it twice
     int fp; // Frame Pointer
