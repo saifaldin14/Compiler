@@ -585,81 +585,104 @@ string ThreeAddressCode::handleInplaceDeclerationCode(vector<Token> line, string
 
 void ThreeAddressCode::handlePrintCode(vector<Token> line) {
     string generatedCode, finalVariable;
-    vector<string> variableStack;
-    vector<vector<Token>> valuesInsideParens;
-    vector<Token> temp;
+    bool functionExpression = false, seenFunction = false;
+    int mathOp = 0;
+    
     for (Token token : line) {
-        string tokenValue = token.getRepresentation();
-        if (tokenValue != "print" and tokenValue != "(" and tokenValue != ")" and tokenValue != "," and tokenValue != ";")
-            temp.push_back(token);
-        else if (tokenValue == ")" or tokenValue == "," or tokenValue == "(") {
-            valuesInsideParens.push_back(temp);
-            temp.clear();
+        string value = token.getRepresentation();
+        
+        if (value == "+" or value == "-" or value == "*" or value == "/") {
+            mathOp++;
+            if (seenFunction)
+                functionExpression = true;
+        }
+        
+        if (functionNames.find(value) != functionNames.end() and functionNames[value] == scopes.back()) {
+            seenFunction = true;
+            if (mathOp > 0)
+                functionExpression = true;
         }
     }
-    valuesInsideParens.push_back(temp);
     
-    bool insideFunction = false;
-    string funcName = "";
-    
-    for (vector<Token> parameter : valuesInsideParens) {
-        if (parameter.size() > 1) {
-            // This means that we have a mathematication operation
-            string varName = handleInplaceDeclerationCode(parameter, parameter[0].getType().toString());
-            variableStack.push_back(varName);
-        } else if (parameter.size() == 1) {
-            string value = parameter[0].getRepresentation();
-            if (functionNames.find(value) != functionNames.end() and functionNames[value] == scopes.back()) {
-                // We have encountered a function
-                funcName = value;
-                insideFunction = true;
-            } else {
-                if (variableNames.find(value) != variableNames.end() and variableNames[value] == scopes.back()) {
-                    // We have encountered a variable
-                    variableStack.push_back(value);
+    if (functionExpression) {
+        
+    } else {
+        vector<string> variableStack;
+        vector<vector<Token>> valuesInsideParens;
+        vector<Token> temp;
+        for (Token token : line) {
+            string tokenValue = token.getRepresentation();
+            if (tokenValue != "print" and tokenValue != "(" and tokenValue != ")" and tokenValue != "," and tokenValue != ";")
+                temp.push_back(token);
+            else if (tokenValue == ")" or tokenValue == "," or tokenValue == "(") {
+                valuesInsideParens.push_back(temp);
+                temp.clear();
+            }
+        }
+        valuesInsideParens.push_back(temp);
+        
+        bool insideFunction = false;
+        string funcName = "";
+        
+        for (vector<Token> parameter : valuesInsideParens) {
+            if (parameter.size() > 1) {
+                // This means that we have a mathematication operation
+                string varName = handleInplaceDeclerationCode(parameter, parameter[0].getType().toString());
+                variableStack.push_back(varName);
+            } else if (parameter.size() == 1) {
+                string value = parameter[0].getRepresentation();
+                if (functionNames.find(value) != functionNames.end() and functionNames[value] == scopes.back()) {
+                    // We have encountered a function
+                    funcName = value;
+                    insideFunction = true;
                 } else {
-                    string varName = handleInplaceDeclerationCode(parameter, parameter[0].getType().toString());
-                    variableStack.push_back(varName);
+                    if (variableNames.find(value) != variableNames.end() and variableNames[value] == scopes.back()) {
+                        // We have encountered a variable
+                        variableStack.push_back(value);
+                    } else {
+                        string varName = handleInplaceDeclerationCode(parameter, parameter[0].getType().toString());
+                        variableStack.push_back(varName);
+                    }
                 }
             }
         }
-    }
-    
-    finalVariable = variableStack.back();
-    
-    
-    if (insideFunction) {
-        for (string value : variableStack) {
-            generatedCode += PUSH + "{" + value + "}";
+        
+        finalVariable = variableStack.back();
+        
+        
+        if (insideFunction) {
+            for (string value : variableStack) {
+                generatedCode += PUSH + "{" + value + "}";
+                generatedCode += '\n';
+            }
+            // Create the branch link
+            ScopeVariable variable;
+            variable.setScope(scopes.back());
+            variable.setType(functionType);
+            variable.setVarName(temporaryVariable + to_string(temporaryVariableCounter));
+            temporaryVariableCounter++;
+            numberOfBytes += 4;
+                            
+            // Print temporary variable to symbol table
+            printValue(variable.getVarName() + ", " + variable.getType() + ", " + variable.getScope(), 0);
+            
+            finalVariable = variable.getVarName();
+            
+            generatedCode += variable.getVarName() + " = " + BRANCH_LINK + " " + funcName;
             generatedCode += '\n';
+            
+            // Print the pop stack
+            for (auto it = variableStack.rbegin(); it != variableStack.rend(); ++it) {
+                generatedCode += POP + "{" + *it + "}";
+                generatedCode += '\n';
+            }
         }
-        // Create the branch link
-        ScopeVariable variable;
-        variable.setScope(scopes.back());
-        variable.setType(functionType);
-        variable.setVarName(temporaryVariable + to_string(temporaryVariableCounter));
-        temporaryVariableCounter++;
-        numberOfBytes += 4;
-                        
-        // Print temporary variable to symbol table
-        printValue(variable.getVarName() + ", " + variable.getType() + ", " + variable.getScope(), 0);
         
-        finalVariable = variable.getVarName();
-        
-        generatedCode += variable.getVarName() + " = " + BRANCH_LINK + " " + funcName;
+        generatedCode += PRINT + "(" + finalVariable + ")";
         generatedCode += '\n';
-        
-        // Print the pop stack
-        for (auto it = variableStack.rbegin(); it != variableStack.rend(); ++it) {
-            generatedCode += POP + "{" + *it + "}";
-            generatedCode += '\n';
-        }
+        generatedCode += '\n';
     }
     
-    generatedCode += PRINT + "(" + finalVariable + ")";
-    generatedCode += '\n';
-    generatedCode += '\n';
-
     addCode(generatedCode);
 }
 
