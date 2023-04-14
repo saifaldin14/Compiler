@@ -1,0 +1,41 @@
+GLOBAL SCOPE
+	FUNCTION SCOPE
+		gcd, integer, FUNCTION
+		a, integer, FUNCTION
+		b, integer, FUNCTION
+			t1, integer, IF
+			t2, integer, IF
+			t3, integer, IF
+			t4, integer, IF
+			t5, integer, IF
+			t6, integer, IF
+			t7, integer, IF
+		IF SCOPE
+			d, integer, IF
+			c, double, IF
+			t8, id, IF
+			t9, function, IF
+		ELSE SCOPE
+			q, integer, ELSE
+			t10, id, ELSE
+			t11, function, ELSE
+	FUNCTION SCOPE
+		testDouble, double, FUNCTION
+		r, integer, FUNCTION
+		r5, double, FUNCTION
+		t6, double, FUNCTION
+		y9, double, FUNCTION
+	c, integer, GLOBAL
+	t1, integer, GLOBAL
+	t2, integer, GLOBAL
+	t3, function, GLOBAL
+	t4, integer, GLOBAL
+	t5, integer, GLOBAL
+	t6, integer, GLOBAL
+	t7, function, GLOBAL
+	t8, integer, GLOBAL
+	t9, integer, GLOBAL
+	t10, integer, GLOBAL
+	t11, integer, GLOBAL
+	t12, integer, GLOBAL
+

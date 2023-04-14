@@ -482,12 +482,13 @@ void ThreeAddressCode::handleReturnCode(vector<Token> line) {
             startOfParen = true;
     }
     
-    
-    valuesInsideParens.pop_back();
-    
-    // This means that we popped a ";"
-    if (valuesInsideParens.back().getRepresentation() == ")")
+    if (valuesInsideParens.size() > 0) {
         valuesInsideParens.pop_back();
+
+        // This means that we popped a ";"
+        if (valuesInsideParens.size() > 0 and valuesInsideParens.back().getRepresentation() == ")")
+            valuesInsideParens.pop_back();
+    }
     
     if (valuesInsideParens.size() > 1) {
         for (Token token : valuesInsideParens) {
@@ -495,7 +496,8 @@ void ThreeAddressCode::handleReturnCode(vector<Token> line) {
                 finalReturn = handleFunctionCallCode(valuesInsideParens);
         }
     } else {
-        finalReturn = valuesInsideParens[0].getRepresentation();
+        if (valuesInsideParens.size() > 0)
+            finalReturn = valuesInsideParens[0].getRepresentation();
     }
     
     int decrement = functionType == "integer" ? 4 : 8;
