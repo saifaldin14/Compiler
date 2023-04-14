@@ -74,8 +74,6 @@ void ThreeAddressCode::handleCodeLine(vector<Token> line) {
     // Handle if blocks
     else if (tokenValue == "if") {
         scopeCounter = 1;
-        
-        scopes.push_back("IF");
         handleIfCode(line);
     }
     // Handle else block
@@ -83,8 +81,16 @@ void ThreeAddressCode::handleCodeLine(vector<Token> line) {
         scopes.pop_back(); // Remove the existing IF scope
         scopeCounter = 1;
         
-        functionText += NEW_LABEL + " " + label + to_string(labelCounter);
-        functionText += '\n';
+        if (scopes.back() == FUNCTION) {
+            functionText += NEW_LABEL + " " + label + to_string(labelCounter);
+            functionText += '\n';
+        } else if (scopes.back() == GLOBAL) {
+            globalText += NEW_LABEL + " " + label + to_string(labelCounter);
+            globalText += '\n';
+        } else {
+            operationText += NEW_LABEL + " " + label + to_string(labelCounter);
+            operationText += '\n';
+        }
         
         string textToAdd = labelNames.back() + ":";
         textToAdd += '\n';
@@ -161,12 +167,11 @@ void ThreeAddressCode::handleCodeLine(vector<Token> line) {
     // Handle Return statements
     else if (tokenValue == "return") {
         handleReturnCode(line);
-        addCode(NEW_LABEL + " " + returnLabel);
+        addCode(NEW_LABEL + " " + returnLabel, scopes.back());
         scopeCounter--;
     }
     // Handle print statements
     else if (tokenValue == "print") {
-//        handlePrint(token, line);
         handlePrintCode(line);
     }
     // Handle variable decleration
@@ -228,7 +233,64 @@ void ThreeAddressCode::handleFunctionCode(vector<Token> line) {
 }
 
 void ThreeAddressCode::handleIfCode(vector<Token> line) {
+    string generatedCode;
+    string currentScope = scopes.back();
+    scopes.push_back("IF");
     vector<string> componentsOfIf = { "if", "(", ")", ",", "then" },
+    componentsOfCondition = { "and", "or", ">", "<", "==", ">=", "<=" };
+    vector<ScopeVariable> variables;
+    vector<string> operations;
+    int j = 0;
+    ScopeVariable variable;
+    
+    for (Token token : line) {
+        string tokenValue = token.getRepresentation();
+        if(std::find(componentsOfIf.begin(), componentsOfIf.end(), tokenValue) == componentsOfIf.end()) {
+            if(std::find(componentsOfCondition.begin(), componentsOfCondition.end(), tokenValue) != componentsOfCondition.end()) {
+                // Is a boolean operation
+                operations.push_back(tokenValue);
+            } else {
+                // Is a variable
+                variable.setType(token.getType().toString());
+                variable.setScope(scopes.back());
+                variable.setVarName(tokenValue);
+                variables.push_back(variable);
+                variable.setEmptyValues();
+            }
+        }
+    }
+    
+    string tempOperation = COMPARE + " " + variables[j].getVarName() + ", " + variables[j + 1].getVarName();
+    
+    if (tempOperation != compareOperation) {
+        compareOperation = tempOperation;
+        generatedCode += tempOperation;
+        j += 2;
+        generatedCode += '\n';
+    }
+    
+    for (string op : operations) {
+        string labelName = label + to_string(labelCounter);
+        labelNames.push_back(labelName);
+        if (op == "<")
+            generatedCode += LESS_THAN + " " + labelName;
+        else if (op == "<=")
+            generatedCode += LESS_THAN_EQUAL + " " + labelName;
+        else if (op == ">")
+            generatedCode += GREATER_THAN + " " + labelName;
+        else if (op == ">=")
+            generatedCode += GREATER_THAN_EQUAL + " " + labelName;
+        else if (op == "==")
+            generatedCode += EQUAL + " " + labelName;
+        generatedCode += '\n';
+        labelCounter++;
+        operationLabels.push_back(labelName);
+        addCode(generatedCode, currentScope);
+    }
+}
+
+void ThreeAddressCode::handleWhileCode(vector<Token> line) {
+    vector<string> componentsOfIf = { "while", "(", ")", ",", "do" },
     componentsOfCondition = { "and", "or", ">", "<", "==", ">=", "<=" };
     vector<ScopeVariable> variables;
     vector<string> operations;
@@ -310,7 +372,7 @@ void ThreeAddressCode::handleVariableDeclerationCode(vector<Token> line) {
     
     variableNames[variable.getVarName()] = scopes.back();
     
-    addCode(generatedCode);
+    addCode(generatedCode, scopes.back());
 }
 
 void ThreeAddressCode::handleOperationCode(vector<Token> line) {
@@ -356,7 +418,7 @@ void ThreeAddressCode::handleOperationCode(vector<Token> line) {
         numberOfBytes += 4;
     }
     
-    addCode(generatedCode);
+    addCode(generatedCode, scopes.back());
 }
 
 string ThreeAddressCode::simplifyMultiplicationOperation(vector<Token> exp, string variableType) {
@@ -464,7 +526,7 @@ string ThreeAddressCode::simplifyMultiplicationOperation(vector<Token> exp, stri
     for (auto token : tempExp)
         ret += token.getRepresentation() + " ";
     
-    addCode(generatedCode);
+    addCode(generatedCode, scopes.back());
     
     return ret;
 }
@@ -505,7 +567,7 @@ void ThreeAddressCode::handleReturnCode(vector<Token> line) {
     
     generatedCode += FP + " - " + to_string(decrement) + " = " + finalReturn;
     generatedCode += '\n';
-    addCode(generatedCode);
+    addCode(generatedCode, scopes.back());
 }
 
 string ThreeAddressCode::handleFunctionCallCode(vector<Token> line) {
@@ -562,7 +624,7 @@ string ThreeAddressCode::handleFunctionCallCode(vector<Token> line) {
         generatedCode += '\n';
     }
     
-    addCode(generatedCode);
+    addCode(generatedCode, scopes.back());
     
     return variable.getVarName();
 }
@@ -585,7 +647,7 @@ string ThreeAddressCode::handleInplaceDeclerationCode(vector<Token> line, string
     generatedCode += '\n';
     numberOfBytes += 4;
     
-    addCode(generatedCode);
+    addCode(generatedCode, scopes.back());
     
     return variable.getVarName();
 }
@@ -818,13 +880,13 @@ void ThreeAddressCode::handlePrintCode(vector<Token> line) {
         generatedCode += '\n';
     }
     
-    addCode(generatedCode);
+    addCode(generatedCode, scopes.back());
 }
 
-void ThreeAddressCode::addCode(string generatedCode) {
-    if (scopes.back() == FUNCTION)
+void ThreeAddressCode::addCode(string generatedCode, string scope) {
+    if (scope == FUNCTION)
         functionText += generatedCode;
-    else if (scopes.back() == GLOBAL)
+    else if (scope == GLOBAL)
         globalText += generatedCode;
     else
         operationText += generatedCode;
@@ -838,6 +900,7 @@ void ThreeAddressCode::printValue(string text, int incr) {
 }
 
 void ThreeAddressCode::printThreeAddressCode() {
+    cout << threeAddressCodeText << endl;
     try {
         fstream appendFileToWorkWith;
         string filename = "../output/intermediateCode.txt";

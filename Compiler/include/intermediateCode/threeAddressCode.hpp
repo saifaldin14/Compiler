@@ -64,6 +64,7 @@ private:
     void handleCodeLine(vector<Token> line);
     void handleFunctionCode(vector<Token> line);
     void handleIfCode(vector<Token> line);
+    void handleWhileCode(vector<Token> line);
     void handleReturnCode(vector<Token> line);
     void handleVariableDeclerationCode(vector<Token> line);
     void handleOperationCode(vector<Token> line);
@@ -71,7 +72,7 @@ private:
     string handleInplaceDeclerationCode(vector<Token> line, string variableType, string generatedCode="");
     string handleFunctionCallCode(vector<Token> line);
     
-    void addCode(string generatedCode);
+    void addCode(string generatedCode, string scope);
     string simplifyMultiplicationOperation(vector<Token> exp, string variableType);
 
     bool isVariableType(Token token);

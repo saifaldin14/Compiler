@@ -3,7 +3,7 @@ Begin:
 push{LR}
 push{FP}
 
-gcd 68:
+gcd 24:
 b = fp + 8
 a = fp + 12
 cmp a, b
@@ -16,57 +16,575 @@ FP - 4 = a
 b exitgcd
 
 lab2:
-t1 = 100 * 9
-t2 = a + 90
-t3 = 4 / 3
-t4 = b * 6
-t5 = 7 * b
-t6 = t3 + t4
-t7 = t6 - 8
-d = fp + 44
-c = fp + 48
-t8 = a - b 
-push {t8}
+t1 = a - b 
+push {t1}
 push {b}
-t9 = BL gcd
+t2 = BL gcd
 pop {b}
-pop {t8}
-FP - 4 = t9
+pop {t1}
+FP - 4 = t2
 b exitgcd
 
 lab3:
-q = fp + 64
-b = a 
-t10 = b - a 
+t3 = b - a 
 push {a}
-push {t10}
-t11 = BL gcd
-pop {t10}
+push {t3}
+t4 = BL gcd
+pop {t3}
 pop {a}
-FP - 4 = t11
+FP - 4 = t4
 b exitgcd
 
 exitgcd:
 pop {FP}
 pop {PC}
 
+main: 
+Begin 44: 
+t1 = 21 
+t2 = 15 
+push{t1}
+push{t2}
+t3 = BL gcd
+pop{t2}
+pop{t1}
+print(t3)
 
-testDouble 24:
-r = fp + 80
-y9 = fp + 84
-t6 = fp + 92
-r5 = fp + 100
-r5 = 3.4 
-t6 = 1.6 
-FP - 8 = 
-b exittestDouble
-exittestDouble:
+t4 = 45 
+print(t4)
+
+t5 = 21 
+t6 = 28 
+push{t5}
+push{t6}
+t7 = BL gcd
+pop{t6}
+pop{t5}
+t8 = 2 
+t9 = 6 
+t10 = t9 + t7 
+t12 = t10 * t8
+t11 = t12 
+
+B main
+Begin: 
+push{LR}
+push{FP}
+
+gcd 24:
+b = fp + 8
+a = fp + 12
+cmp a, b
+beq lab1
+bgt lab2
+b lab3
+
+lab1:
+FP - 4 = a
+b exitgcd
+
+lab2:
+t1 = a - b 
+push {t1}
+push {b}
+t2 = BL gcd
+pop {b}
+pop {t1}
+FP - 4 = t2
+b exitgcd
+
+lab3:
+t3 = b - a 
+push {a}
+push {t3}
+t4 = BL gcd
+pop {t3}
+pop {a}
+FP - 4 = t4
+b exitgcd
+
+exitgcd:
 pop {FP}
 pop {PC}
 
 main: 
-Begin 48: 
-c = fp + 124
+Begin 44: 
+t1 = 21 
+t2 = 15 
+push{t1}
+push{t2}
+t3 = BL gcd
+pop{t2}
+pop{t1}
+print(t3)
+
+t4 = 45 
+print(t4)
+
+t5 = 21 
+t6 = 28 
+push{t5}
+push{t6}
+t7 = BL gcd
+pop{t6}
+pop{t5}
+t8 = 2 
+t9 = 6 
+t10 = t9 + t7 
+t12 = t10 * t8
+t11 = t12 
+
+B main
+Begin: 
+push{LR}
+push{FP}
+
+gcd 24:
+b = fp + 8
+a = fp + 12
+cmp a, b
+beq lab1
+bgt lab2
+b lab3
+
+lab1:
+FP - 4 = a
+b exitgcd
+
+lab2:
+t1 = a - b 
+push {t1}
+push {b}
+t2 = BL gcd
+pop {b}
+pop {t1}
+FP - 4 = t2
+b exitgcd
+
+lab3:
+t3 = b - a 
+push {a}
+push {t3}
+t4 = BL gcd
+pop {t3}
+pop {a}
+FP - 4 = t4
+b exitgcd
+
+exitgcd:
+pop {FP}
+pop {PC}
+
+main: 
+Begin 68: 
+t1 = 21 
+t2 = 15 
+push{t1}
+push{t2}
+t3 = BL gcd
+pop{t2}
+pop{t1}
+print(t3)
+
+t4 = 45 
+print(t4)
+
+t5 = 21 
+t6 = 28 
+push{t5}
+push{t6}
+t7 = BL gcd
+pop{t6}
+pop{t5}
+t8 = 2 
+t9 = 6 
+t10 = t9 + t7 
+t12 = t10 * t8
+t11 = t12 
+
+B main
+Begin: 
+push{LR}
+push{FP}
+
+gcd 24:
+b = fp + 8
+a = fp + 12
+cmp a, b
+beq lab1
+bgt lab2
+b lab3
+
+lab1:
+FP - 4 = a
+b exitgcd
+
+lab2:
+t1 = a - b 
+push {t1}
+push {b}
+t2 = BL gcd
+pop {b}
+pop {t1}
+FP - 4 = t2
+b exitgcd
+
+lab3:
+t3 = b - a 
+push {a}
+push {t3}
+t4 = BL gcd
+pop {t3}
+pop {a}
+FP - 4 = t4
+b exitgcd
+
+exitgcd:
+pop {FP}
+pop {PC}
+
+main: 
+Begin 44: 
+t1 = 21 
+t2 = 15 
+push{t1}
+push{t2}
+t3 = BL gcd
+pop{t2}
+pop{t1}
+print(t3)
+
+t4 = 45 
+print(t4)
+
+t5 = 21 
+t6 = 28 
+push{t5}
+push{t6}
+t7 = BL gcd
+pop{t6}
+pop{t5}
+t8 = 2 
+t9 = 6 
+t10 = t9 + t7 
+t12 = t10 * t8
+t11 = t12 
+
+B main
+Begin: 
+push{LR}
+push{FP}
+
+gcd 28:
+b = fp + 8
+a = fp + 12
+cmp a, b
+beq lab1
+bgt lab2
+b lab3
+
+lab1:
+FP - 4 = a
+b exitgcd
+
+lab2:
+t1 = a - b 
+push {t1}
+push {b}
+t2 = BL gcd
+pop {b}
+pop {t1}
+FP - 4 = t2
+b exitgcd
+
+lab3:
+t3 = b - a 
+push {a}
+push {t3}
+t4 = BL gcd
+pop {t3}
+pop {a}
+FP - 4 = t4
+b exitgcd
+
+exitgcd:
+pop {FP}
+pop {PC}
+
+main: 
+Begin 44: 
+t1 = 21 
+t2 = 15 
+push{t1}
+push{t2}
+t3 = BL gcd
+pop{t2}
+pop{t1}
+print(t3)
+
+t4 = 45 
+print(t4)
+
+t5 = 21 
+t6 = 28 
+push{t5}
+push{t6}
+t7 = BL gcd
+pop{t6}
+pop{t5}
+t8 = 2 
+t9 = 6 
+t10 = t9 + t7 
+t12 = t10 * t8
+t11 = t12 
+
+B main
+Begin: 
+push{LR}
+push{FP}
+
+gcd 24:
+b = fp + 8
+a = fp + 12
+b lab3
+
+lab1:
+cmp a, b
+beq lab1
+FP - 4 = a
+b exitgcd
+
+lab2:
+bgt lab2
+t1 = a - b 
+push {t1}
+push {b}
+t2 = BL gcd
+pop {b}
+pop {t1}
+FP - 4 = t2
+b exitgcd
+
+lab3:
+t3 = b - a 
+push {a}
+push {t3}
+t4 = BL gcd
+pop {t3}
+pop {a}
+FP - 4 = t4
+b exitgcd
+
+exitgcd:
+pop {FP}
+pop {PC}
+
+main: 
+Begin 44: 
+t1 = 21 
+t2 = 15 
+push{t1}
+push{t2}
+t3 = BL gcd
+pop{t2}
+pop{t1}
+print(t3)
+
+t4 = 45 
+print(t4)
+
+t5 = 21 
+t6 = 28 
+push{t5}
+push{t6}
+t7 = BL gcd
+pop{t6}
+pop{t5}
+t8 = 2 
+t9 = 6 
+t10 = t9 + t7 
+t12 = t10 * t8
+t11 = t12 
+
+B main
+Begin: 
+push{LR}
+push{FP}
+
+gcd 24:
+b = fp + 8
+a = fp + 12
+b lab3
+
+lab1:
+cmp a, b
+beq lab1
+FP - 4 = a
+b exitgcd
+
+lab2:
+bgt lab2
+t1 = a - b 
+push {t1}
+push {b}
+t2 = BL gcd
+pop {b}
+pop {t1}
+FP - 4 = t2
+b exitgcd
+
+lab3:
+t3 = b - a 
+push {a}
+push {t3}
+t4 = BL gcd
+pop {t3}
+pop {a}
+FP - 4 = t4
+b exitgcd
+
+exitgcd:
+pop {FP}
+pop {PC}
+
+main: 
+Begin 44: 
+t1 = 21 
+t2 = 15 
+push{t1}
+push{t2}
+t3 = BL gcd
+pop{t2}
+pop{t1}
+print(t3)
+
+t4 = 45 
+print(t4)
+
+t5 = 21 
+t6 = 28 
+push{t5}
+push{t6}
+t7 = BL gcd
+pop{t6}
+pop{t5}
+t8 = 2 
+t9 = 6 
+t10 = t9 + t7 
+t12 = t10 * t8
+t11 = t12 
+
+B main
+Begin: 
+push{LR}
+push{FP}
+
+gcd 24:
+b = fp + 8
+a = fp + 12
+cmp a, b
+beq lab1
+FP - 4 = a
+b exitgcdbgt lab2
+t1 = a - b 
+push {t1}
+push {b}
+t2 = BL gcd
+pop {b}
+pop {t1}
+FP - 4 = t2
+b exitgcdb lab3
+t3 = b - a 
+push {a}
+push {t3}
+t4 = BL gcd
+pop {t3}
+pop {a}
+FP - 4 = t4
+b exitgcd
+lab1:
+
+
+lab2:
+
+
+lab3:
+
+
+exitgcd:
+pop {FP}
+pop {PC}
+
+main: 
+Begin 44: 
+t1 = 21 
+t2 = 15 
+push{t1}
+push{t2}
+t3 = BL gcd
+pop{t2}
+pop{t1}
+print(t3)
+
+t4 = 45 
+print(t4)
+
+t5 = 21 
+t6 = 28 
+push{t5}
+push{t6}
+t7 = BL gcd
+pop{t6}
+pop{t5}
+t8 = 2 
+t9 = 6 
+t10 = t9 + t7 
+t12 = t10 * t8
+t11 = t12 
+
+B main
+Begin: 
+push{LR}
+push{FP}
+
+gcd 24:
+b = fp + 8
+a = fp + 12
+cmp a, b
+beq lab1
+bgt lab2
+b lab3
+
+lab1:
+FP - 4 = a
+b exitgcd
+
+lab2:
+t1 = a - b 
+push {t1}
+push {b}
+t2 = BL gcd
+pop {b}
+pop {t1}
+FP - 4 = t2
+b exitgcd
+
+lab3:
+t3 = b - a 
+push {a}
+push {t3}
+t4 = BL gcd
+pop {t3}
+pop {a}
+FP - 4 = t4
+b exitgcd
+
+exitgcd:
+pop {FP}
+pop {PC}
+
+main: 
+Begin 44: 
 t1 = 21 
 t2 = 15 
 push{t1}
