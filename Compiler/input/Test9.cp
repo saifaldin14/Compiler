@@ -4,7 +4,7 @@ def int gcd(int a, int b)
     fi;
 
     if (a>b) then
-        a = b + 1 * 9 - (a + 90 - (4 / 3 + b));
+        a = b + 100 * 9 - (a + 90 - (4 / 3 + b));
         int d;
         double c;
         return(gcd(a-b,b))
