@@ -305,3 +305,19 @@ StackTrace:
 3   Compiler                            0x00000001000164f9 _ZN6Parser5parseEv + 473
 4   Compiler                            0x000000010004d613 main + 323
 5   libdyld.dylib                       0x00007fff2060ef3d start + 1
+SEMANTIC ERROR
+Invalid! Assignment operation has mismatching types!
+SEMANTIC ERROR
+Invalid! Assignment operation has mismatching types!
+SEMANTIC ERROR
+Invalid! Assignment operation has mismatching types!
+SEMANTIC ERROR
+Invalid! Assignment operation has mismatching types!
+SEMANTIC ERROR
+Invalid! Assignment operation has mismatching types!
+SEMANTIC ERROR
+Invalid! Assignment operation has mismatching types!
+SEMANTIC ERROR
+Invalid! Assignment operation has mismatching types!
+SEMANTIC ERROR
+Invalid! Assignment operation has mismatching types!
