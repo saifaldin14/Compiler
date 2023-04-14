@@ -81,8 +81,13 @@ void ThreeAddressCode::handleCodeLine(vector<Token> line) {
         functionText += NEW_LABEL + " " + label + to_string(labelCounter);
         functionText += '\n';
         
-        // Move this to dedicated function
-        generatedOperationCode.push_back(operationText);
+        string textToAdd = labelNames.back() + ":";
+        textToAdd += '\n';
+        textToAdd += operationText;
+        labelNames.pop_back();
+        labelNames.push_back(label + to_string(labelCounter));
+        
+        generatedOperationCode.push_back(textToAdd);
         operationText = "";
         scopes.push_back("ELSE");
     }
@@ -93,17 +98,54 @@ void ThreeAddressCode::handleCodeLine(vector<Token> line) {
         scopes.push_back("WHILE");
     }
     // Handle closing scopes
-    else if (tokenValue == "od" or tokenValue == "fi") {
+    else if (tokenValue == "od") {
         scopes.pop_back();
         scopeCounter--;
         
         // Move this to dedicated function
         generatedOperationCode.push_back(operationText);
         operationText = "";
+    } else if (tokenValue == "fi") {
+        scopes.pop_back();
+        scopeCounter--;
+        
+        string textToAdd = labelNames.back() + ":";
+        textToAdd += '\n';
+        textToAdd += operationText;
+        labelNames.pop_back();
+        generatedOperationCode.push_back(textToAdd);
+        operationText = "";
     }
     // Handle function close
     else if (tokenValue == "fed") {
         scopes.pop_back();
+        
+        string textToAdd = functionName + " " + to_string(numberOfBytes) +":";
+        textToAdd += '\n';
+        for (auto i : generatedOperationCode) {
+            functionText += '\n';
+            functionText += i;
+            functionText += '\n';
+        }
+        textToAdd += functionText;
+        textToAdd += '\n';
+        textToAdd += '\n';
+        textToAdd += returnLabel + ":";
+        textToAdd += '\n';
+        textToAdd += "pop {" + FP + "}";
+        textToAdd += '\n';
+        textToAdd += "pop {PC}";
+        textToAdd += '\n';
+        textToAdd += '\n';
+
+        threeAddressCodeText += textToAdd;
+        
+        functionText = "";
+        operationText = "";
+        generatedOperationCode.clear();
+        functionName = "";
+        functionType = "";
+        
         scopeCounter--;
     }
     // Handle Return statements
@@ -174,8 +216,8 @@ void ThreeAddressCode::handleFunctionCode(vector<Token> line) {
 }
 
 void ThreeAddressCode::handleIfCode(vector<Token> line) {
-    vector<string> componentsOfIf = {"if", "(", ")", ",", "then"},
-    componentsOfCondition = {"and", "or", ">", "<", "==", ">=", "<="};
+    vector<string> componentsOfIf = { "if", "(", ")", ",", "then" },
+    componentsOfCondition = { "and", "or", ">", "<", "==", ">=", "<=" };
     vector<ScopeVariable> variables;
     vector<string> operations;
     int j = 0;
@@ -209,6 +251,7 @@ void ThreeAddressCode::handleIfCode(vector<Token> line) {
     
     for (string op : operations) {
         string labelName = label + to_string(labelCounter);
+        labelNames.push_back(labelName);
         if (op == "<")
             functionText += LESS_THAN + " " + labelName;
         else if (op == "<=")
@@ -473,14 +516,6 @@ string ThreeAddressCode::handleRecursiveCallCode(vector<Token> line) {
     }
     definedVariables.push_back(temp);
     
-    cout << "YOYOY: ";
-    for (vector<Token> parameter : definedVariables) {
-        for (Token t : parameter)
-            cout << t.getRepresentation() << ", ";
-        cout << endl;
-    }
-    cout << endl;
-    
     for (vector<Token> parameter : definedVariables) {
         if (parameter.size() > 1) {
             // This means that we have a mathematication operation
@@ -502,6 +537,7 @@ string ThreeAddressCode::handleRecursiveCallCode(vector<Token> line) {
     variable.setType(functionType);
     variable.setVarName(temporaryVariable + to_string(temporaryVariableCounter));
     temporaryVariableCounter++;
+    numberOfBytes += 4;
                     
     // Print temporary variable to symbol table
     printValue(variable.getVarName() + ", " + variable.getType() + ", " + variable.getScope(), 0);
@@ -562,13 +598,6 @@ void ThreeAddressCode::printValue(string text, int incr) {
 
 void ThreeAddressCode::printThreeAddressCode() {
     cout << threeAddressCodeText << endl;
-    cout << "--------" << endl;
-    cout << functionText << endl;
-    cout << "--------" << endl;
-    for (auto i : generatedOperationCode) {
-        cout << i << endl;
-        cout << "--------" << endl;
-    }
     cout << printString << endl;
 }
 
