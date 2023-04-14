@@ -62,8 +62,6 @@ void ThreeAddressCode::handleCodeLine(vector<Token> line) {
         
         scopes.push_back(FUNCTION);
         handleFunctionCode(line);
-
-//        handleFunctionScope(token, line);
     }
     // Handle if blocks
     else if (tokenValue == "if") {
@@ -71,7 +69,6 @@ void ThreeAddressCode::handleCodeLine(vector<Token> line) {
         
         scopes.push_back("IF");
         handleIfCode(line);
-//        handleCondition(token, line);
     }
     // Handle else block
     else if (tokenValue == "else") {
@@ -120,7 +117,9 @@ void ThreeAddressCode::handleCodeLine(vector<Token> line) {
     else if (tokenValue == "fed") {
         scopes.pop_back();
         
-        string textToAdd = functionName + " " + to_string(numberOfBytes) +":";
+        string textToAdd;
+        textToAdd += '\n';
+        textToAdd += functionName + " " + to_string(numberOfBytes) +":";
         textToAdd += '\n';
         for (auto i : generatedOperationCode) {
             functionText += '\n';
@@ -128,7 +127,6 @@ void ThreeAddressCode::handleCodeLine(vector<Token> line) {
             functionText += '\n';
         }
         textToAdd += functionText;
-        textToAdd += '\n';
         textToAdd += '\n';
         textToAdd += returnLabel + ":";
         textToAdd += '\n';
@@ -145,6 +143,8 @@ void ThreeAddressCode::handleCodeLine(vector<Token> line) {
         generatedOperationCode.clear();
         functionName = "";
         functionType = "";
+        returnLabel = "";
+        temporaryVariableCounter = 1;
         
         scopeCounter--;
     }
@@ -157,6 +157,7 @@ void ThreeAddressCode::handleCodeLine(vector<Token> line) {
     // Handle print statements
     else if (tokenValue == "print") {
 //        handlePrint(token, line);
+        handlePrintCode(line);
     }
     // Handle variable decleration
     else if (isVariableType(line[0])) {
@@ -165,6 +166,10 @@ void ThreeAddressCode::handleCodeLine(vector<Token> line) {
         }
         scopeCounter++;
         handleVariableDeclerationCode(line);
+    }
+    // Handle end of file
+    else if (tokenValue == ".") {
+        
     }
     // Assignment operations
     else {
@@ -178,6 +183,7 @@ void ThreeAddressCode::handleFunctionCode(vector<Token> line) {
     labelNames.push_back(funcName + ": "); // Add the function name
     
     returnLabel = "exit" + funcName;
+    functionNames[funcName] = "GLOBAL";
     functionName = funcName;
     functionType = funcType;
     
@@ -296,12 +302,9 @@ void ThreeAddressCode::handleVariableDeclerationCode(vector<Token> line) {
         numberOfBytes += 4;
     }
     
-    if (scopes.back() == FUNCTION)
-        functionText += generatedCode;
-    else if (scopes.back() == GLOBAL)
-        threeAddressCodeText += generatedCode;
-    else
-        operationText += generatedCode;
+    variableNames[variable.getVarName()] = scopes.back();
+    
+    addCode(generatedCode);
 }
 
 void ThreeAddressCode::handleOperationCode(vector<Token> line) {
@@ -311,7 +314,7 @@ void ThreeAddressCode::handleOperationCode(vector<Token> line) {
     
     // Recursive call
     if (finalVariable == functionName) {
-        handleRecursiveCallCode(line);
+        handleFunctionCallCode(line);
         return;
     }
     
@@ -483,7 +486,7 @@ void ThreeAddressCode::handleReturnCode(vector<Token> line) {
     if (valuesInsideParens.size() > 1) {
         for (Token token : valuesInsideParens) {
             if (token.getRepresentation() == functionName)
-                finalReturn = handleRecursiveCallCode(valuesInsideParens);
+                finalReturn = handleFunctionCallCode(valuesInsideParens);
         }
     } else {
         finalReturn = valuesInsideParens[0].getRepresentation();
@@ -497,7 +500,7 @@ void ThreeAddressCode::handleReturnCode(vector<Token> line) {
     addCode(generatedCode);
 }
 
-string ThreeAddressCode::handleRecursiveCallCode(vector<Token> line) {
+string ThreeAddressCode::handleFunctionCallCode(vector<Token> line) {
     string generatedCode;
     vector<vector<Token>> definedVariables;
     vector<string> variableStack;
@@ -578,6 +581,86 @@ string ThreeAddressCode::handleInplaceDeclerationCode(vector<Token> line, string
     addCode(generatedCode);
     
     return variable.getVarName();
+}
+
+void ThreeAddressCode::handlePrintCode(vector<Token> line) {
+    string generatedCode, finalVariable;
+    vector<string> variableStack;
+    vector<vector<Token>> valuesInsideParens;
+    vector<Token> temp;
+    for (Token token : line) {
+        string tokenValue = token.getRepresentation();
+        if (tokenValue != "print" and tokenValue != "(" and tokenValue != ")" and tokenValue != "," and tokenValue != ";")
+            temp.push_back(token);
+        else if (tokenValue == ")" or tokenValue == "," or tokenValue == "(") {
+            valuesInsideParens.push_back(temp);
+            temp.clear();
+        }
+    }
+    valuesInsideParens.push_back(temp);
+    
+    bool insideFunction = false;
+    string funcName = "";
+    
+    for (vector<Token> parameter : valuesInsideParens) {
+        if (parameter.size() > 1) {
+            // This means that we have a mathematication operation
+            string varName = handleInplaceDeclerationCode(parameter, parameter[0].getType().toString());
+            variableStack.push_back(varName);
+        } else if (parameter.size() == 1) {
+            string value = parameter[0].getRepresentation();
+            if (functionNames.find(value) != functionNames.end() and functionNames[value] == scopes.back()) {
+                // We have encountered a function
+                funcName = value;
+                insideFunction = true;
+            } else {
+                if (variableNames.find(value) != variableNames.end() and variableNames[value] == scopes.back()) {
+                    // We have encountered a variable
+                    variableStack.push_back(value);
+                } else {
+                    string varName = handleInplaceDeclerationCode(parameter, parameter[0].getType().toString());
+                    variableStack.push_back(varName);
+                }
+            }
+        }
+    }
+    
+    finalVariable = variableStack.back();
+    
+    
+    if (insideFunction) {
+        for (string value : variableStack) {
+            generatedCode += PUSH + "{" + value + "}";
+            generatedCode += '\n';
+        }
+        // Create the branch link
+        ScopeVariable variable;
+        variable.setScope(scopes.back());
+        variable.setType(functionType);
+        variable.setVarName(temporaryVariable + to_string(temporaryVariableCounter));
+        temporaryVariableCounter++;
+        numberOfBytes += 4;
+                        
+        // Print temporary variable to symbol table
+        printValue(variable.getVarName() + ", " + variable.getType() + ", " + variable.getScope(), 0);
+        
+        finalVariable = variable.getVarName();
+        
+        generatedCode += variable.getVarName() + " = " + BRANCH_LINK + " " + funcName;
+        generatedCode += '\n';
+        
+        // Print the pop stack
+        for (auto it = variableStack.rbegin(); it != variableStack.rend(); ++it) {
+            generatedCode += POP + "{" + *it + "}";
+            generatedCode += '\n';
+        }
+    }
+    
+    generatedCode += PRINT + "(" + finalVariable + ")";
+    generatedCode += '\n';
+    generatedCode += '\n';
+
+    addCode(generatedCode);
 }
 
 void ThreeAddressCode::addCode(string generatedCode) {
