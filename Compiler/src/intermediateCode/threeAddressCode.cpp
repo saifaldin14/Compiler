@@ -320,11 +320,14 @@ string ThreeAddressCode::simplifyMultiplicationOperation(vector<Token> exp, stri
     }
     
     vector<Token> tempExp = exp;
-    for (int i = 0; i < numberOfMultiplcation; i++) {
+//    for (int i = 0; i < numberOfMultiplcation; i++) {
+    if (numberOfMultiplcation > 0) {
         vector<Token> newTempExp;
         for (int j = 0; j < tempExp.size() - completeScan; j ++) {
             string curr = tempExp[j].getRepresentation();
             if (curr == "*" or curr == "/") {
+                numberOfMultiplcation--;
+                
                 // Create temporary variable
                 ScopeVariable variable;
                 variable.setScope(scopes.back());
@@ -342,22 +345,20 @@ string ThreeAddressCode::simplifyMultiplicationOperation(vector<Token> exp, stri
                 generatedCode += '\n';
                 numberOfBytes += 4;
                 
-                if (scopes.back() == FUNCTION)
-                    functionText += generatedCode;
-                else if (scopes.back() == GLOBAL)
-                    threeAddressCodeText += generatedCode;
-                else
-                    operationText += generatedCode;
-                
                 // Add temporary variable in place of the multiplication operation
-//                newTempExp += variable.getVarName();
                 Token varToken(variable.getVarName(), TokenType(variable.getType()));
                 newTempExp.push_back(varToken);
             } else if (curr == "+" or curr == "-") {
                 if (newTempExp.size() > 0) {
                     // Already added a variable
                     newTempExp.push_back(tempExp[j]);
-                    newTempExp.push_back(tempExp[j + 1]);
+                    if (numberOfMultiplcation <= 0)
+                        newTempExp.push_back(tempExp[j + 1]);
+                    else if (j + 2 < tempExp.size() - completeScan) {
+                        // This means that there will be a multiplication or division coming up, but right now we're adding or subtracting something
+                        if (tempExp[j + 2].getRepresentation() == "+" or tempExp[j + 2].getRepresentation() == "-")
+                            newTempExp.push_back(tempExp[j + 1]);
+                    }
                 } else {
                     newTempExp.push_back(tempExp[j - 1]);
                     newTempExp.push_back(tempExp[j]);
@@ -370,6 +371,13 @@ string ThreeAddressCode::simplifyMultiplicationOperation(vector<Token> exp, stri
     string ret = "";
     for (auto token : tempExp)
         ret += token.getRepresentation();
+    
+    if (scopes.back() == FUNCTION)
+        functionText += generatedCode;
+    else if (scopes.back() == GLOBAL)
+        threeAddressCodeText += generatedCode;
+    else
+        operationText += generatedCode;
     
     return ret;
 }
