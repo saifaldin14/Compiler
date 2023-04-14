@@ -31,6 +31,7 @@ public:
     ThreeAddressCode(vector<vector<Token>> inputLines);
     void createCode();
     void printThreeAddressCode();
+    void printSymbolTable();
     
 private:
     // Used for the Symbol Table (same as Semantic Analysis)

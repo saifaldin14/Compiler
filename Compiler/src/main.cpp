@@ -10,7 +10,7 @@
 using namespace std;
 
 int main() {
-    FileReader fileReader("../input/test10.cp");
+    FileReader fileReader("../input/test9.cp");
     
     string filename = "../output/error.txt";
     fstream errorFile;
@@ -25,11 +25,13 @@ int main() {
     if (parser.getParsed()) {
         Analyzer analyzer(parser.getLines());
         analyzer.analyzeSemantics();
-//        analyzer.printVariables();
         
-        ThreeAddressCode threeAddressCode(parser.getLines());
-        threeAddressCode.createCode();
-        threeAddressCode.printThreeAddressCode();
+        if (analyzer.getCorrect()) {
+            ThreeAddressCode threeAddressCode(parser.getLines());
+            threeAddressCode.createCode();
+            threeAddressCode.printThreeAddressCode();
+            threeAddressCode.printSymbolTable();
+        }
     }
     return 0;
 }

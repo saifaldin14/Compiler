@@ -511,6 +511,7 @@ bool Analyzer::checkValidCondition(vector<Token> line, int openParen, int closeP
     - None
 */
 void Analyzer::saveErrorText(string text) {
+    isCorrect = false;
     fstream appendFileToWorkWith;
     string filename = "../output/error.txt";
     appendFileToWorkWith.open(filename, std::fstream::in | std::fstream::out | std::fstream::app);

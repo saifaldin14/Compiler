@@ -29,7 +29,8 @@ public:
     Analyzer(vector<vector<Token>> inputLines);
     void analyzeSemantics();
     void printVariables();
-
+    bool getCorrect() { return isCorrect; }
+    
 private:
     inline static const string FUNCTION = "FUNCTION";
     inline static const string IF = "IF";
@@ -64,6 +65,7 @@ private:
     unordered_map<string, vector<string>> variableDefinition;
     
     bool validReturn = true;
+    bool isCorrect = true;
     string printString;
     int scopeCounter = 0;
 };

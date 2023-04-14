@@ -681,7 +681,6 @@ void ThreeAddressCode::handlePrintCode(vector<Token> line) {
         variable.setType(functionType);
         variable.setVarName(temporaryVariable + to_string(temporaryVariableCounter));
         temporaryVariableCounter++;
-        numberOfBytes += 4;
         
         // Add temporary variable to final vector
         Token token(variable.getVarName(), variable.getType());
@@ -837,8 +836,47 @@ void ThreeAddressCode::printValue(string text, int incr) {
 }
 
 void ThreeAddressCode::printThreeAddressCode() {
-    cout << threeAddressCodeText << endl;
-    cout << printString << endl;
+    try {
+        fstream appendFileToWorkWith;
+        string filename = "../output/intermediateCode.txt";
+        appendFileToWorkWith.open(filename, std::fstream::in | std::fstream::out | std::fstream::app);
+
+      // If file does not exist, Create new file
+      if (!appendFileToWorkWith) {
+        appendFileToWorkWith.open(filename,  fstream::in | fstream::out | fstream::trunc);
+        appendFileToWorkWith <<"\n";
+        appendFileToWorkWith.close();
+       } else {    // use existing file
+           appendFileToWorkWith << threeAddressCodeText <<endl;
+           appendFileToWorkWith.close();
+        }
+    } catch (const std::out_of_range& e) {
+        cerr << "Out of Range error: " << e.what() << endl;
+    } catch (...) {
+        cerr << "Unknown exception caught" << endl;
+    }
+}
+
+void ThreeAddressCode::printSymbolTable() {
+    try {
+        fstream appendFileToWorkWith;
+        string filename = "../output/symbolTable.txt";
+        appendFileToWorkWith.open(filename, std::fstream::in | std::fstream::out | std::fstream::app);
+
+      // If file does not exist, Create new file
+      if (!appendFileToWorkWith) {
+        appendFileToWorkWith.open(filename,  fstream::in | fstream::out | fstream::trunc);
+        appendFileToWorkWith <<"\n";
+        appendFileToWorkWith.close();
+       } else {    // use existing file
+           appendFileToWorkWith << printString <<endl;
+           appendFileToWorkWith.close();
+        }
+    } catch (const std::out_of_range& e) {
+        cerr << "Out of Range error: " << e.what() << endl;
+    } catch (...) {
+        cerr << "Unknown exception caught" << endl;
+    }
 }
 
 string ThreeAddressCode::determineType(Token token) {
