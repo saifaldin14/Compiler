@@ -23,6 +23,8 @@
 		D51FC19729D62DBA004AB4B5 /* analyzer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D51FC19529D62DBA004AB4B5 /* analyzer.cpp */; };
 		D51FC19D29D63BEA004AB4B5 /* scopeVariable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D51FC19B29D63BEA004AB4B5 /* scopeVariable.cpp */; };
 		D587FAD429E487DA000AA456 /* threeAddressCode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D587FAD229E487DA000AA456 /* threeAddressCode.cpp */; };
+		D5B3DD9C29E9FD9F0008B78F /* saveToken.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D5B3DD9A29E9FD9F0008B78F /* saveToken.cpp */; };
+		D5B3DD9F29EA08B80008B78F /* compareToken.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D5B3DD9D29EA08B80008B78F /* compareToken.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -72,6 +74,10 @@
 		D51FC19C29D63BEA004AB4B5 /* scopeVariable.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = scopeVariable.hpp; sourceTree = "<group>"; };
 		D587FAD229E487DA000AA456 /* threeAddressCode.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = threeAddressCode.cpp; sourceTree = "<group>"; };
 		D587FAD329E487DA000AA456 /* threeAddressCode.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = threeAddressCode.hpp; sourceTree = "<group>"; };
+		D5B3DD9A29E9FD9F0008B78F /* saveToken.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = saveToken.cpp; sourceTree = "<group>"; };
+		D5B3DD9B29E9FD9F0008B78F /* saveToken.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = saveToken.hpp; sourceTree = "<group>"; };
+		D5B3DD9D29EA08B80008B78F /* compareToken.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = compareToken.cpp; sourceTree = "<group>"; };
+		D5B3DD9E29EA08B80008B78F /* compareToken.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = compareToken.hpp; sourceTree = "<group>"; };
 		D5B4A33F2999D8E600D8C783 /* Compiler */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Compiler; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -177,6 +183,8 @@
 			isa = PBXGroup;
 			children = (
 				D587FAD329E487DA000AA456 /* threeAddressCode.hpp */,
+				D5B3DD9E29EA08B80008B78F /* compareToken.hpp */,
+				D5B3DD9B29E9FD9F0008B78F /* saveToken.hpp */,
 			);
 			path = intermediateCode;
 			sourceTree = "<group>";
@@ -185,6 +193,8 @@
 			isa = PBXGroup;
 			children = (
 				D587FAD229E487DA000AA456 /* threeAddressCode.cpp */,
+				D5B3DD9D29EA08B80008B78F /* compareToken.cpp */,
+				D5B3DD9A29E9FD9F0008B78F /* saveToken.cpp */,
 			);
 			path = intermediateCode;
 			sourceTree = "<group>";
@@ -302,6 +312,7 @@
 				D501FE3029C921FF00F56BF4 /* leaf.cpp in Sources */,
 				D501FE2C29C921FF00F56BF4 /* main.cpp in Sources */,
 				D501FE2729C921FF00F56BF4 /* tokenType.cpp in Sources */,
+				D5B3DD9C29E9FD9F0008B78F /* saveToken.cpp in Sources */,
 				D501FE2829C921FF00F56BF4 /* syntaxTreeNode.cpp in Sources */,
 				D501FE2929C921FF00F56BF4 /* transitionTableNode.cpp in Sources */,
 				D51FC19729D62DBA004AB4B5 /* analyzer.cpp in Sources */,
@@ -312,6 +323,7 @@
 				D501FE2429C921FF00F56BF4 /* syntaxProp.cpp in Sources */,
 				D587FAD429E487DA000AA456 /* threeAddressCode.cpp in Sources */,
 				D501FE2629C921FF00F56BF4 /* lexer.cpp in Sources */,
+				D5B3DD9F29EA08B80008B78F /* compareToken.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

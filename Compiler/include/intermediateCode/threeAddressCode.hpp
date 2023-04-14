@@ -20,6 +20,8 @@
 #include <unordered_map>
 #include "../tokens/token.hpp"
 #include "../semanticAnalysis/scopeVariable.hpp"
+#include "./saveToken.hpp"
+#include "./compareToken.hpp"
 
 using namespace std;
 
@@ -65,7 +67,7 @@ private:
     void handleVariableDeclerationCode(vector<Token> line);
     void handleOperationCode(vector<Token> line);
     void handlePrintCode(vector<Token> line);
-    string handleInplaceDeclerationCode(vector<Token> line, string variableType);
+    string handleInplaceDeclerationCode(vector<Token> line, string variableType, string generatedCode="");
     string handleFunctionCallCode(vector<Token> line);
     
     void addCode(string generatedCode);
