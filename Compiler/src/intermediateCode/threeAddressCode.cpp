@@ -264,63 +264,58 @@ void ThreeAddressCode::handleOperationCode(vector<Token> line) {
     string generatedCode;
     string finalVariable = line[0].getRepresentation(); // The variable we will assign everything to in the end
     string variableType = variableTypes[finalVariable];
-    vector<string> arithmeticOperations; // Add or subtract
-    vector<string> geometricOperations; // Multiplication or division
     vector<vector<Token>> bracketsOperations; // Brackets
     vector<Token> beginOp = line, endOp;
     
     vector<vector<Token>> mathOperations;
     
     // We have a math operation in the assignment
-    if (line.size() > 4) {
-        vector<Token> temp;
-        for (int i = 2; i < line.size() - 1; i++) {
-            if (line[i].getRepresentation() == "(" or line[i].getRepresentation() == ")") {
-                bracketsOperations.push_back(temp);
-                temp.clear();
-            } else {
-                temp.push_back(line[i]);
-            }
+    vector<Token> temp;
+    for (int i = 2; i < line.size() - 1; i++) {
+        if (line[i].getRepresentation() == "(" or line[i].getRepresentation() == ")") {
+            bracketsOperations.push_back(temp);
+            temp.clear();
+        } else {
+            temp.push_back(line[i]);
         }
-        
-//        cout << "CHECK IT: ";
-//        for (auto i : bracketsOperations)
-//            cout << i << ", ";
-//        cout << endl;
-//
-        for (auto i : bracketsOperations) {
-            if (i.size() > 0)
-                cout << simplifyMultiplicationOperation(i, variableType) << ", ";
-        }
-        cout << endl;
     }
     
     if (bracketsOperations.size() > 0) {
-        
+        for (auto i : bracketsOperations) {
+            if (i.size() > 0)
+                simplifyMultiplicationOperation(i, variableType);
+        }
+    } else {
+        vector<Token> expression;
+        for (int i = 2; i < line.size() - 1; i++) {
+            expression.push_back(line[i]);
+        }
+        string expVal = simplifyMultiplicationOperation(expression, variableType);
+        generatedCode += line[0].getRepresentation() + " = " + expVal;
+        sp += variableTypes[line[0].getRepresentation()] == "integer" ? 4 : 8;
+        generatedCode += '\n';
+        numberOfBytes += 4;
     }
     
+    addCode(generatedCode);
 }
 
 string ThreeAddressCode::simplifyMultiplicationOperation(vector<Token> exp, string variableType) {
     string generatedCode;
-    int numberOfMultiplcation = 0, numberOfAddition = 0, completeScan = 0;
+    int numberOfMultiplcation = 0, completeScan = 0;
     
     for (auto ct : exp) {
         string c = ct.getRepresentation();
         if (c == "*" or c == "/")
             numberOfMultiplcation++;
-        else if (c == "+" or c == "-")
-            numberOfAddition++;
     }
     
+    // Incomplete expression
     string lastChar = exp.back().getRepresentation();
-    if (lastChar == "-" or lastChar == "+" or lastChar == "/" or lastChar == "*") {
-        // Incomplete expression
+    if (lastChar == "-" or lastChar == "+" or lastChar == "/" or lastChar == "*")
         completeScan++;
-    }
     
     vector<Token> tempExp = exp;
-//    for (int i = 0; i < numberOfMultiplcation; i++) {
     if (numberOfMultiplcation > 0) {
         vector<Token> newTempExp;
         for (int j = 0; j < tempExp.size() - completeScan; j ++) {
@@ -370,16 +365,20 @@ string ThreeAddressCode::simplifyMultiplicationOperation(vector<Token> exp, stri
     
     string ret = "";
     for (auto token : tempExp)
-        ret += token.getRepresentation();
+        ret += token.getRepresentation() + " ";
     
+    addCode(generatedCode);
+    
+    return ret;
+}
+
+void ThreeAddressCode::addCode(string generatedCode) {
     if (scopes.back() == FUNCTION)
         functionText += generatedCode;
     else if (scopes.back() == GLOBAL)
         threeAddressCodeText += generatedCode;
     else
         operationText += generatedCode;
-    
-    return ret;
 }
 
 void ThreeAddressCode::printValue(string text, int incr) {
