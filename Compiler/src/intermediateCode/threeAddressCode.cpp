@@ -266,31 +266,32 @@ void ThreeAddressCode::handleOperationCode(vector<Token> line) {
     string variableType = variableTypes[finalVariable];
     vector<string> arithmeticOperations; // Add or subtract
     vector<string> geometricOperations; // Multiplication or division
-    vector<string> bracketsOperations; // Brackets
+    vector<vector<Token>> bracketsOperations; // Brackets
     vector<Token> beginOp = line, endOp;
     
     vector<vector<Token>> mathOperations;
     
     // We have a math operation in the assignment
     if (line.size() > 4) {
-        string temp;
+        vector<Token> temp;
         for (int i = 2; i < line.size() - 1; i++) {
             if (line[i].getRepresentation() == "(" or line[i].getRepresentation() == ")") {
                 bracketsOperations.push_back(temp);
-                temp = "";
+                temp.clear();
             } else {
-                temp += line[i].getRepresentation();
+                temp.push_back(line[i]);
             }
         }
         
-        cout << "CHECK IT: ";
-        for (auto i : bracketsOperations)
-            cout << i << ", ";
-        cout << endl;
-        
-        cout << "CHECK IT2: ";
-        for (auto i : bracketsOperations)
-            cout << simplifyMultiplicationOperation(i, variableType) << ", ";
+//        cout << "CHECK IT: ";
+//        for (auto i : bracketsOperations)
+//            cout << i << ", ";
+//        cout << endl;
+//
+        for (auto i : bracketsOperations) {
+            if (i.size() > 0)
+                cout << simplifyMultiplicationOperation(i, variableType) << ", ";
+        }
         cout << endl;
     }
     
@@ -300,27 +301,30 @@ void ThreeAddressCode::handleOperationCode(vector<Token> line) {
     
 }
 
-string ThreeAddressCode::simplifyMultiplicationOperation(string exp, string variableType) {
-    string temp = "", generatedCode;
+string ThreeAddressCode::simplifyMultiplicationOperation(vector<Token> exp, string variableType) {
+    string generatedCode;
     int numberOfMultiplcation = 0, numberOfAddition = 0, completeScan = 0;
     
-    for (auto c : exp) {
-        if (c == '*' or c == '/')
+    for (auto ct : exp) {
+        string c = ct.getRepresentation();
+        if (c == "*" or c == "/")
             numberOfMultiplcation++;
-        else if (c == '+' or c == '-')
+        else if (c == "+" or c == "-")
             numberOfAddition++;
     }
-        
-    if (exp.back() == *"-" or exp.back() == *"+" or exp.back() == *"/" or exp.back() == *"*") {
+    
+    string lastChar = exp.back().getRepresentation();
+    if (lastChar == "-" or lastChar == "+" or lastChar == "/" or lastChar == "*") {
         // Incomplete expression
         completeScan++;
     }
     
-    string tempExp = exp;
+    vector<Token> tempExp = exp;
     for (int i = 0; i < numberOfMultiplcation; i++) {
-        string newTempExp = "";
+        vector<Token> newTempExp;
         for (int j = 0; j < tempExp.size() - completeScan; j ++) {
-            if (tempExp[j] == '*' or tempExp[j] == '/') {
+            string curr = tempExp[j].getRepresentation();
+            if (curr == "*" or curr == "/") {
                 // Create temporary variable
                 ScopeVariable variable;
                 variable.setScope(scopes.back());
@@ -332,7 +336,8 @@ string ThreeAddressCode::simplifyMultiplicationOperation(string exp, string vari
                 printValue(variable.getVarName() + ", " + variable.getType() + ", " + variable.getScope(), 0);
                 
                 // Create Three Adress Code of temporary variable
-                generatedCode += variable.getVarName() + " = " + tempExp[j - 1] + " " + tempExp[j] + " " + tempExp[j + 1];
+                string front = tempExp[j - 1].getRepresentation(), back = tempExp[j + 1].getRepresentation();
+                generatedCode += variable.getVarName() + " = " + front + " " + curr + " " + back;
                 sp += variable.getType() == "integer" ? 4 : 8;
                 generatedCode += '\n';
                 numberOfBytes += 4;
@@ -345,8 +350,10 @@ string ThreeAddressCode::simplifyMultiplicationOperation(string exp, string vari
                     operationText += generatedCode;
                 
                 // Add temporary variable in place of the multiplication operation
-                newTempExp += variable.getVarName();
-            } else if (tempExp[j] == '+' or tempExp[j] == '-') {
+//                newTempExp += variable.getVarName();
+                Token varToken(variable.getVarName(), TokenType(variable.getType()));
+                newTempExp.push_back(varToken);
+            } else if (curr == "+" or curr == "-") {
                 if (newTempExp.size() > 0) {
                     // Already added a variable
                     newTempExp.push_back(tempExp[j]);
@@ -359,7 +366,12 @@ string ThreeAddressCode::simplifyMultiplicationOperation(string exp, string vari
         }
         tempExp = newTempExp;
     }
-    return tempExp;
+    
+    string ret = "";
+    for (auto token : tempExp)
+        ret += token.getRepresentation();
+    
+    return ret;
 }
 
 void ThreeAddressCode::printValue(string text, int incr) {
