@@ -1,9 +1,10 @@
-//
-//  saveToken.hpp
-//  Compiler
-//
-//  Created by Saif Al-Din Ali on 2023-04-14.
-//
+/*
+ File: saveToken.hpp
+ Project: Compiler
+ Author: Saif Al-Din Ali
+ Created: 2023-04-14
+*/
+
 #ifndef SAVE_TOKEN_H
 #define SAVE_TOKEN_H
 
