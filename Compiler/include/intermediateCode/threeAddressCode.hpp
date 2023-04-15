@@ -58,6 +58,7 @@ private:
     inline static const string LESS_THAN = "blt";
     inline static const string LESS_THAN_EQUAL = "ble";
     inline static const string EQUAL = "beq";
+    inline static const string NOT_EQUAL = "bne";
     inline static const string NEW_LABEL = "b";
     
     // Define methods

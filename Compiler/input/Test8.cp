@@ -1,9 +1,9 @@
 def int max(int x, int y)
 int z;
 if (x>y) then
-  z = x
+    z = x
 else
-  z=y
+    z = y
 fi;
 return(z)
 fed;

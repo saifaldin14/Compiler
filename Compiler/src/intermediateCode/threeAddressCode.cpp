@@ -99,8 +99,7 @@ void ThreeAddressCode::handleCodeLine(vector<Token> line) {
     // Handle while block
     else if (tokenValue == "while") {
         scopeCounter = 1;
-        
-        scopes.push_back("WHILE");
+        handleWhileCode(line);
     }
     // Handle closing scopes
     else if (tokenValue == "od") {
@@ -231,7 +230,7 @@ void ThreeAddressCode::handleIfCode(vector<Token> line) {
     string currentScope = scopes.back();
     scopes.push_back("IF");
     vector<string> componentsOfIf = { "if", "(", ")", ",", "then" },
-    componentsOfCondition = { "and", "or", ">", "<", "==", ">=", "<=" };
+    componentsOfCondition = { "and", "or", ">", "<", "==", ">=", "<=", "<>" };
     vector<ScopeVariable> variables;
     vector<string> operations;
     int j = 0;
@@ -276,6 +275,8 @@ void ThreeAddressCode::handleIfCode(vector<Token> line) {
             generatedCode += GREATER_THAN_EQUAL + " " + labelName;
         else if (op == "==")
             generatedCode += EQUAL + " " + labelName;
+        else if (op == "<>")
+            generatedCode += NOT_EQUAL + " " + labelName;
         generatedCode += '\n';
         labelCounter++;
         operationLabels.push_back(labelName);
@@ -285,8 +286,13 @@ void ThreeAddressCode::handleIfCode(vector<Token> line) {
 
 void ThreeAddressCode::handleWhileCode(vector<Token> line) {
     vector<string> componentsOfIf = { "while", "(", ")", ",", "do" },
-    componentsOfCondition = { "and", "or", ">", "<", "==", ">=", "<=" };
+    componentsOfCondition = { "and", "or", ">", "<", "==", ">=", "<=", "<>" };
+    
+    string currentScope = scopes.back();
+    scopes.push_back("WHILE");
+    
     vector<ScopeVariable> variables;
+    string generatedCode;
     vector<string> operations;
     int j = 0;
     ScopeVariable variable;
@@ -308,32 +314,46 @@ void ThreeAddressCode::handleWhileCode(vector<Token> line) {
         }
     }
     
+    string loopLabel = label + to_string(labelCounter);
+    labelCounter++;
+    
+    generatedCode += loopLabel;
+    generatedCode += '\n';
     string tempOperation = COMPARE + " " + variables[j].getVarName() + ", " + variables[j + 1].getVarName();
     
     if (tempOperation != compareOperation) {
         compareOperation = tempOperation;
-        functionText += tempOperation;
+        generatedCode += tempOperation;
         j += 2;
-        functionText += '\n';
+        generatedCode += '\n';
     }
     
+    // Do the opposite reaction to have the break condition
     for (string op : operations) {
         string labelName = label + to_string(labelCounter);
         labelNames.push_back(labelName);
         if (op == "<")
-            functionText += LESS_THAN + " " + labelName;
+            generatedCode += GREATER_THAN_EQUAL + " " + labelName;
         else if (op == "<=")
-            functionText += LESS_THAN_EQUAL + " " + labelName;
+            generatedCode += GREATER_THAN + " " + labelName;
         else if (op == ">")
-            functionText += GREATER_THAN + " " + labelName;
+            generatedCode += LESS_THAN_EQUAL + " " + labelName;
         else if (op == ">=")
-            functionText += GREATER_THAN_EQUAL + " " + labelName;
+            generatedCode += LESS_THAN + " " + labelName;
         else if (op == "==")
-            functionText += EQUAL + " " + labelName;
-        functionText += '\n';
+            generatedCode += NOT_EQUAL + " " + labelName;
+        else if (op == "<>")
+            generatedCode += EQUAL + " " + labelName;
+        generatedCode += '\n';
         labelCounter++;
         operationLabels.push_back(labelName);
+        addCode(generatedCode, currentScope);
     }
+    
+    string endLoopLabel = label + to_string(labelCounter - 1);
+    
+    generatedCode += endLoopLabel;
+    generatedCode += '\n';
 }
 
 void ThreeAddressCode::handleVariableDeclerationCode(vector<Token> line) {
@@ -386,7 +406,7 @@ void ThreeAddressCode::handleOperationCode(vector<Token> line) {
         
     // We have a math operation in the assignment
     vector<Token> temp;
-    for (int i = 2; i < line.size() - 1; i++) {
+    for (int i = 2; i < line.size(); i++) {
         if (line[i].getRepresentation() == "(" or line[i].getRepresentation() == ")") {
             bracketsOperations.push_back(temp);
             temp.clear();
@@ -402,7 +422,12 @@ void ThreeAddressCode::handleOperationCode(vector<Token> line) {
         }
     } else {
         vector<Token> expression;
-        for (int i = 2; i < line.size() - 1; i++) {
+        
+        int skipLast = 0;
+        if (line.back().getRepresentation() == ";")
+            skipLast++;
+        
+        for (int i = 2; i < line.size() - skipLast; i++) {
             expression.push_back(line[i]);
         }
         string expVal = simplifyMultiplicationOperation(expression, variableType);
@@ -426,9 +451,11 @@ string ThreeAddressCode::simplifyMultiplicationOperation(vector<Token> exp, stri
     }
     
     // Incomplete expression
-    string lastChar = exp.back().getRepresentation();
-    if (lastChar == "-" or lastChar == "+" or lastChar == "/" or lastChar == "*")
-        completeScan++;
+    if (exp.size() > 0) {
+        string lastChar = exp.back().getRepresentation();
+        if (lastChar == "-" or lastChar == "+" or lastChar == "/" or lastChar == "*")
+            completeScan++;
+    }
     
     // Deal with multiplcation and division first
     vector<Token> tempExp = exp;

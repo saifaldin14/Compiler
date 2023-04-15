@@ -678,3 +678,341 @@ t10 = t9 + t7
 t12 = t10 * t8
 t11 = t12 
 
+B main
+Begin: 
+push{LR}
+push{FP}
+
+max 20:
+y = fp + 8
+x = fp + 12
+z = fp + 16
+cmp x, y
+bgt lab1
+b lab2
+FP - 4 = z
+b exitmax
+lab1:
+z = 
+
+
+lab2:
+z = 
+
+
+exitmax:
+pop {FP}
+pop {PC}
+
+main: 
+Begin 36: 
+d = fp + 28
+c = fp + 32
+b = fp + 36
+a = fp + 40
+a = 2 
+t1 = a * 2
+b = t1 - 3 
+t2 = b / a
+c = t2 + 1 
+print(d)
+
+
+B main
+Begin: 
+push{LR}
+push{FP}
+
+max 20:
+y = fp + 8
+x = fp + 12
+z = fp + 16
+cmp x, y
+bgt lab1
+b lab2
+FP - 4 = z
+b exitmax
+lab1:
+z = 
+
+
+lab2:
+z = 
+
+
+exitmax:
+pop {FP}
+pop {PC}
+
+main: 
+Begin 36: 
+d = fp + 28
+c = fp + 32
+b = fp + 36
+a = fp + 40
+a = 2 
+t1 = a * 2
+b = t1 - 3 
+t2 = b / a
+c = t2 + 1 
+print(d)
+
+
+B main
+Begin: 
+push{LR}
+push{FP}
+
+max 20:
+y = fp + 8
+x = fp + 12
+z = fp + 16
+cmp x, y
+bgt lab1
+b lab2
+FP - 4 = z
+b exitmax
+lab1:
+z = x + 
+
+
+lab2:
+z = 
+
+
+exitmax:
+pop {FP}
+pop {PC}
+
+main: 
+Begin 36: 
+d = fp + 28
+c = fp + 32
+b = fp + 36
+a = fp + 40
+a = 2 
+t1 = a * 2
+b = t1 - 3 
+t2 = b / a
+c = t2 + 1 
+print(d)
+
+
+B main
+Begin: 
+push{LR}
+push{FP}
+
+max 20:
+y = fp + 8
+x = fp + 12
+z = fp + 16
+cmp x, y
+bgt lab1
+b lab2
+FP - 4 = z
+b exitmax
+lab1:
+z = 
+
+
+lab2:
+z = 
+
+
+exitmax:
+pop {FP}
+pop {PC}
+
+main: 
+Begin 36: 
+d = fp + 28
+c = fp + 32
+b = fp + 36
+a = fp + 40
+a = 2 
+t1 = a * 2
+b = t1 - 3 
+t2 = b / a
+c = t2 + 1 
+print(d)
+
+
+B main
+Begin: 
+push{LR}
+push{FP}
+
+max 20:
+y = fp + 8
+x = fp + 12
+z = fp + 16
+cmp x, y
+bgt lab1
+b lab2
+FP - 4 = z
+b exitmax
+lab1:
+z = 
+
+
+lab2:
+z = 
+
+
+exitmax:
+pop {FP}
+pop {PC}
+
+main: 
+Begin 36: 
+d = fp + 28
+c = fp + 32
+b = fp + 36
+a = fp + 40
+a = 2 
+t1 = a * 2
+b = t1 - 3 
+t2 = b / a
+c = t2 + 1 
+print(d)
+
+
+B main
+Begin: 
+push{LR}
+push{FP}
+
+max 20:
+y = fp + 8
+x = fp + 12
+z = fp + 16
+cmp x, y
+bgt lab1
+b lab2
+FP - 4 = z
+b exitmax
+lab1:
+z = x 
+
+
+lab2:
+z = y 
+
+
+exitmax:
+pop {FP}
+pop {PC}
+
+main: 
+Begin 36: 
+d = fp + 28
+c = fp + 32
+b = fp + 36
+a = fp + 40
+a = 2 ; 
+t1 = a * 2
+b = t1 - 3 
+t2 = b / a
+c = t2 + 1 
+print(d)
+
+
+B main
+Begin: 
+push{LR}
+push{FP}
+
+max 20:
+y = fp + 8
+x = fp + 12
+z = fp + 16
+cmp x, y
+bgt lab1
+b lab2
+FP - 4 = z
+b exitmax
+lab1:
+z = x 
+
+
+lab2:
+z = y 
+
+
+exitmax:
+pop {FP}
+pop {PC}
+
+main: 
+Begin 36: 
+d = fp + 28
+c = fp + 32
+b = fp + 36
+a = fp + 40
+a = 2 
+t1 = a * 2
+b = t1 - 3 
+t2 = b / a
+c = t2 + 1 
+print(d)
+
+
+B main
+Begin: 
+push{LR}
+push{FP}
+
+max 20:
+y = fp + 8
+x = fp + 12
+z = fp + 16
+cmp x, y
+bgt lab1
+b lab2
+FP - 4 = z
+b exitmax
+lab1:
+z = x 
+
+
+lab2:
+z = y 
+
+
+exitmax:
+pop {FP}
+pop {PC}
+
+main: 
+Begin 36: 
+d = fp + 28
+c = fp + 32
+b = fp + 36
+a = fp + 40
+a = 2 
+t1 = a * 2
+b = t1 - 3 
+t2 = b / a
+c = t2 + 1 
+print(d)
+
+
+B main
+Begin: 
+push{LR}
+push{FP}
+lab2: 
+Begin 36: 
+r = fp + 8
+b = fp + 12
+a = fp + 16
+a = 21 
+b = 15 
+lab1
+cmp b, 0
+beq lab2
+t1 = a 
+print(t1)
+
+

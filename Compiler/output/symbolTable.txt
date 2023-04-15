@@ -218,3 +218,113 @@ GLOBAL SCOPE
 	t11, integer, GLOBAL
 	t12, integer, GLOBAL
 
+GLOBAL SCOPE
+	FUNCTION SCOPE
+		max, integer, FUNCTION
+		x, integer, FUNCTION
+		y, integer, FUNCTION
+		z, integer, FUNCTION
+	a, integer, GLOBAL
+	b, integer, GLOBAL
+	c, integer, GLOBAL
+	d, integer, GLOBAL
+	t1, integer, GLOBAL
+	t2, integer, GLOBAL
+
+GLOBAL SCOPE
+	FUNCTION SCOPE
+		max, integer, FUNCTION
+		x, integer, FUNCTION
+		y, integer, FUNCTION
+		z, integer, FUNCTION
+	a, integer, GLOBAL
+	b, integer, GLOBAL
+	c, integer, GLOBAL
+	d, integer, GLOBAL
+	t1, integer, GLOBAL
+	t2, integer, GLOBAL
+
+GLOBAL SCOPE
+	FUNCTION SCOPE
+		max, integer, FUNCTION
+		x, integer, FUNCTION
+		y, integer, FUNCTION
+		z, integer, FUNCTION
+	a, integer, GLOBAL
+	b, integer, GLOBAL
+	c, integer, GLOBAL
+	d, integer, GLOBAL
+	t1, integer, GLOBAL
+	t2, integer, GLOBAL
+
+GLOBAL SCOPE
+	FUNCTION SCOPE
+		max, integer, FUNCTION
+		x, integer, FUNCTION
+		y, integer, FUNCTION
+		z, integer, FUNCTION
+	a, integer, GLOBAL
+	b, integer, GLOBAL
+	c, integer, GLOBAL
+	d, integer, GLOBAL
+	t1, integer, GLOBAL
+	t2, integer, GLOBAL
+
+GLOBAL SCOPE
+	FUNCTION SCOPE
+		max, integer, FUNCTION
+		x, integer, FUNCTION
+		y, integer, FUNCTION
+		z, integer, FUNCTION
+	a, integer, GLOBAL
+	b, integer, GLOBAL
+	c, integer, GLOBAL
+	d, integer, GLOBAL
+	t1, integer, GLOBAL
+	t2, integer, GLOBAL
+
+GLOBAL SCOPE
+	FUNCTION SCOPE
+		max, integer, FUNCTION
+		x, integer, FUNCTION
+		y, integer, FUNCTION
+		z, integer, FUNCTION
+	a, integer, GLOBAL
+	b, integer, GLOBAL
+	c, integer, GLOBAL
+	d, integer, GLOBAL
+	t1, integer, GLOBAL
+	t2, integer, GLOBAL
+
+GLOBAL SCOPE
+	FUNCTION SCOPE
+		max, integer, FUNCTION
+		x, integer, FUNCTION
+		y, integer, FUNCTION
+		z, integer, FUNCTION
+	a, integer, GLOBAL
+	b, integer, GLOBAL
+	c, integer, GLOBAL
+	d, integer, GLOBAL
+	t1, integer, GLOBAL
+	t2, integer, GLOBAL
+
+GLOBAL SCOPE
+	FUNCTION SCOPE
+		max, integer, FUNCTION
+		x, integer, FUNCTION
+		y, integer, FUNCTION
+		z, integer, FUNCTION
+	a, integer, GLOBAL
+	b, integer, GLOBAL
+	c, integer, GLOBAL
+	d, integer, GLOBAL
+	t1, integer, GLOBAL
+	t2, integer, GLOBAL
+
+GLOBAL SCOPE
+	a, integer, GLOBAL
+	b, integer, GLOBAL
+	r, integer, GLOBAL
+	t1, id, GLOBAL
+
