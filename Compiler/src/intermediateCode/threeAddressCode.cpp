@@ -1107,7 +1107,7 @@ void ThreeAddressCode::printValue(string text, int incr) {
     - None
 */
 void ThreeAddressCode::printThreeAddressCode() {
-    cout << threeAddressCodeText << endl;
+//    cout << threeAddressCodeText << endl;
     try {
         fstream appendFileToWorkWith;
         string filename = "../output/intermediateCode.txt";
