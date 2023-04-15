@@ -7,11 +7,22 @@
 
 #include "../../include/intermediateCode/threeAddressCode.hpp"
 
+/*
+ Description:
+    Construtor for the 3TAC generator
+ 
+ Parameters:
+    - inputLines: The code lines split into Token arrays (vector<vector<Token>> inputLines)
+*/
 ThreeAddressCode::ThreeAddressCode(vector<vector<Token>> inputLines) {
     lines = inputLines;
     scopes.push_back("GLOBAL");
+    
+    // Default symbol table text
     printString += "GLOBAL SCOPE";
     printString += '\n';
+    
+    // Default 3TAC
     threeAddressCodeText += BRANCH + " " + labelNames.back();
     threeAddressCodeText += '\n';
     threeAddressCodeText += PUSH + "{" + LR + "}";
@@ -21,6 +32,16 @@ ThreeAddressCode::ThreeAddressCode(vector<vector<Token>> inputLines) {
     sp += 8;
 }
 
+/*
+ Description:
+    Generates the 3TAC based on gramatically correct code
+ 
+ Parameters:
+    - None
+ 
+ Returns:
+    - None
+*/
 void ThreeAddressCode::createCode() {
     vector<vector<Token>> brokenUpLines = breakUpLines(lines);
     
@@ -29,6 +50,7 @@ void ThreeAddressCode::createCode() {
             handleCodeLine(line);
     }
     
+    // After everything has been generated print the GLOBAL scope 3TAC
     string textToAdd = labelNames.back() + ": ";
     textToAdd += '\n';
     textToAdd += BEGIN + " " + to_string(numberOfBytes) + ": ";
@@ -38,6 +60,16 @@ void ThreeAddressCode::createCode() {
     globalText = "";
 }
 
+/*
+ Description:
+    Breaks up lines into individual statements
+ 
+ Parameters:
+    - lines: The default lines to split (vector<vector<Token>>)
+ 
+ Returns:
+    - brokenUpLines: The lines after they have been split (vector<vector<Token>>)
+*/
 vector<vector<Token>> ThreeAddressCode::breakUpLines(vector<vector<Token>> lines) {
     vector<vector<Token>> brokenUpLines;
     for (auto line : lines) {
@@ -60,6 +92,16 @@ vector<vector<Token>> ThreeAddressCode::breakUpLines(vector<vector<Token>> lines
     return brokenUpLines;
 }
 
+/*
+ Description:
+    Generate the 3TAC for a specific line
+ 
+ Parameters:
+    - line: The line to parse (vector<Token>)
+ 
+ Returns:
+    - None
+*/
 void ThreeAddressCode::handleCodeLine(vector<Token> line) {
     string tokenValue = line[0].getRepresentation();
     // Handle functions
@@ -104,12 +146,10 @@ void ThreeAddressCode::handleCodeLine(vector<Token> line) {
         scopes.pop_back();
         scopeCounter--;
         
-        // Move this to dedicated function
         string textToAdd = labelNames.back() + ": ";
         textToAdd += '\n';
         textToAdd += operationText;
         labelNames.pop_back();
-//        generatedOperationCode.push_back(textToAdd);
         addCode(textToAdd, scopes.back());
         operationText = "";
     } else if (tokenValue == "fi") {
@@ -186,6 +226,16 @@ void ThreeAddressCode::handleCodeLine(vector<Token> line) {
     }
 }
 
+/*
+ Description:
+    Generate 3TAC for a function definition
+ 
+ Parameters:
+    - line: The line to parse (vector<Token>)
+ 
+ Returns:
+    - None
+*/
 void ThreeAddressCode::handleFunctionCode(vector<Token> line) {
     string funcType = determineType(line[1]);
     string funcName = line[2].getRepresentation();
@@ -230,6 +280,16 @@ void ThreeAddressCode::handleFunctionCode(vector<Token> line) {
     }
 }
 
+/*
+ Description:
+    Generate 3TAC for an IF statement definition
+ 
+ Parameters:
+    - line: The line to parse (vector<Token>)
+ 
+ Returns:
+    - None
+*/
 void ThreeAddressCode::handleIfCode(vector<Token> line) {
     string generatedCode;
     string currentScope = scopes.back();
@@ -289,6 +349,16 @@ void ThreeAddressCode::handleIfCode(vector<Token> line) {
     }
 }
 
+/*
+ Description:
+    Generate 3TAC for a WHILE loop definition
+ 
+ Parameters:
+    - line: The line to parse (vector<Token>)
+ 
+ Returns:
+    - None
+*/
 void ThreeAddressCode::handleWhileCode(vector<Token> line) {
     vector<string> componentsOfIf = { "while", "(", ")", ",", "do" },
     componentsOfCondition = { "and", "or", ">", "<", "==", ">=", "<=", "<>" };
@@ -361,6 +431,16 @@ void ThreeAddressCode::handleWhileCode(vector<Token> line) {
     generatedCode += '\n';
 }
 
+/*
+ Description:
+    Generate 3TAC for a variable declaration
+ 
+ Parameters:
+    - line: The line to parse (vector<Token>)
+ 
+ Returns:
+    - None
+*/
 void ThreeAddressCode::handleVariableDeclerationCode(vector<Token> line) {
     string variableType = determineType(line[0]);
     string generatedCode;
@@ -394,6 +474,17 @@ void ThreeAddressCode::handleVariableDeclerationCode(vector<Token> line) {
     addCode(generatedCode, scopes.back());
 }
 
+/*
+ Description:
+    Generate 3TAC for an assignment operation
+    Creates temporary variables for arithmatic operations following BEDMAS
+ 
+ Parameters:
+    - line: The line to parse (vector<Token>)
+ 
+ Returns:
+    - None
+*/
 void ThreeAddressCode::handleOperationCode(vector<Token> line) {
     string generatedCode;
     
@@ -445,118 +536,16 @@ void ThreeAddressCode::handleOperationCode(vector<Token> line) {
     addCode(generatedCode, scopes.back());
 }
 
-string ThreeAddressCode::simplifyMultiplicationOperation(vector<Token> exp, string variableType) {
-    string generatedCode;
-    int numberOfMultiplcation = 0, completeScan = 0;
-    
-    for (auto ct : exp) {
-        string c = ct.getRepresentation();
-        if (c == "*" or c == "/")
-            numberOfMultiplcation++;
-    }
-    
-    // Incomplete expression
-    if (exp.size() > 0) {
-        string lastChar = exp.back().getRepresentation();
-        if (lastChar == "-" or lastChar == "+" or lastChar == "/" or lastChar == "*")
-            completeScan++;
-    }
-    
-    // Deal with multiplcation and division first
-    vector<Token> tempExp = exp;
-    if (numberOfMultiplcation > 0) {
-        vector<Token> newTempExp;
-        for (int j = 0; j < tempExp.size() - completeScan; j ++) {
-            string curr = tempExp[j].getRepresentation();
-            if (curr == "*" or curr == "/") {
-                numberOfMultiplcation--;
-                
-                // Create temporary variable
-                ScopeVariable variable;
-                variable.setScope(scopes.back());
-                variable.setType(variableType);
-                variable.setVarName(temporaryVariable + to_string(temporaryVariableCounter));
-                temporaryVariableCounter++;
-                                
-                // Print temporary variable to symbol table
-                printValue(variable.getVarName() + ", " + variable.getType() + ", " + variable.getScope(), 0);
-                
-                // Create Three Adress Code of temporary variable
-                string front = tempExp[j - 1].getRepresentation(), back = tempExp[j + 1].getRepresentation();
-                generatedCode += variable.getVarName() + " = " + front + " " + curr + " " + back;
-                sp += variable.getType() == "integer" ? 4 : 8;
-                generatedCode += '\n';
-                numberOfBytes += 4;
-                
-                // Add temporary variable in place of the multiplication operation
-                Token varToken(variable.getVarName(), TokenType(variable.getType()));
-                newTempExp.push_back(varToken);
-            } else if (curr == "+" or curr == "-") {
-                if (newTempExp.size() > 0) {
-                    // Already added a variable
-                    newTempExp.push_back(tempExp[j]);
-                    if (numberOfMultiplcation <= 0)
-                        newTempExp.push_back(tempExp[j + 1]);
-                    else if (j + 2 < tempExp.size() - completeScan) {
-                        // This means that there will be a multiplication or division coming up, but right now we're adding or subtracting something
-                        if (tempExp[j + 2].getRepresentation() == "+" or tempExp[j + 2].getRepresentation() == "-")
-                            newTempExp.push_back(tempExp[j + 1]);
-                    }
-                } else {
-                    newTempExp.push_back(tempExp[j - 1]);
-                    newTempExp.push_back(tempExp[j]);
-                }
-            }
-        }
-        tempExp = newTempExp;
-    }
-    
-    // Deal with addition and subtraction
-    Token finalAssignment;
-    while (tempExp.size() > 3) {
-        vector<Token> newTempExp;
-        for (int j = 0; j < tempExp.size() - completeScan; j ++) {
-            string curr = tempExp[j].getRepresentation();
-            if (curr == "+" or curr == "-") {
-                finalAssignment = tempExp[j];
-                // Create temporary variable
-                ScopeVariable variable;
-                variable.setScope(scopes.back());
-                variable.setType(variableType);
-                variable.setVarName(temporaryVariable + to_string(temporaryVariableCounter));
-                temporaryVariableCounter++;
-                                
-                // Print temporary variable to symbol table
-                printValue(variable.getVarName() + ", " + variable.getType() + ", " + variable.getScope(), 0);
-                
-                // Create Three Adress Code of temporary variable
-                string front = tempExp[j - 1].getRepresentation(), back = tempExp[j + 1].getRepresentation();
-                generatedCode += variable.getVarName() + " = " + front + " " + curr + " " + back;
-                sp += variable.getType() == "integer" ? 4 : 8;
-                generatedCode += '\n';
-                numberOfBytes += 4;
-                
-                // Add temporary variable in place of the multiplication operation
-                Token varToken(variable.getVarName(), TokenType(variable.getType()));
-                newTempExp.push_back(varToken);
-                for (int k = j + 2; k < tempExp.size(); k++)
-                    newTempExp.push_back(tempExp[k]);
-                tempExp = newTempExp;
-                break;
-            }
-        }
-        
-        tempExp = newTempExp;
-    }
-    string ret = "";
-    for (auto token : tempExp)
-        ret += token.getRepresentation() + " ";
-    
-    addCode(generatedCode, scopes.back());
-    
-    return ret;
-}
-
+/*
+ Description:
+    Generate 3TAC for a return statement
+ 
+ Parameters:
+    - line: The line to parse (vector<Token>)
+ 
+ Returns:
+    - None
+*/
 void ThreeAddressCode::handleReturnCode(vector<Token> line) {
     vector<Token> valuesInsideParens;
     string finalReturn;
@@ -596,6 +585,16 @@ void ThreeAddressCode::handleReturnCode(vector<Token> line) {
     addCode(generatedCode, scopes.back());
 }
 
+/*
+ Description:
+    Generate 3TAC for a function call (whether recursive or not)
+ 
+ Parameters:
+    - line: The line to parse (vector<Token>)
+ 
+ Returns:
+    - variableName: The name of the temporary variable assigned to the function (string)
+*/
 string ThreeAddressCode::handleFunctionCallCode(vector<Token> line) {
     string generatedCode;
     vector<vector<Token>> definedVariables;
@@ -655,6 +654,18 @@ string ThreeAddressCode::handleFunctionCallCode(vector<Token> line) {
     return variable.getVarName();
 }
 
+/*
+ Description:
+    Generate 3TAC for in place variable declerations
+ 
+ Parameters:
+    - line: The line to parse (vector<Token>)
+    - variableType: The type to assign to the temporary variables (string)
+    - generatedCode: Already created code to append to (string)
+ 
+ Returns:
+    - variableName: The name of the created temporary variable (string)
+*/
 string ThreeAddressCode::handleInplaceDeclerationCode(vector<Token> line, string variableType, string generatedCode) {
     // Create temporary variable
     ScopeVariable variable;
@@ -678,6 +689,16 @@ string ThreeAddressCode::handleInplaceDeclerationCode(vector<Token> line, string
     return variable.getVarName();
 }
 
+/*
+ Description:
+    Generate 3TAC for a print statement
+ 
+ Parameters:
+    - line: The line to parse (vector<Token>)
+ 
+ Returns:
+    - None
+*/
 void ThreeAddressCode::handlePrintCode(vector<Token> line) {
     string generatedCode, finalVariable;
     bool functionExpression = false, seenFunction = false;
@@ -909,6 +930,145 @@ void ThreeAddressCode::handlePrintCode(vector<Token> line) {
     addCode(generatedCode, scopes.back());
 }
 
+// -----------------------------------------------------------
+// UTILITY FUNCTIONS
+// -----------------------------------------------------------
+
+/*
+ Description:
+    Simplify a given mathematical expression and create the necessary temporary variables
+ 
+ Parameters:
+    - exp: The expression to parse (vector<Token>)
+    - variableType: The type to assign to the temporary variables (string)
+ 
+ Returns:
+    - result: The result of the mathematical expression in terms of the temporary variables (string)
+*/
+string ThreeAddressCode::simplifyMultiplicationOperation(vector<Token> exp, string variableType) {
+    string generatedCode;
+    int numberOfMultiplcation = 0, completeScan = 0;
+    
+    for (auto ct : exp) {
+        string c = ct.getRepresentation();
+        if (c == "*" or c == "/")
+            numberOfMultiplcation++;
+    }
+    
+    // Incomplete expression
+    if (exp.size() > 0) {
+        string lastChar = exp.back().getRepresentation();
+        if (lastChar == "-" or lastChar == "+" or lastChar == "/" or lastChar == "*")
+            completeScan++;
+    }
+    
+    // Deal with multiplcation and division first
+    vector<Token> tempExp = exp;
+    if (numberOfMultiplcation > 0) {
+        vector<Token> newTempExp;
+        for (int j = 0; j < tempExp.size() - completeScan; j ++) {
+            string curr = tempExp[j].getRepresentation();
+            if (curr == "*" or curr == "/") {
+                numberOfMultiplcation--;
+                
+                // Create temporary variable
+                ScopeVariable variable;
+                variable.setScope(scopes.back());
+                variable.setType(variableType);
+                variable.setVarName(temporaryVariable + to_string(temporaryVariableCounter));
+                temporaryVariableCounter++;
+                                
+                // Print temporary variable to symbol table
+                printValue(variable.getVarName() + ", " + variable.getType() + ", " + variable.getScope(), 0);
+                
+                // Create Three Adress Code of temporary variable
+                string front = tempExp[j - 1].getRepresentation(), back = tempExp[j + 1].getRepresentation();
+                generatedCode += variable.getVarName() + " = " + front + " " + curr + " " + back;
+                sp += variable.getType() == "integer" ? 4 : 8;
+                generatedCode += '\n';
+                numberOfBytes += 4;
+                
+                // Add temporary variable in place of the multiplication operation
+                Token varToken(variable.getVarName(), TokenType(variable.getType()));
+                newTempExp.push_back(varToken);
+            } else if (curr == "+" or curr == "-") {
+                if (newTempExp.size() > 0) {
+                    // Already added a variable
+                    newTempExp.push_back(tempExp[j]);
+                    if (numberOfMultiplcation <= 0)
+                        newTempExp.push_back(tempExp[j + 1]);
+                    else if (j + 2 < tempExp.size() - completeScan) {
+                        // This means that there will be a multiplication or division coming up, but right now we're adding or subtracting something
+                        if (tempExp[j + 2].getRepresentation() == "+" or tempExp[j + 2].getRepresentation() == "-")
+                            newTempExp.push_back(tempExp[j + 1]);
+                    }
+                } else {
+                    newTempExp.push_back(tempExp[j - 1]);
+                    newTempExp.push_back(tempExp[j]);
+                }
+            }
+        }
+        tempExp = newTempExp;
+    }
+    
+    // Deal with addition and subtraction
+    Token finalAssignment;
+    while (tempExp.size() > 3) {
+        vector<Token> newTempExp;
+        for (int j = 0; j < tempExp.size() - completeScan; j ++) {
+            string curr = tempExp[j].getRepresentation();
+            if (curr == "+" or curr == "-") {
+                finalAssignment = tempExp[j];
+                // Create temporary variable
+                ScopeVariable variable;
+                variable.setScope(scopes.back());
+                variable.setType(variableType);
+                variable.setVarName(temporaryVariable + to_string(temporaryVariableCounter));
+                temporaryVariableCounter++;
+                                
+                // Print temporary variable to symbol table
+                printValue(variable.getVarName() + ", " + variable.getType() + ", " + variable.getScope(), 0);
+                
+                // Create Three Adress Code of temporary variable
+                string front = tempExp[j - 1].getRepresentation(), back = tempExp[j + 1].getRepresentation();
+                generatedCode += variable.getVarName() + " = " + front + " " + curr + " " + back;
+                sp += variable.getType() == "integer" ? 4 : 8;
+                generatedCode += '\n';
+                numberOfBytes += 4;
+                
+                // Add temporary variable in place of the multiplication operation
+                Token varToken(variable.getVarName(), TokenType(variable.getType()));
+                newTempExp.push_back(varToken);
+                for (int k = j + 2; k < tempExp.size(); k++)
+                    newTempExp.push_back(tempExp[k]);
+                tempExp = newTempExp;
+                break;
+            }
+        }
+        
+        tempExp = newTempExp;
+    }
+    string ret = "";
+    for (auto token : tempExp)
+        ret += token.getRepresentation() + " ";
+    
+    addCode(generatedCode, scopes.back());
+    
+    return ret;
+}
+
+
+/*
+ Description:
+    Add generated code to the appropriate block
+ 
+ Parameters:
+    - generatedCode: The code to add (string)
+    - scope: The scope to add to (string)
+ 
+ Returns:
+    - None
+*/
 void ThreeAddressCode::addCode(string generatedCode, string scope) {
     if (scope == FUNCTION)
         functionText += generatedCode;
@@ -918,6 +1078,17 @@ void ThreeAddressCode::addCode(string generatedCode, string scope) {
         operationText += generatedCode;
 }
 
+/*
+ Description:
+    Put together the symbol table
+ 
+ Parameters:
+    - text: The symbolTable text (string)
+    - incr: The increment to apply (int)
+ 
+ Returns:
+    - None
+*/
 void ThreeAddressCode::printValue(string text, int incr) {
     for (int i = 0; i < scopes.size() - incr; i++)
         printString += '\t';
@@ -925,6 +1096,16 @@ void ThreeAddressCode::printValue(string text, int incr) {
     printString += '\n';
 }
 
+/*
+ Description:
+    Save the generated 3TAC to a file
+ 
+ Parameters:
+    - None
+ 
+ Returns:
+    - None
+*/
 void ThreeAddressCode::printThreeAddressCode() {
     cout << threeAddressCodeText << endl;
     try {
@@ -948,6 +1129,16 @@ void ThreeAddressCode::printThreeAddressCode() {
     }
 }
 
+/*
+ Description:
+    Save the created symbolTable to a file
+ 
+ Parameters:
+    - None
+ 
+ Returns:
+    - None
+*/
 void ThreeAddressCode::printSymbolTable() {
     try {
         fstream appendFileToWorkWith;
@@ -970,11 +1161,31 @@ void ThreeAddressCode::printSymbolTable() {
     }
 }
 
+/*
+ Description:
+    Get the type of a token
+ 
+ Parameters:
+    - token: The token to check (Token)
+ 
+ Returns:
+    - tokenType: The type of the token (string)
+*/
 string ThreeAddressCode::determineType(Token token) {
     if (token.getRepresentation() == "int") return "integer";
     return token.getRepresentation();
 }
 
+/*
+ Description:
+    Check if a token is a variable
+ 
+ Parameters:
+    - token: The token to check (Token)
+ 
+ Returns:
+    - Whether or not the token is a variable (bool)
+*/
 bool ThreeAddressCode::isVariableType(Token token) {
     if (token.getRepresentation() == "int" or token.getRepresentation() == "double")
         return true;
