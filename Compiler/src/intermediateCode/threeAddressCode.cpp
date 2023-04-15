@@ -14,8 +14,6 @@ ThreeAddressCode::ThreeAddressCode(vector<vector<Token>> inputLines) {
     printString += '\n';
     threeAddressCodeText += BRANCH + " " + labelNames.back();
     threeAddressCodeText += '\n';
-    threeAddressCodeText += "Begin: ";
-    threeAddressCodeText += '\n';
     threeAddressCodeText += PUSH + "{" + LR + "}";
     threeAddressCodeText += '\n';
     threeAddressCodeText += PUSH + "{" + FP + "}";
@@ -107,7 +105,12 @@ void ThreeAddressCode::handleCodeLine(vector<Token> line) {
         scopeCounter--;
         
         // Move this to dedicated function
-        generatedOperationCode.push_back(operationText);
+        string textToAdd = labelNames.back() + ": ";
+        textToAdd += '\n';
+        textToAdd += operationText;
+        labelNames.pop_back();
+//        generatedOperationCode.push_back(textToAdd);
+        addCode(textToAdd, scopes.back());
         operationText = "";
     } else if (tokenValue == "fi") {
         scopes.pop_back();
@@ -127,6 +130,8 @@ void ThreeAddressCode::handleCodeLine(vector<Token> line) {
         string textToAdd;
         textToAdd += '\n';
         textToAdd += functionName + " " + to_string(numberOfBytes) +":";
+        textToAdd += '\n';
+        textToAdd += BEGIN + ": ";
         textToAdd += '\n';
         for (auto i : generatedOperationCode) {
             functionText += '\n';
