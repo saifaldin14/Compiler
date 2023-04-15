@@ -1,9 +1,9 @@
-//
-//  threeAddressCode.hpp
-//  Compiler
-//
-//  Created by Saif Al-Din Ali on 2023-04-10.
-//
+/*
+ File: threeAddressCode.hpp
+ Project: Compiler
+ Author: Saif Al-Din Ali
+ Created: 2023-04-10
+*/
 
 #ifndef THREE_ADDRESS_CODE_H
 #define THREE_ADDRESS_CODE_H

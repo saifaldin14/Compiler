@@ -1,9 +1,9 @@
-//
-//  saveToken.cpp
-//  Compiler
-//
-//  Created by Saif Al-Din Ali on 2023-04-14.
-//
+/*
+ File: saveToken.cpp
+ Project: Compiler
+ Author: Saif Al-Din Ali
+ Created: 2023-04-14
+*/
 
 #include "../../include/intermediateCode/saveToken.hpp"
 

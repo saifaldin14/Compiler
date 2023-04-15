@@ -1,9 +1,9 @@
-//
-//  compareToken.hpp
-//  Compiler
-//
-//  Created by Saif Al-Din Ali on 2023-04-14.
-//
+/*
+ File: compareToken.hpp
+ Project: Compiler
+ Author: Saif Al-Din Ali
+ Created: 2023-04-14
+*/
 
 #ifndef COMPARE_TOKEN_H
 #define COMPARE_TOKEN_H
