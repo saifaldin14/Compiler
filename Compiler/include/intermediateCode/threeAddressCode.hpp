@@ -68,8 +68,8 @@ private:
     void handleWhileCode(vector<Token> line);
     void handleReturnCode(vector<Token> line);
     void handleVariableDeclerationCode(vector<Token> line);
-    void handleOperationCode(vector<Token> line);
     void handlePrintCode(vector<Token> line);
+    void handleOperationCode(vector<Token> line);
     string handleInplaceDeclerationCode(vector<Token> line, string variableType, string generatedCode="");
     string handleFunctionCallCode(vector<Token> line);
     
