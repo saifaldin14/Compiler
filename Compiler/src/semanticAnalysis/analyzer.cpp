@@ -33,6 +33,9 @@ Analyzer::Analyzer(vector<vector<Token>> inputLines) {
 */
 void Analyzer::analyzeSemantics() {
     vector<vector<Token>> brokenUpLines;
+    vector<int> lineNumbers;
+    int currentLine = 1;
+    
     for (auto line : lines) {
         vector<Token> tLine;
         for (Token token : line) {
@@ -40,20 +43,26 @@ void Analyzer::analyzeSemantics() {
             tLine.push_back(token);
             if (tokenValue == "do" or tokenValue == "then" or tokenValue == ";") {
                 brokenUpLines.push_back(tLine);
+                lineNumbers.push_back(currentLine);
                 tLine.clear();
             } else if (tokenValue == "od" or tokenValue == "fi" or tokenValue == "else") {
                 tLine.pop_back();
                 brokenUpLines.push_back(tLine);
+                lineNumbers.push_back(currentLine);
                 tLine.clear();
                 tLine.push_back(token);
             }
         }
         brokenUpLines.push_back(tLine);
+        lineNumbers.push_back(currentLine);
+        currentLine++;
     }
     
-    for (auto line : brokenUpLines) {
-        if (line.size() > 0)
-            handleScopes(line[0], line);
+    for (int i = 0; i < brokenUpLines.size(); i++) {
+        if (brokenUpLines[i].size() > 0) {
+            handleScopes(brokenUpLines[i][0], brokenUpLines[i]);
+            currentLineNumber = lineNumbers[i];
+        }
     }
 }
 
@@ -520,10 +529,12 @@ void Analyzer::saveErrorText(string text) {
     if (!appendFileToWorkWith) {
         appendFileToWorkWith.open(filename,  fstream::in | fstream::out | fstream::trunc);
         appendFileToWorkWith << "SEMANTIC ERROR" << endl;
+        appendFileToWorkWith << "Error on line number: " << currentLineNumber << endl;
         appendFileToWorkWith << text << endl;
         appendFileToWorkWith.close();
     } else {    // use existing file
         appendFileToWorkWith << "SEMANTIC ERROR" << endl;
+        appendFileToWorkWith << "Error on line number: " << currentLineNumber << endl;
         appendFileToWorkWith << text << endl;
         appendFileToWorkWith.close();
     }

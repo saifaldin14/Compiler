@@ -68,5 +68,6 @@ private:
     bool isCorrect = true;
     string printString;
     int scopeCounter = 0;
+    int currentLineNumber = 0;
 };
 #endif /* analyzer_hpp */

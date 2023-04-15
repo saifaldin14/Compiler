@@ -1,6 +1,6 @@
 def int gcd(int a, int b)
     if (a==b) then
-        return (a)
+        return (5.2)
     fi;
     
     if (a>b) then
