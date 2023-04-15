@@ -22,6 +22,8 @@ print gcd(21,15);
 print 45;
 print 2*(gcd(21, 28) + 6).
 ```
+
+## Description of Project
 The program first reads the file contents using Double Buffering and breaks it up into a stream to tokens in the 'lexer.cpp' class. Lexical analysis is performed on the Tokens to ensure that they are correct and keywords are recognized.
 
 Next, the program performs syntax analysis through the 'parser.cpp' class. It creates the FIRST and FOLLOW sets for the language and makes sure that the provided code is in the correct grammatical order and is synticatically correct.
@@ -32,6 +34,7 @@ Finally, after all of the analysis phases are complete the program will generate
 
 The final output of the program are two files containing the Symbol Table of the code and the generated Three Adress Code.
 
+## Symbol Tables
 For the above code the symbol table without the temporary variables is:
 
 ```c++:
@@ -68,6 +71,7 @@ GLOBAL SCOPE
 	t12, integer, GLOBAL
  ```
 
+## Three Address Code
 For the above code the generated Three Adress Code is:
 ```c++:
 B main
