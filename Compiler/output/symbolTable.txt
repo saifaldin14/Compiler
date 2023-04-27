@@ -1,6 +1,0 @@
-GLOBAL SCOPE
-	FUNCTION SCOPE
-		gcd, integer, FUNCTION
-		a, integer, FUNCTION
-		b, integer, FUNCTION
-
