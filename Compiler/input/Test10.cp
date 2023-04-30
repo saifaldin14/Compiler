@@ -8,6 +8,7 @@ def int gcd(int a, int b)
     else
         return(gcd(a,b-a))
     fi;
+    return 5.4;
 fed;
 
 print gcd(21,15);
