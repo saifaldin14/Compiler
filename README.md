@@ -83,8 +83,8 @@ B main
 push{LR}
 push{FP}
 
-gcd 24:
-Begin: 
+gcd:
+Begin 24: 
 b = fp + 8
 a = fp + 12
 cmp a, b
