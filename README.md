@@ -1,4 +1,4 @@
-# Compiler
+# EZ: Custom Compiler
  
 An implementation of a compiler written entirely in C++ that performs lexical, syntax and semantic analysis before finally creating intermediate code through Three Adress Code. 
 
