@@ -1,6 +1,6 @@
 # EZ: Complete Compiler and Custom Language
  
-An implementation of a compiler written entirely in C++ that performs lexical, syntax and semantic analysis before finally creating intermediate code through Three Adress Code. 
+An implementation of a compiler written entirely in C++ that performs lexical, syntax and semantic analysis before finally creating intermediate code through Three Address Code. 
 
 The program defines its own programming language EZ as a simple and readable psuedocode style language. The code is loaded from files containing '.cp' extension. 
 
