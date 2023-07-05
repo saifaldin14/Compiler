@@ -1,4 +1,4 @@
-# Épée: Complete Compiler and Custom Language
+# Épée: A Complete Compiler and Custom Language
  
 An implementation of a compiler written entirely in C++ that performs lexical, syntax and semantic analysis before finally creating intermediate code through Three Address Code. 
 
