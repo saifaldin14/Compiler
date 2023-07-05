@@ -2,13 +2,13 @@
  
 An implementation of a compiler written entirely in C++ that performs lexical, syntax and semantic analysis before finally creating intermediate code through Three Address Code. 
 
-The program defines its own programming language EZ as a simple and readable psuedocode style language. The code is loaded from files containing '.cp' extension. 
+The program defines its own programming language Épée as a simple and readable psuedocode style language. The code is loaded from files containing '.ep' extension. 
 
 The language supports if-else conditional operations, while loops, recursion, function definitions, integer and double variables, boolean algebra and arithmetic operations.
 
-Below is an example of EZ code:
+Below is an example of Épée code:
 
-## EZ Code Example
+## Épée Code Example
 
 ```c++:
 def int gcd(int a, int b)
