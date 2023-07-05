@@ -1,3 +1,0 @@
-SEMANTIC ERROR
-Error on line number: 11
-Invalid! Function has mismatching return types
