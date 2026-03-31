@@ -1220,8 +1220,9 @@ Value Executor::evaluateStringFunc(const std::string& name,
         if (args.empty()) return Value();
         std::string s = args[0].asString();
         size_t start = s.find_first_not_of(" \t\n\r");
-        size_t end = s.find_last_not_of(" \t\n\r");
         if (start == std::string::npos) return Value(std::string(""));
+        size_t end = s.find_last_not_of(" \t\n\r");
+        if (end == std::string::npos) end = s.size() - 1;
         return Value(s.substr(start, end - start + 1));
     }
     if (name == "replace") {

@@ -13,7 +13,6 @@
 #include <stdexcept>
 #include <cmath>
 #include <functional>
-#include <regex>
 #include <sstream>
 #include <iomanip>
 
@@ -173,25 +172,12 @@ public:
     bool operator<=(const Value& other) const { return !(other < *this); }
     bool operator>=(const Value& other) const { return !(*this < other); }
 
-    // LIKE pattern matching (SQL-style with % wildcard)
+    // LIKE pattern matching (SQL-style with % and _ wildcards)
+    // Uses simple recursive matching instead of regex to avoid DoS
     bool like(const std::string& pattern) const {
         if (!isString()) return false;
         const std::string& str = std::get<std::string>(data_);
-        std::string regexPattern;
-        for (char c : pattern) {
-            if (c == '%') regexPattern += ".*";
-            else if (c == '_') regexPattern += ".";
-            else if (c == '.' || c == '[' || c == ']' || c == '(' || c == ')' ||
-                     c == '{' || c == '}' || c == '\\' || c == '^' || c == '$' ||
-                     c == '|' || c == '?' || c == '+')
-                regexPattern += std::string("\\") + c;
-            else regexPattern += c;
-        }
-        try {
-            return std::regex_match(str, std::regex(regexPattern, std::regex_constants::icase));
-        } catch (...) {
-            return false;
-        }
+        return likeMatch(str, 0, pattern, 0);
     }
 
     // BETWEEN check
@@ -207,6 +193,34 @@ public:
 private:
     VariantType data_;
     ValueType type_;
+
+    // Simple recursive LIKE pattern matching (case-insensitive)
+    static bool likeMatch(const std::string& str, size_t si,
+                          const std::string& pat, size_t pi) {
+        while (pi < pat.size()) {
+            char p = pat[pi];
+            if (p == '%') {
+                // Skip consecutive % characters
+                while (pi < pat.size() && pat[pi] == '%') pi++;
+                if (pi == pat.size()) return true;
+                // Try matching remaining pattern at every position
+                for (size_t i = si; i <= str.size(); i++) {
+                    if (likeMatch(str, i, pat, pi)) return true;
+                }
+                return false;
+            } else if (p == '_') {
+                if (si >= str.size()) return false;
+                si++; pi++;
+            } else {
+                if (si >= str.size()) return false;
+                if (std::tolower(static_cast<unsigned char>(str[si])) !=
+                    std::tolower(static_cast<unsigned char>(p)))
+                    return false;
+                si++; pi++;
+            }
+        }
+        return si == str.size();
+    }
 };
 
 } // namespace epee

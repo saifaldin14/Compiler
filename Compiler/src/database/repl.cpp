@@ -94,8 +94,13 @@ void Repl::printHelp() {
 
 std::string Repl::readMultiline(std::istream& in) {
     std::string line, result;
+    const size_t MAX_INPUT_SIZE = 1024 * 1024; // 1MB limit
     while (std::getline(in, line)) {
         result += line + "\n";
+        if (result.size() > MAX_INPUT_SIZE) {
+            std::cerr << "Error: Input exceeds maximum size (1MB)" << std::endl;
+            return "";
+        }
         // Check if we have a complete statement (ends with ;)
         // Trim trailing whitespace
         size_t end = result.find_last_not_of(" \t\n\r");
