@@ -1396,7 +1396,7 @@ Value Executor::evaluateStringFunc(const std::string& name,
     if (name == "sqrt") {
         if (args.empty()) return Value();
         double val = args[0].asDouble();
-        if (val < 0) throw std::runtime_error("sqrt of negative number");
+        if (val < 0) throw std::runtime_error("Cannot compute square root of negative number: " + std::to_string(val));
         return Value(std::sqrt(val));
     }
     // log: log(n) or log(base, n)
@@ -1411,7 +1411,13 @@ Value Executor::evaluateStringFunc(const std::string& name,
         return Value(3.14159265358979323846);
     }
     // random: random() -- return a random double in [0,1)
+    // Note: uses std::rand() seeded once at startup; not cryptographically secure
     if (name == "random") {
+        static bool seeded = false;
+        if (!seeded) {
+            std::srand(static_cast<unsigned>(std::time(nullptr)));
+            seeded = true;
+        }
         return Value(static_cast<double>(std::rand()) / (static_cast<double>(RAND_MAX) + 1.0));
     }
     // now: now() -- return current timestamp as string
