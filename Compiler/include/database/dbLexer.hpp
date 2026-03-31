@@ -62,6 +62,18 @@ enum class DbTokenType {
     // Keywords - String functions
     UPPER, LOWER, LENGTH, SUBSTR, CONCAT, TRIM, REPLACE,
 
+    // Keywords - Utility functions
+    COALESCE, NULLIF, TYPEOF, CAST, LEFT_FN, RIGHT_FN,
+    LPAD, RPAD, REVERSE, REPEAT_FN,
+    POWER, SQRT, LOG_FN, PI_FN, RANDOM, NOW,
+    IIF,
+
+    // Keywords - CASE expression
+    CASE, WHEN, END_KW,
+
+    // Keywords - Pipeline aliases
+    TAKE, SKIP_KW, MAP,
+
     // Operators
     PLUS, MINUS, STAR, SLASH, PERCENT,
     EQ, NEQ, LT, GT, LTE, GTE, EQEQ,

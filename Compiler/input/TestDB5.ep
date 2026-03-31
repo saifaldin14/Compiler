@@ -1,0 +1,177 @@
+// ============================================================
+// TestDB5.ep - New Language Features
+// Demonstrates: CASE/WHEN, new functions, map/take/skip,
+//               negated predicates, and math functions
+// ============================================================
+
+create table inventory (
+    id int,
+    product string,
+    category string,
+    price double,
+    quantity int,
+    supplier string
+);
+
+insert into inventory values (1, "Laptop",     "Electronics", 999.99, 50,  "TechCo");
+insert into inventory values (2, "Phone",      "Electronics", 699.99, 200, "TechCo");
+insert into inventory values (3, "Headphones", "Electronics", 149.99, 500, "AudioInc");
+insert into inventory values (4, "Desk",       "Furniture",   299.99, 30,  "FurnishCo");
+insert into inventory values (5, "Chair",      "Furniture",   199.99, 75,  "FurnishCo");
+insert into inventory values (6, "Notebook",   "Stationery",  4.99,   1000, "PaperPro");
+insert into inventory values (7, "Pen",        "Stationery",  1.99,   5000, "PaperPro");
+insert into inventory values (8, "Monitor",    "Electronics", 449.99, 100, "TechCo");
+
+// --- CASE/WHEN expressions ---
+print "=== CASE/WHEN Expressions ===";
+inventory
+    |> select(
+        product,
+        price,
+        case
+            when price > 500.0  then "Premium"
+            when price > 100.0  then "Mid-range"
+            when price > 10.0   then "Budget"
+            else "Bargain"
+        end as tier
+    )
+    |> orderby(price desc)
+    |> print;
+
+// --- coalesce and nullif ---
+print "=== coalesce and nullif ===";
+
+create table contacts (
+    name string,
+    phone string,
+    email string
+);
+insert into contacts values ("Alice",   "555-0001", "alice@mail.com");
+insert into contacts values ("Bob",     "555-0002", "bob@mail.com");
+
+// coalesce picks the first non-null value
+contacts
+    |> select(name, coalesce(phone, email, "N/A") as contact_info)
+    |> print;
+
+// --- typeof and cast ---
+print "=== typeof and cast ===";
+inventory
+    |> select(product, typeof(price) as price_type, typeof(quantity) as qty_type)
+    |> take(3)
+    |> print;
+
+// cast price to int
+inventory
+    |> select(product, price, cast(price, "int") as price_rounded)
+    |> take(3)
+    |> print;
+
+// --- String functions: left, right, reverse, lpad, rpad, repeat ---
+print "=== String Functions ===";
+inventory
+    |> select(
+        product,
+        left(product, 4) as first4,
+        right(product, 3) as last3,
+        reverse(product) as reversed,
+        length(product) as len
+    )
+    |> take(4)
+    |> print;
+
+// lpad and rpad
+inventory
+    |> select(
+        product,
+        lpad(product, 15, ".") as left_padded,
+        rpad(product, 15, ".") as right_padded
+    )
+    |> take(4)
+    |> print;
+
+// repeat
+inventory
+    |> select(product, repeat(left(product, 1), 3) as initials)
+    |> take(4)
+    |> print;
+
+// --- Math functions: power, sqrt, log, pi ---
+print "=== Math Functions ===";
+inventory
+    |> select(
+        product,
+        price,
+        round(sqrt(price)) as sqrt_price,
+        round(power(quantity, 2)) as qty_squared
+    )
+    |> take(4)
+    |> print;
+
+// --- iif (inline if / ternary) ---
+print "=== iif (Ternary) ===";
+inventory
+    |> select(
+        product,
+        quantity,
+        iif(quantity > 100, "High Stock", "Low Stock") as stock_level
+    )
+    |> print;
+
+// --- NOT IN, NOT LIKE, NOT BETWEEN ---
+print "=== Negated Predicates ===";
+
+// NOT IN
+inventory
+    |> where(category not in ("Electronics", "Furniture"))
+    |> select(product, category)
+    |> print;
+
+// NOT LIKE
+inventory
+    |> where(product not like "P%")
+    |> select(product)
+    |> print;
+
+// NOT BETWEEN
+inventory
+    |> where(price not between 100.0 and 500.0)
+    |> select(product, price)
+    |> orderby(price desc)
+    |> print;
+
+// --- map (add columns without removing existing ones) ---
+print "=== map() Pipeline Stage ===";
+inventory
+    |> where(category == "Electronics")
+    |> map(price * quantity as total_value)
+    |> select(product, price, quantity, total_value)
+    |> orderby(total_value desc)
+    |> print;
+
+// --- take and skip (aliases for limit/offset) ---
+print "=== take() and skip() ===";
+inventory
+    |> orderby(price desc)
+    |> skip(2)
+    |> take(3)
+    |> select(product, price)
+    |> print;
+
+// --- CASE in pipeline with GROUP BY ---
+print "=== CASE with GROUP BY ===";
+inventory
+    |> select(
+        case
+            when price > 500.0  then "Premium"
+            when price > 100.0  then "Mid-range"
+            else "Budget"
+        end as tier,
+        price,
+        quantity
+    )
+    |> groupby(tier)
+    |> select(tier, count(*) as items, avg(price) as avg_price)
+    |> print;
+
+print "All new features verified.";

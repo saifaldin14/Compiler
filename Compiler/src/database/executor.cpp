@@ -14,6 +14,8 @@
 #include <sstream>
 #include <set>
 #include <map>
+#include <ctime>
+#include <cstdlib>
 
 namespace epee {
 
@@ -795,6 +797,36 @@ QueryResult Executor::applyPipelineStage(const PipelineStage& stage,
         countResult.rows.push_back(r);
         return countResult;
     }
+
+    case PipelineStage::Type::TAKE: {
+        if (stage.limitCount >= 0 && static_cast<int>(current.rows.size()) > stage.limitCount)
+            current.rows.resize(static_cast<size_t>(stage.limitCount));
+        return current;
+    }
+
+    case PipelineStage::Type::SKIP_STAGE: {
+        if (stage.offsetCount > 0) {
+            int off = std::min(stage.offsetCount, static_cast<int>(current.rows.size()));
+            current.rows.erase(current.rows.begin(), current.rows.begin() + off);
+        }
+        return current;
+    }
+
+    case PipelineStage::Type::MAP: {
+        // MAP adds new computed columns to existing rows (unlike SELECT which replaces)
+        QueryResult mapped;
+        mapped.columnNames = current.columnNames;
+        for (const auto& col : stage.columns)
+            mapped.columnNames.push_back(getExprName(col));
+
+        for (const auto& row : current.rows) {
+            Row newRow = row; // keep existing columns
+            for (const auto& col : stage.columns)
+                newRow.push_back(evaluate(col, row, current.columnNames));
+            mapped.rows.push_back(newRow);
+        }
+        return mapped;
+    }
     }
 
     return current;
@@ -1061,23 +1093,28 @@ Value Executor::evaluate(const ExprPtr& expr, const Row& row,
         Value val  = evaluate(bet->expr, row, colNames);
         Value low  = evaluate(bet->low, row, colNames);
         Value high = evaluate(bet->high, row, colNames);
-        return Value(val.between(low, high));
+        bool result = val.between(low, high);
+        return Value(bet->negated ? !result : result);
     }
 
     // InExpr
     if (auto in = std::dynamic_pointer_cast<InExpr>(expr)) {
         Value val = evaluate(in->expr, row, colNames);
+        bool found = false;
         for (const auto& v : in->values) {
-            if (val == evaluate(v, row, colNames))
-                return Value(true);
+            if (val == evaluate(v, row, colNames)) {
+                found = true;
+                break;
+            }
         }
-        return Value(false);
+        return Value(in->negated ? !found : found);
     }
 
     // LikeExpr
     if (auto lk = std::dynamic_pointer_cast<LikeExpr>(expr)) {
         Value val = evaluate(lk->expr, row, colNames);
-        return Value(val.like(lk->pattern));
+        bool result = val.like(lk->pattern);
+        return Value(lk->negated ? !result : result);
     }
 
     // IsNullExpr
@@ -1085,6 +1122,18 @@ Value Executor::evaluate(const ExprPtr& expr, const Row& row,
         Value val = evaluate(isn->expr, row, colNames);
         bool result = val.isNull();
         return Value(isn->isNot ? !result : result);
+    }
+
+    // CaseExpr
+    if (auto caseExpr = std::dynamic_pointer_cast<CaseExpr>(expr)) {
+        for (const auto& when : caseExpr->whenClauses) {
+            Value cond = evaluate(when.condition, row, colNames);
+            if (cond.asBool())
+                return evaluate(when.result, row, colNames);
+        }
+        if (caseExpr->elseResult)
+            return evaluate(caseExpr->elseResult, row, colNames);
+        return Value(); // NULL
     }
 
     return Value();
@@ -1255,6 +1304,127 @@ Value Executor::evaluateStringFunc(const std::string& name,
     if (name == "ceil" || name == "ceiling") {
         if (args.empty()) return Value();
         return Value(static_cast<int>(std::ceil(args[0].asDouble())));
+    }
+    // coalesce: return first non-null argument
+    if (name == "coalesce") {
+        for (const auto& a : args) {
+            if (!a.isNull()) return a;
+        }
+        return Value();
+    }
+    // nullif: return null if the two args are equal, otherwise arg1
+    if (name == "nullif") {
+        if (args.size() < 2) return Value();
+        return (args[0] == args[1]) ? Value() : args[0];
+    }
+    // typeof: return the type name as string
+    if (name == "typeof") {
+        if (args.empty()) return Value(std::string("null"));
+        return Value(args[0].typeToString());
+    }
+    // cast: cast(value, "type") -- convert type
+    if (name == "cast") {
+        if (args.size() < 2) return Value();
+        std::string targetType = args[1].asString();
+        if (targetType == "int") return Value(args[0].asInt());
+        if (targetType == "double") return Value(args[0].asDouble());
+        if (targetType == "string") return Value(args[0].asString());
+        if (targetType == "bool") return Value(args[0].asBool());
+        return args[0];
+    }
+    // left: left(str, n) -- first n characters
+    if (name == "left") {
+        if (args.size() < 2) return Value();
+        std::string s = args[0].asString();
+        int n = args[1].asInt();
+        if (n < 0) n = 0;
+        return Value(s.substr(0, static_cast<size_t>(n)));
+    }
+    // right: right(str, n) -- last n characters
+    if (name == "right") {
+        if (args.size() < 2) return Value();
+        std::string s = args[0].asString();
+        int n = args[1].asInt();
+        if (n < 0) n = 0;
+        if (static_cast<size_t>(n) >= s.size()) return Value(s);
+        return Value(s.substr(s.size() - static_cast<size_t>(n)));
+    }
+    // lpad: lpad(str, len, pad) -- left-pad string
+    if (name == "lpad") {
+        if (args.size() < 2) return Value();
+        std::string s = args[0].asString();
+        int len = args[1].asInt();
+        std::string pad = (args.size() >= 3) ? args[2].asString() : " ";
+        if (pad.empty()) pad = " ";
+        while (static_cast<int>(s.size()) < len)
+            s = pad.substr(0, static_cast<size_t>(len) - s.size()) + s;
+        return Value(s.substr(0, static_cast<size_t>(len)));
+    }
+    // rpad: rpad(str, len, pad) -- right-pad string
+    if (name == "rpad") {
+        if (args.size() < 2) return Value();
+        std::string s = args[0].asString();
+        int len = args[1].asInt();
+        std::string pad = (args.size() >= 3) ? args[2].asString() : " ";
+        if (pad.empty()) pad = " ";
+        while (static_cast<int>(s.size()) < len)
+            s += pad.substr(0, static_cast<size_t>(len) - s.size());
+        return Value(s.substr(0, static_cast<size_t>(len)));
+    }
+    // reverse: reverse a string
+    if (name == "reverse") {
+        if (args.empty()) return Value();
+        std::string s = args[0].asString();
+        std::reverse(s.begin(), s.end());
+        return Value(s);
+    }
+    // repeat: repeat(str, n)
+    if (name == "repeat") {
+        if (args.size() < 2) return Value();
+        std::string s = args[0].asString();
+        int n = args[1].asInt();
+        std::string result;
+        for (int i = 0; i < n; i++) result += s;
+        return Value(result);
+    }
+    // power: power(base, exp)
+    if (name == "power") {
+        if (args.size() < 2) return Value();
+        return Value(std::pow(args[0].asDouble(), args[1].asDouble()));
+    }
+    // sqrt: sqrt(n)
+    if (name == "sqrt") {
+        if (args.empty()) return Value();
+        double val = args[0].asDouble();
+        if (val < 0) throw std::runtime_error("sqrt of negative number");
+        return Value(std::sqrt(val));
+    }
+    // log: log(n) or log(base, n)
+    if (name == "log") {
+        if (args.empty()) return Value();
+        if (args.size() >= 2)
+            return Value(std::log(args[1].asDouble()) / std::log(args[0].asDouble()));
+        return Value(std::log(args[0].asDouble()));
+    }
+    // pi: pi() -- return pi constant
+    if (name == "pi") {
+        return Value(3.14159265358979323846);
+    }
+    // random: random() -- return a random double in [0,1)
+    if (name == "random") {
+        return Value(static_cast<double>(std::rand()) / (static_cast<double>(RAND_MAX) + 1.0));
+    }
+    // now: now() -- return current timestamp as string
+    if (name == "now") {
+        auto now = std::time(nullptr);
+        char buf[64];
+        std::strftime(buf, sizeof(buf), "%Y-%m-%d %H:%M:%S", std::localtime(&now));
+        return Value(std::string(buf));
+    }
+    // iif: iif(condition, true_val, false_val) -- inline if / ternary
+    if (name == "iif") {
+        if (args.size() < 3) return Value();
+        return args[0].asBool() ? args[1] : args[2];
     }
 
     throw std::runtime_error("Unknown function: " + name);

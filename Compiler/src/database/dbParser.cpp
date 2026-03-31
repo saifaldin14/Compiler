@@ -490,6 +490,31 @@ PipelineStage DbParser::parsePipelineStage() {
         advance();
         stage.type = PipelineStage::Type::COUNT_STAGE;
     }
+    else if (tok.type == DbTokenType::TAKE) {
+        advance();
+        expect(DbTokenType::LPAREN, "Expected '(' after 'take'");
+        stage.type = PipelineStage::Type::TAKE;
+        const auto& val = expect(DbTokenType::INT_LIT, "Expected integer for take");
+        try { stage.limitCount = std::stoi(val.value); }
+        catch (...) { error("Invalid take value"); }
+        expect(DbTokenType::RPAREN, "Expected ')' after take value");
+    }
+    else if (tok.type == DbTokenType::SKIP_KW) {
+        advance();
+        expect(DbTokenType::LPAREN, "Expected '(' after 'skip'");
+        stage.type = PipelineStage::Type::SKIP_STAGE;
+        const auto& val = expect(DbTokenType::INT_LIT, "Expected integer for skip");
+        try { stage.offsetCount = std::stoi(val.value); }
+        catch (...) { error("Invalid skip value"); }
+        expect(DbTokenType::RPAREN, "Expected ')' after skip value");
+    }
+    else if (tok.type == DbTokenType::MAP) {
+        advance();
+        expect(DbTokenType::LPAREN, "Expected '(' after 'map'");
+        stage.type = PipelineStage::Type::MAP;
+        stage.columns = parseExpressionList();
+        expect(DbTokenType::RPAREN, "Expected ')' after map columns");
+    }
     else {
         error("Unknown pipeline stage '" + tok.value + "'");
         advance();
@@ -784,7 +809,7 @@ ExprPtr DbParser::parseComparisonExpr() {
         auto low = parseAddExpr();
         expect(DbTokenType::AND, "Expected 'AND' in BETWEEN");
         auto high = parseAddExpr();
-        return std::make_shared<BetweenExpr>(left, low, high);
+        return std::make_shared<BetweenExpr>(left, low, high, false);
     }
 
     // NOT BETWEEN / NOT IN / NOT LIKE
@@ -797,8 +822,7 @@ ExprPtr DbParser::parseComparisonExpr() {
             auto low = parseAddExpr();
             expect(DbTokenType::AND, "Expected 'AND' in NOT BETWEEN");
             auto high = parseAddExpr();
-            auto betw = std::make_shared<BetweenExpr>(left, low, high);
-            return std::make_shared<UnaryExpr>("not", betw);
+            return std::make_shared<BetweenExpr>(left, low, high, true);
         }
         if (check(DbTokenType::IN)) {
             advance();
@@ -808,14 +832,12 @@ ExprPtr DbParser::parseComparisonExpr() {
                 vals.push_back(parseExpression());
             } while (match(DbTokenType::COMMA));
             expect(DbTokenType::RPAREN, "Expected ')' after NOT IN list");
-            auto inExpr = std::make_shared<InExpr>(left, std::move(vals));
-            return std::make_shared<UnaryExpr>("not", inExpr);
+            return std::make_shared<InExpr>(left, std::move(vals), true);
         }
         if (check(DbTokenType::LIKE)) {
             advance();
             std::string pattern = expect(DbTokenType::STRING_LIT, "Expected pattern string").value;
-            auto likeExpr = std::make_shared<LikeExpr>(left, pattern);
-            return std::make_shared<UnaryExpr>("not", likeExpr);
+            return std::make_shared<LikeExpr>(left, pattern, true);
         }
 
         // Not a postfix NOT — backtrack
@@ -831,14 +853,14 @@ ExprPtr DbParser::parseComparisonExpr() {
             vals.push_back(parseExpression());
         } while (match(DbTokenType::COMMA));
         expect(DbTokenType::RPAREN, "Expected ')' after IN list");
-        return std::make_shared<InExpr>(left, std::move(vals));
+        return std::make_shared<InExpr>(left, std::move(vals), false);
     }
 
     // LIKE
     if (check(DbTokenType::LIKE)) {
         advance();
         std::string pattern = expect(DbTokenType::STRING_LIT, "Expected pattern string").value;
-        return std::make_shared<LikeExpr>(left, pattern);
+        return std::make_shared<LikeExpr>(left, pattern, false);
     }
 
     // IS [NOT] NULL
@@ -979,6 +1001,44 @@ ExprPtr DbParser::parsePrimaryExpr() {
         tok.type == DbTokenType::LENGTH || tok.type == DbTokenType::SUBSTR ||
         tok.type == DbTokenType::CONCAT || tok.type == DbTokenType::TRIM ||
         tok.type == DbTokenType::REPLACE) {
+        return parseColumnOrFunction();
+    }
+    // New utility/math functions
+    if (tok.type == DbTokenType::COALESCE || tok.type == DbTokenType::NULLIF ||
+        tok.type == DbTokenType::TYPEOF   || tok.type == DbTokenType::CAST ||
+        tok.type == DbTokenType::LEFT_FN  || tok.type == DbTokenType::RIGHT_FN ||
+        tok.type == DbTokenType::LPAD     || tok.type == DbTokenType::RPAD ||
+        tok.type == DbTokenType::REVERSE  || tok.type == DbTokenType::REPEAT_FN ||
+        tok.type == DbTokenType::POWER    || tok.type == DbTokenType::SQRT ||
+        tok.type == DbTokenType::LOG_FN   || tok.type == DbTokenType::PI_FN ||
+        tok.type == DbTokenType::RANDOM   || tok.type == DbTokenType::NOW ||
+        tok.type == DbTokenType::IIF) {
+        return parseColumnOrFunction();
+    }
+
+    // CASE WHEN ... THEN ... [ELSE ...] END
+    if (tok.type == DbTokenType::CASE) {
+        advance(); // consume CASE
+        auto caseExpr = std::make_shared<CaseExpr>();
+        while (check(DbTokenType::WHEN)) {
+            advance(); // consume WHEN
+            auto cond = parseExpression();
+            expect(DbTokenType::THEN, "Expected 'THEN' after WHEN condition");
+            auto result = parseExpression();
+            caseExpr->whenClauses.push_back({cond, result});
+        }
+        if (check(DbTokenType::ELSE)) {
+            advance();
+            caseExpr->elseResult = parseExpression();
+        }
+        expect(DbTokenType::END_KW, "Expected 'END' to close CASE");
+        return caseExpr;
+    }
+
+    // Keywords that can also be used as function names when followed by '('
+    // (e.g., left(str, n), right(str, n))
+    if ((tok.type == DbTokenType::LEFT || tok.type == DbTokenType::RIGHT) &&
+        peekNext().type == DbTokenType::LPAREN) {
         return parseColumnOrFunction();
     }
 

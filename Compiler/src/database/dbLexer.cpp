@@ -91,6 +91,29 @@ std::string DbToken::typeToString() const {
         case DbTokenType::CONCAT: return "CONCAT";
         case DbTokenType::TRIM: return "TRIM";
         case DbTokenType::REPLACE: return "REPLACE";
+        case DbTokenType::COALESCE: return "COALESCE";
+        case DbTokenType::NULLIF: return "NULLIF";
+        case DbTokenType::TYPEOF: return "TYPEOF";
+        case DbTokenType::CAST: return "CAST";
+        case DbTokenType::LEFT_FN: return "LEFT_FN";
+        case DbTokenType::RIGHT_FN: return "RIGHT_FN";
+        case DbTokenType::LPAD: return "LPAD";
+        case DbTokenType::RPAD: return "RPAD";
+        case DbTokenType::REVERSE: return "REVERSE";
+        case DbTokenType::REPEAT_FN: return "REPEAT_FN";
+        case DbTokenType::POWER: return "POWER";
+        case DbTokenType::SQRT: return "SQRT";
+        case DbTokenType::LOG_FN: return "LOG_FN";
+        case DbTokenType::PI_FN: return "PI_FN";
+        case DbTokenType::RANDOM: return "RANDOM";
+        case DbTokenType::NOW: return "NOW";
+        case DbTokenType::IIF: return "IIF";
+        case DbTokenType::CASE: return "CASE";
+        case DbTokenType::WHEN: return "WHEN";
+        case DbTokenType::END_KW: return "END";
+        case DbTokenType::TAKE: return "TAKE";
+        case DbTokenType::SKIP_KW: return "SKIP";
+        case DbTokenType::MAP: return "MAP";
         case DbTokenType::PLUS: return "PLUS";
         case DbTokenType::MINUS: return "MINUS";
         case DbTokenType::STAR: return "STAR";
@@ -234,6 +257,33 @@ void DbLexer::initKeywords() {
     keywords_["concat"] = DbTokenType::CONCAT;
     keywords_["trim"] = DbTokenType::TRIM;
     keywords_["replace"] = DbTokenType::REPLACE;
+
+    // Utility functions
+    keywords_["coalesce"] = DbTokenType::COALESCE;
+    keywords_["nullif"] = DbTokenType::NULLIF;
+    keywords_["typeof"] = DbTokenType::TYPEOF;
+    keywords_["cast"] = DbTokenType::CAST;
+    keywords_["lpad"] = DbTokenType::LPAD;
+    keywords_["rpad"] = DbTokenType::RPAD;
+    keywords_["reverse"] = DbTokenType::REVERSE;
+    keywords_["repeat"] = DbTokenType::REPEAT_FN;
+    keywords_["power"] = DbTokenType::POWER;
+    keywords_["sqrt"] = DbTokenType::SQRT;
+    keywords_["log"] = DbTokenType::LOG_FN;
+    keywords_["pi"] = DbTokenType::PI_FN;
+    keywords_["random"] = DbTokenType::RANDOM;
+    keywords_["now"] = DbTokenType::NOW;
+    keywords_["iif"] = DbTokenType::IIF;
+
+    // CASE expression
+    keywords_["case"] = DbTokenType::CASE;
+    keywords_["when"] = DbTokenType::WHEN;
+    keywords_["end"] = DbTokenType::END_KW;
+
+    // Pipeline aliases
+    keywords_["take"] = DbTokenType::TAKE;
+    keywords_["skip"] = DbTokenType::SKIP_KW;
+    keywords_["map"] = DbTokenType::MAP;
 }
 
 char DbLexer::peek() const {

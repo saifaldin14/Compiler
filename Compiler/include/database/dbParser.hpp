@@ -73,25 +73,39 @@ struct BetweenExpr : Expression {
     ExprPtr expr;
     ExprPtr low;
     ExprPtr high;
-    BetweenExpr(ExprPtr e, ExprPtr l, ExprPtr h) : expr(e), low(l), high(h) {}
+    bool negated;
+    BetweenExpr(ExprPtr e, ExprPtr l, ExprPtr h, bool neg = false)
+        : expr(e), low(l), high(h), negated(neg) {}
 };
 
 struct InExpr : Expression {
     ExprPtr expr;
     std::vector<ExprPtr> values;
-    InExpr(ExprPtr e, std::vector<ExprPtr> v) : expr(e), values(std::move(v)) {}
+    bool negated;
+    InExpr(ExprPtr e, std::vector<ExprPtr> v, bool neg = false)
+        : expr(e), values(std::move(v)), negated(neg) {}
 };
 
 struct LikeExpr : Expression {
     ExprPtr expr;
     std::string pattern;
-    LikeExpr(ExprPtr e, const std::string& p) : expr(e), pattern(p) {}
+    bool negated;
+    LikeExpr(ExprPtr e, const std::string& p, bool neg = false) : expr(e), pattern(p), negated(neg) {}
 };
 
 struct IsNullExpr : Expression {
     ExprPtr expr;
     bool isNot;
     IsNullExpr(ExprPtr e, bool n) : expr(e), isNot(n) {}
+};
+
+struct CaseExpr : Expression {
+    struct WhenClause {
+        ExprPtr condition;
+        ExprPtr result;
+    };
+    std::vector<WhenClause> whenClauses;
+    ExprPtr elseResult;  // can be null
 };
 
 // Statement types
@@ -158,7 +172,8 @@ struct DeleteStmt : Statement {
 struct PipelineStage {
     enum class Type {
         WHERE, SELECT, ORDERBY, LIMIT, OFFSET, GROUPBY, HAVING,
-        JOIN, UPDATE, DELETE_STAGE, PRINT, DISTINCT, COUNT_STAGE
+        JOIN, UPDATE, DELETE_STAGE, PRINT, DISTINCT, COUNT_STAGE,
+        MAP, TAKE, SKIP_STAGE
     };
     Type type;
 
