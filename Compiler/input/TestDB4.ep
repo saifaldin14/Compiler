@@ -1,0 +1,81 @@
+// ============================================================
+// TestDB4.ep - Advanced Features
+// Demonstrates: Transactions, LIKE, BETWEEN, IN, control flow,
+//               variables, functions, UPDATE, DELETE
+// ============================================================
+
+// Create products table
+create table products (
+    id int,
+    name string,
+    category string,
+    price double,
+    in_stock bool
+);
+
+// Insert products
+insert into products values (1, "Laptop Pro", "Electronics", 1299.99, true);
+insert into products values (2, "Wireless Mouse", "Electronics", 29.99, true);
+insert into products values (3, "Coffee Maker", "Kitchen", 89.99, true);
+insert into products values (4, "Standing Desk", "Furniture", 549.99, false);
+insert into products values (5, "Monitor 4K", "Electronics", 399.99, true);
+insert into products values (6, "Keyboard", "Electronics", 149.99, true);
+insert into products values (7, "Blender", "Kitchen", 64.99, true);
+insert into products values (8, "Office Chair", "Furniture", 299.99, true);
+insert into products values (9, "Webcam HD", "Electronics", 79.99, false);
+insert into products values (10, "Toaster", "Kitchen", 34.99, true);
+
+// LIKE pattern matching
+products
+    |> where(name like "%Pro%")
+    |> select(name, category, price)
+    |> print;
+
+// BETWEEN range query
+products
+    |> where(price between 50.0 and 200.0)
+    |> select(name, price)
+    |> orderby(price asc)
+    |> print;
+
+// Variables and control flow
+int total_products;
+total_products = 10;
+print "Total products in catalog:";
+print total_products;
+
+// Transaction: Apply a 10% discount
+begin;
+    products |> where(category == "Electronics") |> update(price = price * 0.9);
+commit;
+
+// Verify the discount was applied
+products
+    |> where(category == "Electronics")
+    |> select(name, price)
+    |> orderby(price asc)
+    |> print;
+
+// DELETE operation
+products |> where(in_stock == false) |> delete;
+
+// Show remaining products
+products
+    |> select(name, category, price, in_stock)
+    |> orderby(category asc)
+    |> print;
+
+// GROUP BY with aggregate
+products
+    |> groupby(category)
+    |> select(category, count(*) as items, avg(price) as avg_price, sum(price) as total_value)
+    |> orderby(total_value desc)
+    |> print;
+
+// Distinct categories
+products |> select(category) |> distinct |> print;
+
+// Show final state
+show tables;
+
+print "Advanced features test complete!";

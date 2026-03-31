@@ -1380,6 +1380,7 @@ void Parser::writeStackTrace(fstream& appendFileToWorkWith) {
     appendFileToWorkWith << ss.str() << endl;
     
     vector<string> stackTraceElements;
+#ifdef __APPLE__
     const int maxStackTraceDepth = 50;
     void *stackTrace[maxStackTraceDepth];
     int stackTraceDepth = backtrace(stackTrace, maxStackTraceDepth);
@@ -1388,6 +1389,7 @@ void Parser::writeStackTrace(fstream& appendFileToWorkWith) {
         stackTraceElements.push_back(stackTraceSymbols[i]);
     }
     free(stackTraceSymbols);
+#endif
     appendFileToWorkWith << "StackTrace: " << endl;
     for (const auto& elem : stackTraceElements) {
         appendFileToWorkWith << elem << endl;
@@ -1426,6 +1428,7 @@ void Parser::error() {
     ss << "Error on Line " << lex.getLineNum() << " at token " << lookahead.getRepresentation();
     cout << ss.str() << endl;
     vector<string> stackTraceElements;
+#ifdef __APPLE__
     const int maxStackTraceDepth = 50;
     void *stackTrace[maxStackTraceDepth];
     int stackTraceDepth = backtrace(stackTrace, maxStackTraceDepth);
@@ -1434,6 +1437,7 @@ void Parser::error() {
         stackTraceElements.push_back(stackTraceSymbols[i]);
     }
     free(stackTraceSymbols);
+#endif
     cout << "StackTrace: " << endl;
     for (const auto& elem : stackTraceElements) {
         cout << elem << endl;

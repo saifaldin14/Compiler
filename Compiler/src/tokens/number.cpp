@@ -6,6 +6,8 @@
 */
 
 
+#include <cstring>
+#include <cmath>
 #include "../../include/tokens/number.hpp"
 
 /*

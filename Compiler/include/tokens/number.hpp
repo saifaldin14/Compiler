@@ -13,6 +13,7 @@
 #include <string>
 #include <sstream>
 #include <unordered_map>
+#include <cstring>
 #include "token.hpp"
 
 using namespace std;

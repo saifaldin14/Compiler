@@ -1,0 +1,67 @@
+// ============================================================
+// TestDB2.ep - Pipeline Queries (Épée's Signature Feature!)
+// Demonstrates: Pipeline operator |>, chaining, computed columns
+// ============================================================
+
+// Create employees table
+create table employees (
+    id int,
+    name string,
+    department string,
+    title string,
+    salary double,
+    years_exp int
+);
+
+// Insert employees
+insert into employees values (1, "Alice", "Engineering", "Senior Dev", 95000.0, 8);
+insert into employees values (2, "Bob", "Marketing", "Manager", 78000.0, 5);
+insert into employees values (3, "Charlie", "Engineering", "Lead Dev", 110000.0, 12);
+insert into employees values (4, "Diana", "Sales", "VP Sales", 125000.0, 15);
+insert into employees values (5, "Eve", "Engineering", "Junior Dev", 65000.0, 2);
+insert into employees values (6, "Frank", "Marketing", "Director", 98000.0, 10);
+insert into employees values (7, "Grace", "Engineering", "Mid Dev", 85000.0, 5);
+insert into employees values (8, "Hank", "Sales", "Rep", 55000.0, 3);
+insert into employees values (9, "Ivy", "Engineering", "Senior Dev", 92000.0, 7);
+insert into employees values (10, "Jack", "Marketing", "Analyst", 62000.0, 2);
+
+// Pipeline: Filter and select
+employees
+    |> where(department == "Engineering")
+    |> select(name, title, salary)
+    |> print;
+
+// Pipeline: Sort and limit top earners
+employees
+    |> orderby(salary desc)
+    |> limit(5)
+    |> select(name, department, salary)
+    |> print;
+
+// Pipeline: Computed columns with aliases
+employees
+    |> select(name, salary, salary * 12 as annual_salary, salary * 0.1 as bonus)
+    |> orderby(annual_salary desc)
+    |> limit(5)
+    |> print;
+
+// Pipeline: Count rows
+employees
+    |> where(salary > 80000.0)
+    |> count;
+
+// Pipeline: String functions
+employees
+    |> select(upper(name) as upper_name, lower(department) as dept, length(name) as name_len)
+    |> orderby(name_len desc)
+    |> limit(5)
+    |> print;
+
+// Pipeline: Multiple conditions with AND/OR
+employees
+    |> where(department == "Engineering" and salary > 80000.0)
+    |> select(name, title, salary)
+    |> orderby(salary desc)
+    |> print;
+
+print "Pipeline queries complete!";

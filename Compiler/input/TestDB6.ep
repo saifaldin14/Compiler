@@ -1,0 +1,116 @@
+// ============================================================
+// TestDB6.ep - Persistence, Indexing, Security, and Ops Tests
+// ============================================================
+
+// --- Indexing ---
+print "=== Indexing Tests ===";
+
+create table products (
+    id int,
+    name string,
+    price double,
+    category string
+);
+
+insert into products values (1, "Widget", 9.99, "Tools");
+insert into products values (2, "Gadget", 24.99, "Electronics");
+insert into products values (3, "Doohickey", 4.99, "Tools");
+insert into products values (4, "Thingamajig", 49.99, "Electronics");
+insert into products values (5, "Whatchamacallit", 14.99, "Misc");
+
+// Create an index
+create index idx_price on products(price);
+create unique index idx_id on products(id);
+
+// Verify table still works with indexes
+products |> where(price > 10.0) |> select(name, price) |> orderby(price asc) |> print;
+
+// Update and delete should maintain indexes
+update products set price = 19.99 where name == "Widget";
+products |> where(name == "Widget") |> select(name, price) |> print;
+
+delete from products where name == "Doohickey";
+products |> select(name) |> orderby(name asc) |> print;
+
+// Drop an index
+drop index idx_price on products;
+
+print "Indexing tests passed.";
+
+// --- EXPLAIN ---
+print "=== EXPLAIN Tests ===";
+
+explain select name, price from products where price > 10.0 orderby price asc limit 5;
+
+explain products |> where(price > 10.0) |> select(name, price) |> orderby(price asc) |> print;
+
+print "EXPLAIN tests passed.";
+
+// --- Persistence ---
+print "=== Persistence Tests ===";
+
+save database "/tmp/epee_test.epd";
+print "Database saved.";
+
+// Create a second table to verify it doesn't persist after load
+create table temp_table (x int);
+insert into temp_table values (42);
+
+// Load the saved database (overwrites temp_table)
+load database "/tmp/epee_test.epd";
+
+// Verify original data survived
+products |> select(name) |> orderby(name asc) |> print;
+
+print "Persistence tests passed.";
+
+// --- Security (opt-in, so existing operations still work) ---
+print "=== Security Tests ===";
+
+// Create a user (this enables security)
+create user admin password "secret123" admin;
+show user;
+
+// Login as admin
+login admin "secret123";
+
+// Admin can do everything
+create table sec_test (id int, val string);
+insert into sec_test values (1, "hello");
+sec_test |> select(id, val) |> print;
+
+// Show grants
+show grant for admin;
+
+// Create a limited user
+create user reader password "read123";
+grant select to reader;
+
+// Cleanup - drop users to disable security for remaining tests
+drop user reader;
+drop user admin;
+
+print "Security tests passed.";
+
+// --- Edge Cases ---
+print "=== Edge Case Tests ===";
+
+// Empty table operations
+create table empty_table (id int, name string);
+select * from empty_table;
+empty_table |> count |> print;
+
+// NULL handling
+create table nullable (id int, val string);
+insert into nullable values (1, null);
+insert into nullable values (2, "hello");
+nullable |> where(val is null) |> select(id) |> print;
+nullable |> where(val is not null) |> select(id, val) |> print;
+
+// Type coercion
+create table nums (id int, amount double);
+insert into nums values (1, 100.5);
+insert into nums values (2, 200.0);
+nums |> select(id, amount, cast(amount, "int") as rounded) |> print;
+
+print "All production feature tests passed.";

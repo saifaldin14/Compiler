@@ -30,6 +30,8 @@ public:
     static TokenType TERM;
     static TokenType END;
     static TokenType ERR;
+    static TokenType STRING;
+    static TokenType PIPE;
 };
 
 #endif /* lexer_hpp */

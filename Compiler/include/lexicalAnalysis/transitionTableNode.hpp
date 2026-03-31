@@ -14,6 +14,7 @@
 #include <sstream>
 #include <fstream>
 #include <unordered_map>
+#include <algorithm>
 #include "transitionTableEntry.hpp"
 
 using namespace std;

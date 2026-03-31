@@ -1,0 +1,76 @@
+// ============================================================
+// TestDB3.ep - Joins and Aggregations
+// Demonstrates: JOIN, GROUP BY, HAVING, aggregate functions
+// ============================================================
+
+// Create tables
+create table departments (
+    id int,
+    name string,
+    budget double
+);
+
+create table employees (
+    id int,
+    name string,
+    dept_id int,
+    salary double
+);
+
+create table projects (
+    id int,
+    name string,
+    dept_id int,
+    status string
+);
+
+// Insert departments
+insert into departments values (1, "Engineering", 500000.0);
+insert into departments values (2, "Marketing", 200000.0);
+insert into departments values (3, "Sales", 300000.0);
+insert into departments values (4, "HR", 150000.0);
+
+// Insert employees
+insert into employees values (1, "Alice", 1, 95000.0);
+insert into employees values (2, "Bob", 2, 78000.0);
+insert into employees values (3, "Charlie", 1, 110000.0);
+insert into employees values (4, "Diana", 3, 85000.0);
+insert into employees values (5, "Eve", 1, 65000.0);
+insert into employees values (6, "Frank", 2, 92000.0);
+insert into employees values (7, "Grace", 3, 72000.0);
+insert into employees values (8, "Hank", 4, 68000.0);
+
+// Insert projects
+insert into projects values (1, "Website Redesign", 1, "active");
+insert into projects values (2, "Ad Campaign", 2, "active");
+insert into projects values (3, "Sales Portal", 3, "completed");
+insert into projects values (4, "Code Review Tool", 1, "active");
+insert into projects values (5, "Newsletter", 2, "completed");
+
+// Basic aggregation on all rows
+select count(*), sum(salary), avg(salary), min(salary), max(salary) from employees;
+
+// GROUP BY department with aggregation
+select dept_id, count(*) as emp_count, avg(salary) as avg_sal, sum(salary) as total_sal
+    from employees
+    groupby dept_id;
+
+// INNER JOIN: employees with their departments
+select employees.name, departments.name, employees.salary
+    from employees
+    inner join departments on employees.dept_id == departments.id;
+
+// Pipeline with JOIN
+employees
+    |> join(departments on employees.dept_id == departments.id)
+    |> select(employees.name, departments.name, employees.salary)
+    |> orderby(employees.salary desc)
+    |> print;
+
+// Departments with project count
+select departments.name, count(*) as project_count
+    from projects
+    inner join departments on projects.dept_id == departments.id
+    groupby departments.name;
+
+print "Joins and aggregations complete!";

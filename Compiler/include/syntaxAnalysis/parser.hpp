@@ -15,7 +15,9 @@
 #include <cstdlib>
 #include <sstream>
 #include <stdexcept>
+#ifdef __APPLE__
 #include <execinfo.h>
+#endif
 #include <unordered_map>
 #include "../lexicalAnalysis/lexer.hpp"
 #include "syntaxTree.hpp"
