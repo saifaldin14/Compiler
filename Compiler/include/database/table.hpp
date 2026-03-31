@@ -18,6 +18,7 @@
 #include <functional>
 #include <set>
 #include "value.hpp"
+#include "btree.hpp"
 
 namespace epee {
 
@@ -175,6 +176,14 @@ public:
         }
 
         rows_.push_back(row);
+
+        // Maintain indexes
+        size_t rowIdx = rows_.size() - 1;
+        for (auto& [name, idx] : indexes_) {
+            int ci = idx.getColumnIndex();
+            if (ci >= 0 && ci < static_cast<int>(row.size()))
+                idx.insert(row[static_cast<size_t>(ci)], rowIdx);
+        }
     }
 
     int deleteRows(const std::function<bool(const Row&)>& predicate) {
@@ -188,6 +197,7 @@ public:
                 ++it;
             }
         }
+        if (count > 0) rebuildAllIndexes();
         return count;
     }
 
@@ -203,6 +213,7 @@ public:
                 count++;
             }
         }
+        if (count > 0) rebuildAllIndexes();
         return count;
     }
 
@@ -231,13 +242,54 @@ public:
 
     // For transaction support - snapshot and restore
     std::vector<Row> snapshot() const { return rows_; }
-    void restore(const std::vector<Row>& snap) { rows_ = snap; }
+    void restore(const std::vector<Row>& snap) {
+        rows_ = snap;
+        rebuildAllIndexes();
+    }
+
+    // Index management
+    void createIndex(const std::string& indexName, const std::string& columnName, bool unique = false) {
+        if (indexes_.find(indexName) != indexes_.end())
+            throw std::runtime_error("Index '" + indexName + "' already exists");
+        int colIdx = getColumnIndex(columnName);
+        if (colIdx < 0)
+            throw std::runtime_error("Column '" + columnName + "' does not exist in table '" + name_ + "'");
+        BTreeIndex idx(indexName, name_, columnName, colIdx, unique);
+        idx.rebuild(rows_);
+        indexes_[indexName] = std::move(idx);
+    }
+
+    void dropIndex(const std::string& indexName) {
+        auto it = indexes_.find(indexName);
+        if (it == indexes_.end())
+            throw std::runtime_error("Index '" + indexName + "' does not exist");
+        indexes_.erase(it);
+    }
+
+    bool hasIndex(const std::string& indexName) const {
+        return indexes_.find(indexName) != indexes_.end();
+    }
+
+    const BTreeIndex* getIndexForColumn(const std::string& columnName) const {
+        for (const auto& [name, idx] : indexes_) {
+            if (idx.getColumnName() == columnName) return &idx;
+        }
+        return nullptr;
+    }
+
+    const std::unordered_map<std::string, BTreeIndex>& getIndexes() const { return indexes_; }
+
+    void rebuildAllIndexes() {
+        for (auto& [name, idx] : indexes_)
+            idx.rebuild(rows_);
+    }
 
 private:
     std::string name_;
     std::vector<Column> columns_;
     std::vector<Row> rows_;
     std::unordered_map<std::string, size_t> columnIndex_;
+    std::unordered_map<std::string, BTreeIndex> indexes_;
 
     static std::string typeToString(ValueType t) {
         switch (t) {

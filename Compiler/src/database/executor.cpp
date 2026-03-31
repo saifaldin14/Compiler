@@ -85,6 +85,28 @@ QueryResult Executor::execute(const StmtPtr& stmt) {
             return executeSaveDatabase(*s);
         if (auto s = std::dynamic_pointer_cast<LoadDatabaseStmt>(stmt))
             return executeLoadDatabase(*s);
+        if (auto s = std::dynamic_pointer_cast<CreateIndexStmt>(stmt))
+            return executeCreateIndex(*s);
+        if (auto s = std::dynamic_pointer_cast<DropIndexStmt>(stmt))
+            return executeDropIndex(*s);
+        if (auto s = std::dynamic_pointer_cast<CreateUserStmt>(stmt))
+            return executeCreateUser(*s);
+        if (auto s = std::dynamic_pointer_cast<DropUserStmt>(stmt))
+            return executeDropUser(*s);
+        if (auto s = std::dynamic_pointer_cast<GrantStmt>(stmt))
+            return executeGrant(*s);
+        if (auto s = std::dynamic_pointer_cast<RevokeStmt>(stmt))
+            return executeRevoke(*s);
+        if (auto s = std::dynamic_pointer_cast<LoginStmt>(stmt))
+            return executeLogin(*s);
+        if (std::dynamic_pointer_cast<LogoutStmt>(stmt))
+            return executeLogout();
+        if (std::dynamic_pointer_cast<ShowUsersStmt>(stmt))
+            return executeShowUsers();
+        if (auto s = std::dynamic_pointer_cast<ShowGrantsStmt>(stmt))
+            return executeShowGrants(*s);
+        if (auto s = std::dynamic_pointer_cast<ExplainStmt>(stmt))
+            return executeExplain(*s);
 
         return QueryResult("Unknown statement type", false);
     } catch (const ReturnException&) {
@@ -108,6 +130,7 @@ QueryResult Executor::executeAll(const std::vector<StmtPtr>& stmts) {
 // ---------------------------------------------------------------------------
 
 QueryResult Executor::executeCreateTable(const CreateTableStmt& stmt) {
+    checkPermission(Permission::CREATE, stmt.tableName);
     std::vector<Column> columns;
     columns.reserve(stmt.columns.size());
     for (const auto& cd : stmt.columns) {
@@ -125,6 +148,7 @@ QueryResult Executor::executeCreateTable(const CreateTableStmt& stmt) {
 // ---------------------------------------------------------------------------
 
 QueryResult Executor::executeDropTable(const DropTableStmt& stmt) {
+    checkPermission(Permission::DROP, stmt.tableName);
     db_->dropTable(stmt.tableName);
     return QueryResult("Table '" + stmt.tableName + "' dropped.");
 }
@@ -134,6 +158,7 @@ QueryResult Executor::executeDropTable(const DropTableStmt& stmt) {
 // ---------------------------------------------------------------------------
 
 QueryResult Executor::executeInsert(const InsertStmt& stmt) {
+    checkPermission(Permission::INSERT, stmt.tableName);
     Table& table = db_->getTable(stmt.tableName);
     const auto& tableCols = table.getColumns();
     int inserted = 0;
@@ -177,6 +202,8 @@ QueryResult Executor::executeInsert(const InsertStmt& stmt) {
 // ---------------------------------------------------------------------------
 
 QueryResult Executor::executeSelect(const SelectStmt& stmt) {
+    if (!stmt.fromTable.empty())
+        checkPermission(Permission::SELECT, stmt.fromTable);
     // Start with the base table
     QueryResult result;
     std::vector<std::string> colNames;
@@ -426,6 +453,7 @@ QueryResult Executor::executeSelect(const SelectStmt& stmt) {
 // ---------------------------------------------------------------------------
 
 QueryResult Executor::executeUpdate(const UpdateStmt& stmt) {
+    checkPermission(Permission::UPDATE, stmt.tableName);
     Table& table = db_->getTable(stmt.tableName);
     const auto& cols = table.getColumns();
     std::vector<std::string> colNames;
@@ -462,6 +490,7 @@ QueryResult Executor::executeUpdate(const UpdateStmt& stmt) {
 // ---------------------------------------------------------------------------
 
 QueryResult Executor::executeDelete(const DeleteStmt& stmt) {
+    checkPermission(Permission::DELETE_PERM, stmt.tableName);
     Table& table = db_->getTable(stmt.tableName);
     const auto& cols = table.getColumns();
     std::vector<std::string> colNames;
@@ -1891,6 +1920,168 @@ QueryResult Executor::executeLoadDatabase(const LoadDatabaseStmt& stmt) {
     } catch (const std::exception& e) {
         return QueryResult(std::string("Load failed: ") + e.what(), false);
     }
+}
+
+// ---------------------------------------------------------------------------
+// INDEX
+// ---------------------------------------------------------------------------
+
+QueryResult Executor::executeCreateIndex(const CreateIndexStmt& stmt) {
+    Table& table = db_->getTable(stmt.tableName);
+    table.createIndex(stmt.indexName, stmt.columnName, stmt.unique);
+    return QueryResult("Index '" + stmt.indexName + "' created on " +
+                       stmt.tableName + "(" + stmt.columnName + ").");
+}
+
+QueryResult Executor::executeDropIndex(const DropIndexStmt& stmt) {
+    Table& table = db_->getTable(stmt.tableName);
+    table.dropIndex(stmt.indexName);
+    return QueryResult("Index '" + stmt.indexName + "' dropped.");
+}
+
+// ---------------------------------------------------------------------------
+// SECURITY
+// ---------------------------------------------------------------------------
+
+void Executor::checkPermission(Permission perm, const std::string& tableName) const {
+    if (!security_.isEnabled()) return;
+    if (!security_.isLoggedIn())
+        throw std::runtime_error("Authentication required. Use LOGIN <user> <password>;");
+    if (!security_.hasPermission(security_.currentUser(), perm, tableName))
+        throw std::runtime_error("Permission denied: " + permissionToString(perm) +
+                                 " on " + tableName);
+}
+
+QueryResult Executor::executeCreateUser(const CreateUserStmt& stmt) {
+    security_.createUser(stmt.userName, stmt.password, stmt.isAdmin);
+    return QueryResult("User '" + stmt.userName + "' created.");
+}
+
+QueryResult Executor::executeDropUser(const DropUserStmt& stmt) {
+    security_.dropUser(stmt.userName);
+    return QueryResult("User '" + stmt.userName + "' dropped.");
+}
+
+QueryResult Executor::executeGrant(const GrantStmt& stmt) {
+    Permission perm = stringToPermission(stmt.permission);
+    security_.grant(stmt.userName, perm, stmt.tableName);
+    return QueryResult("Granted " + permissionToString(perm) + " to '" + stmt.userName + "'.");
+}
+
+QueryResult Executor::executeRevoke(const RevokeStmt& stmt) {
+    Permission perm = stringToPermission(stmt.permission);
+    security_.revoke(stmt.userName, perm, stmt.tableName);
+    return QueryResult("Revoked " + permissionToString(perm) + " from '" + stmt.userName + "'.");
+}
+
+QueryResult Executor::executeLogin(const LoginStmt& stmt) {
+    if (!security_.authenticate(stmt.userName, stmt.password))
+        return QueryResult("Authentication failed for user '" + stmt.userName + "'", false);
+    security_.login(stmt.userName);
+    return QueryResult("Logged in as '" + stmt.userName + "'.");
+}
+
+QueryResult Executor::executeLogout() {
+    security_.logout();
+    return QueryResult("Logged out.");
+}
+
+QueryResult Executor::executeShowUsers() {
+    return security_.showUsers();
+}
+
+QueryResult Executor::executeShowGrants(const ShowGrantsStmt& stmt) {
+    return security_.showGrants(stmt.userName);
+}
+
+// ---------------------------------------------------------------------------
+// EXPLAIN
+// ---------------------------------------------------------------------------
+
+QueryResult Executor::executeExplain(const ExplainStmt& stmt) {
+    QueryResult result;
+    result.columnNames = {"Step", "Operation", "Details"};
+
+    if (auto s = std::dynamic_pointer_cast<SelectStmt>(stmt.innerStmt)) {
+        int step = 1;
+        if (!s->fromTable.empty())
+            result.rows.push_back({Value(step++), Value(std::string("TABLE SCAN")),
+                Value(std::string("Scan table '" + s->fromTable + "'"))});
+        for (const auto& join : s->joins)
+            result.rows.push_back({Value(step++), Value(std::string("JOIN")),
+                Value(std::string(join.joinType + " join with '" + join.tableName + "'"))});
+        if (s->whereClause)
+            result.rows.push_back({Value(step++), Value(std::string("FILTER")),
+                Value(std::string("Apply WHERE predicate"))});
+        if (!s->groupBy.empty())
+            result.rows.push_back({Value(step++), Value(std::string("GROUP")),
+                Value(std::string("Group by " + std::to_string(s->groupBy.size()) + " column(s)"))});
+        if (s->havingClause)
+            result.rows.push_back({Value(step++), Value(std::string("FILTER")),
+                Value(std::string("Apply HAVING predicate"))});
+        if (!s->orderBy.empty())
+            result.rows.push_back({Value(step++), Value(std::string("SORT")),
+                Value(std::string("Order by " + std::to_string(s->orderBy.size()) + " column(s)"))});
+        if (s->limit >= 0)
+            result.rows.push_back({Value(step++), Value(std::string("LIMIT")),
+                Value(std::string("Limit " + std::to_string(s->limit)))});
+        if (s->distinct)
+            result.rows.push_back({Value(step++), Value(std::string("DISTINCT")),
+                Value(std::string("Remove duplicate rows"))});
+        result.rows.push_back({Value(step++), Value(std::string("PROJECT")),
+            Value(std::string("Select " + std::to_string(s->columns.size()) + " column(s)"))});
+    } else if (auto s = std::dynamic_pointer_cast<PipelineStmt>(stmt.innerStmt)) {
+        int step = 1;
+        result.rows.push_back({Value(step++), Value(std::string("TABLE SCAN")),
+            Value(std::string("Scan table '" + s->tableName + "'"))});
+        for (const auto& stage : s->stages) {
+            std::string op, detail;
+            switch (stage.type) {
+                case PipelineStage::Type::WHERE: op = "FILTER"; detail = "Apply WHERE predicate"; break;
+                case PipelineStage::Type::SELECT: op = "PROJECT"; detail = "Select columns"; break;
+                case PipelineStage::Type::ORDERBY: op = "SORT"; detail = "Order by columns"; break;
+                case PipelineStage::Type::LIMIT:
+                case PipelineStage::Type::TAKE: op = "LIMIT"; detail = "Limit rows"; break;
+                case PipelineStage::Type::OFFSET:
+                case PipelineStage::Type::SKIP_STAGE: op = "OFFSET"; detail = "Skip rows"; break;
+                case PipelineStage::Type::GROUPBY: op = "GROUP"; detail = "Group by columns"; break;
+                case PipelineStage::Type::HAVING: op = "FILTER"; detail = "Apply HAVING predicate"; break;
+                case PipelineStage::Type::JOIN: op = "JOIN"; detail = stage.joinType + " join with '" + stage.joinTable + "'"; break;
+                case PipelineStage::Type::DISTINCT: op = "DISTINCT"; detail = "Remove duplicates"; break;
+                case PipelineStage::Type::COUNT_STAGE: op = "AGGREGATE"; detail = "Count rows"; break;
+                case PipelineStage::Type::MAP: op = "MAP"; detail = "Add computed columns"; break;
+                case PipelineStage::Type::PRINT: op = "OUTPUT"; detail = "Print results"; break;
+                default: op = "UNKNOWN"; detail = "Unknown stage"; break;
+            }
+            result.rows.push_back({Value(step++), Value(op), Value(detail)});
+        }
+    } else if (auto s = std::dynamic_pointer_cast<InsertStmt>(stmt.innerStmt)) {
+        result.rows.push_back({Value(1), Value(std::string("INSERT")),
+            Value(std::string("Insert " + std::to_string(s->valueRows.size()) + " row(s) into '" + s->tableName + "'"))});
+    } else if (auto s = std::dynamic_pointer_cast<UpdateStmt>(stmt.innerStmt)) {
+        int step = 1;
+        result.rows.push_back({Value(step++), Value(std::string("TABLE SCAN")),
+            Value(std::string("Scan table '" + s->tableName + "'"))});
+        if (s->whereClause)
+            result.rows.push_back({Value(step++), Value(std::string("FILTER")),
+                Value(std::string("Apply WHERE predicate"))});
+        result.rows.push_back({Value(step++), Value(std::string("UPDATE")),
+            Value(std::string("Update " + std::to_string(s->assignments.size()) + " column(s)"))});
+    } else if (auto s = std::dynamic_pointer_cast<DeleteStmt>(stmt.innerStmt)) {
+        int step = 1;
+        result.rows.push_back({Value(step++), Value(std::string("TABLE SCAN")),
+            Value(std::string("Scan table '" + s->tableName + "'"))});
+        if (s->whereClause)
+            result.rows.push_back({Value(step++), Value(std::string("FILTER")),
+                Value(std::string("Apply WHERE predicate"))});
+        result.rows.push_back({Value(step++), Value(std::string("DELETE")),
+            Value(std::string("Delete matching rows"))});
+    } else {
+        result.rows.push_back({Value(1), Value(std::string("EXECUTE")),
+            Value(std::string("Direct execution"))});
+    }
+
+    return result;
 }
 
 } // namespace epee

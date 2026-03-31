@@ -117,6 +117,15 @@ std::string DbToken::typeToString() const {
         case DbTokenType::SAVE: return "SAVE";
         case DbTokenType::LOAD: return "LOAD";
         case DbTokenType::DATABASE: return "DATABASE";
+        case DbTokenType::USER: return "USER";
+        case DbTokenType::PASSWORD: return "PASSWORD";
+        case DbTokenType::GRANT_KW: return "GRANT";
+        case DbTokenType::REVOKE_KW: return "REVOKE";
+        case DbTokenType::LOGIN: return "LOGIN";
+        case DbTokenType::LOGOUT: return "LOGOUT";
+        case DbTokenType::TO: return "TO";
+        case DbTokenType::PRIVILEGES: return "PRIVILEGES";
+        case DbTokenType::EXPLAIN: return "EXPLAIN";
         case DbTokenType::PLUS: return "PLUS";
         case DbTokenType::MINUS: return "MINUS";
         case DbTokenType::STAR: return "STAR";
@@ -292,6 +301,19 @@ void DbLexer::initKeywords() {
     keywords_["save"] = DbTokenType::SAVE;
     keywords_["load"] = DbTokenType::LOAD;
     keywords_["database"] = DbTokenType::DATABASE;
+
+    // Security
+    keywords_["user"] = DbTokenType::USER;
+    keywords_["password"] = DbTokenType::PASSWORD;
+    keywords_["grant"] = DbTokenType::GRANT_KW;
+    keywords_["revoke"] = DbTokenType::REVOKE_KW;
+    keywords_["login"] = DbTokenType::LOGIN;
+    keywords_["logout"] = DbTokenType::LOGOUT;
+    keywords_["to"] = DbTokenType::TO;
+    keywords_["privileges"] = DbTokenType::PRIVILEGES;
+
+    // Operational
+    keywords_["explain"] = DbTokenType::EXPLAIN;
 }
 
 char DbLexer::peek() const {

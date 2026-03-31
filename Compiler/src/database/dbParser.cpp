@@ -89,8 +89,23 @@ StmtPtr DbParser::parseStatement() {
     if (isAtEnd()) return nullptr;
 
     switch (peek().type) {
-        case DbTokenType::CREATE:    return parseCreateTable();
-        case DbTokenType::DROP:      return parseDropTable();
+        case DbTokenType::CREATE: {
+            // Look ahead to distinguish CREATE TABLE / CREATE INDEX / CREATE USER
+            if (peekNext().is(DbTokenType::INDEX))
+                return parseCreateIndex(false);
+            if (peekNext().is(DbTokenType::UNIQUE))
+                return parseCreateIndex(true);
+            if (peekNext().is(DbTokenType::USER))
+                return parseCreateUser();
+            return parseCreateTable();
+        }
+        case DbTokenType::DROP: {
+            if (peekNext().is(DbTokenType::INDEX))
+                return parseDropIndex();
+            if (peekNext().is(DbTokenType::USER))
+                return parseDropUser();
+            return parseDropTable();
+        }
         case DbTokenType::INSERT:    return parseInsert();
         case DbTokenType::SELECT:    return parseSelect();
         case DbTokenType::UPDATE:    return parseUpdate();
@@ -102,6 +117,17 @@ StmtPtr DbParser::parseStatement() {
         case DbTokenType::DESCRIBE:  return parseDescribe();
         case DbTokenType::SAVE:      return parseSaveDatabase();
         case DbTokenType::LOAD:      return parseLoadDatabase();
+        case DbTokenType::GRANT_KW:  return parseGrant();
+        case DbTokenType::REVOKE_KW: return parseRevoke();
+        case DbTokenType::LOGIN:     return parseLogin();
+        case DbTokenType::LOGOUT:    return parseLogout();
+        case DbTokenType::EXPLAIN: {
+            advance(); // EXPLAIN
+            auto inner = parseStatement();
+            auto stmt = std::make_shared<ExplainStmt>();
+            stmt->innerStmt = inner;
+            return stmt;
+        }
         case DbTokenType::IF:        return parseIf();
         case DbTokenType::WHILE:     return parseWhile();
         case DbTokenType::DEF:       return parseFuncDef();
@@ -550,7 +576,29 @@ StmtPtr DbParser::parseRollback() {
 
 StmtPtr DbParser::parseShowTables() {
     advance(); // SHOW
-    expect(DbTokenType::TABLES, "Expected 'TABLES' after 'SHOW'");
+    if (check(DbTokenType::USER)) {
+        advance(); // USER (SHOW USERS)
+        // Accept optional 's' by checking if next is IDENTIFIER "s" -- skip it
+        expect(DbTokenType::SEMICOLON, "Expected ';' after SHOW USERS");
+        return std::make_shared<ShowUsersStmt>();
+    }
+    if (check(DbTokenType::GRANT_KW)) {
+        advance(); // GRANT (SHOW GRANTS)
+        // Accept optional 's' -- we just consumed GRANT
+        // Expect FOR keyword (use identifier)
+        // "for" is not a keyword, accept any identifier
+        auto& tok = peek();
+        if (tok.type == DbTokenType::IDENTIFIER) {
+            std::string val = tok.value;
+            std::transform(val.begin(), val.end(), val.begin(), ::tolower);
+            if (val == "for") advance(); // skip FOR
+        }
+        auto stmt = std::make_shared<ShowGrantsStmt>();
+        stmt->userName = expect(DbTokenType::IDENTIFIER, "Expected username").value;
+        expect(DbTokenType::SEMICOLON, "Expected ';' after SHOW GRANTS");
+        return stmt;
+    }
+    expect(DbTokenType::TABLES, "Expected 'TABLES', 'USERS', or 'GRANTS' after 'SHOW'");
     expect(DbTokenType::SEMICOLON, "Expected ';' after SHOW TABLES");
     return std::make_shared<ShowTablesStmt>();
 }
@@ -1108,6 +1156,124 @@ ExprPtr DbParser::parseColumnOrFunction() {
 
     // Simple column reference
     return std::make_shared<ColumnExpr>(name);
+}
+
+// ── CREATE INDEX ─────────────────────────────────────────────────────
+
+StmtPtr DbParser::parseCreateIndex(bool unique) {
+    advance(); // CREATE
+    if (unique) advance(); // UNIQUE
+    advance(); // INDEX
+
+    auto stmt = std::make_shared<CreateIndexStmt>();
+    stmt->unique = unique;
+    stmt->indexName = expect(DbTokenType::IDENTIFIER, "Expected index name").value;
+    expect(DbTokenType::ON, "Expected 'ON' after index name");
+    stmt->tableName = expect(DbTokenType::IDENTIFIER, "Expected table name").value;
+    expect(DbTokenType::LPAREN, "Expected '(' after table name");
+    stmt->columnName = expect(DbTokenType::IDENTIFIER, "Expected column name").value;
+    expect(DbTokenType::RPAREN, "Expected ')' after column name");
+    expect(DbTokenType::SEMICOLON, "Expected ';'");
+    return stmt;
+}
+
+StmtPtr DbParser::parseDropIndex() {
+    advance(); // DROP
+    advance(); // INDEX
+
+    auto stmt = std::make_shared<DropIndexStmt>();
+    stmt->indexName = expect(DbTokenType::IDENTIFIER, "Expected index name").value;
+    expect(DbTokenType::ON, "Expected 'ON' after index name");
+    stmt->tableName = expect(DbTokenType::IDENTIFIER, "Expected table name").value;
+    expect(DbTokenType::SEMICOLON, "Expected ';'");
+    return stmt;
+}
+
+// ── Security statements ─────────────────────────────────────────────
+
+StmtPtr DbParser::parseCreateUser() {
+    advance(); // CREATE
+    advance(); // USER
+
+    auto stmt = std::make_shared<CreateUserStmt>();
+    stmt->userName = expect(DbTokenType::IDENTIFIER, "Expected username").value;
+    expect(DbTokenType::PASSWORD, "Expected 'PASSWORD' after username");
+    stmt->password = expect(DbTokenType::STRING_LIT, "Expected password string").value;
+    // Optional ADMIN keyword (check identifier)
+    if (!isAtEnd() && peek().type == DbTokenType::IDENTIFIER) {
+        std::string val = peek().value;
+        std::transform(val.begin(), val.end(), val.begin(), ::tolower);
+        if (val == "admin") {
+            advance();
+            stmt->isAdmin = true;
+        }
+    }
+    expect(DbTokenType::SEMICOLON, "Expected ';'");
+    return stmt;
+}
+
+StmtPtr DbParser::parseDropUser() {
+    advance(); // DROP
+    advance(); // USER
+
+    auto stmt = std::make_shared<DropUserStmt>();
+    stmt->userName = expect(DbTokenType::IDENTIFIER, "Expected username").value;
+    expect(DbTokenType::SEMICOLON, "Expected ';'");
+    return stmt;
+}
+
+StmtPtr DbParser::parseGrant() {
+    advance(); // GRANT
+
+    auto stmt = std::make_shared<GrantStmt>();
+    // Permission name -- it can be a keyword like SELECT, INSERT etc.
+    stmt->permission = peek().value;
+    advance();
+
+    // Optional ON <table>
+    if (check(DbTokenType::ON)) {
+        advance(); // ON
+        stmt->tableName = expect(DbTokenType::IDENTIFIER, "Expected table name").value;
+    }
+
+    expect(DbTokenType::TO, "Expected 'TO'");
+    stmt->userName = expect(DbTokenType::IDENTIFIER, "Expected username").value;
+    expect(DbTokenType::SEMICOLON, "Expected ';'");
+    return stmt;
+}
+
+StmtPtr DbParser::parseRevoke() {
+    advance(); // REVOKE
+
+    auto stmt = std::make_shared<RevokeStmt>();
+    stmt->permission = peek().value;
+    advance();
+
+    if (check(DbTokenType::ON)) {
+        advance(); // ON
+        stmt->tableName = expect(DbTokenType::IDENTIFIER, "Expected table name").value;
+    }
+
+    expect(DbTokenType::FROM, "Expected 'FROM'");
+    stmt->userName = expect(DbTokenType::IDENTIFIER, "Expected username").value;
+    expect(DbTokenType::SEMICOLON, "Expected ';'");
+    return stmt;
+}
+
+StmtPtr DbParser::parseLogin() {
+    advance(); // LOGIN
+
+    auto stmt = std::make_shared<LoginStmt>();
+    stmt->userName = expect(DbTokenType::IDENTIFIER, "Expected username").value;
+    stmt->password = expect(DbTokenType::STRING_LIT, "Expected password string").value;
+    expect(DbTokenType::SEMICOLON, "Expected ';'");
+    return stmt;
+}
+
+StmtPtr DbParser::parseLogout() {
+    advance(); // LOGOUT
+    expect(DbTokenType::SEMICOLON, "Expected ';'");
+    return std::make_shared<LogoutStmt>();
 }
 
 } // namespace epee

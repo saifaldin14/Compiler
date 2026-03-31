@@ -20,6 +20,7 @@
 #include "dbParser.hpp"
 #include "value.hpp"
 #include "storage.hpp"
+#include "security.hpp"
 
 namespace epee {
 
@@ -32,10 +33,12 @@ public:
     QueryResult executeAll(const std::vector<StmtPtr>& stmts);
 
     Database& getDatabase() { return *db_; }
+    SecurityManager& getSecurity() { return security_; }
 
 private:
     Database* db_;
     Database ownedDb_;
+    SecurityManager security_;
 
     // Variable storage for imperative code
     std::unordered_map<std::string, Value> variables_;
@@ -65,6 +68,20 @@ private:
     QueryResult executeFuncCall(const FuncCallStmt& stmt);
     QueryResult executeSaveDatabase(const SaveDatabaseStmt& stmt);
     QueryResult executeLoadDatabase(const LoadDatabaseStmt& stmt);
+    QueryResult executeCreateIndex(const CreateIndexStmt& stmt);
+    QueryResult executeDropIndex(const DropIndexStmt& stmt);
+    QueryResult executeCreateUser(const CreateUserStmt& stmt);
+    QueryResult executeDropUser(const DropUserStmt& stmt);
+    QueryResult executeGrant(const GrantStmt& stmt);
+    QueryResult executeRevoke(const RevokeStmt& stmt);
+    QueryResult executeLogin(const LoginStmt& stmt);
+    QueryResult executeLogout();
+    QueryResult executeShowUsers();
+    QueryResult executeShowGrants(const ShowGrantsStmt& stmt);
+    QueryResult executeExplain(const ExplainStmt& stmt);
+
+    // Permission check helper
+    void checkPermission(Permission perm, const std::string& tableName) const;
 
     // Expression evaluation
     Value evaluate(const ExprPtr& expr, const Row& row = {},

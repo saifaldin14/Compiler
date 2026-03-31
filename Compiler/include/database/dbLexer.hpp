@@ -74,6 +74,12 @@ enum class DbTokenType {
     // Keywords - Persistence
     SAVE, LOAD, DATABASE,
 
+    // Keywords - Security
+    USER, PASSWORD, GRANT_KW, REVOKE_KW, LOGIN, LOGOUT, TO, PRIVILEGES,
+
+    // Keywords - Operational
+    EXPLAIN,
+
     // Keywords - Pipeline aliases
     TAKE, SKIP_KW, MAP,
 

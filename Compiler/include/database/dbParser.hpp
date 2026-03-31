@@ -268,6 +268,60 @@ struct LoadDatabaseStmt : Statement {
     std::string filepath;
 };
 
+// Indexing
+struct CreateIndexStmt : Statement {
+    std::string indexName;
+    std::string tableName;
+    std::string columnName;
+    bool unique = false;
+};
+
+struct DropIndexStmt : Statement {
+    std::string indexName;
+    std::string tableName;
+};
+
+// Security
+struct CreateUserStmt : Statement {
+    std::string userName;
+    std::string password;
+    bool isAdmin = false;
+};
+
+struct DropUserStmt : Statement {
+    std::string userName;
+};
+
+struct GrantStmt : Statement {
+    std::string permission;
+    std::string tableName;
+    std::string userName;
+};
+
+struct RevokeStmt : Statement {
+    std::string permission;
+    std::string tableName;
+    std::string userName;
+};
+
+struct LoginStmt : Statement {
+    std::string userName;
+    std::string password;
+};
+
+struct LogoutStmt : Statement {};
+
+struct ShowUsersStmt : Statement {};
+
+struct ShowGrantsStmt : Statement {
+    std::string userName;
+};
+
+// Operational
+struct ExplainStmt : Statement {
+    StmtPtr innerStmt;
+};
+
 // The Parser
 class DbParser {
 public:
@@ -318,6 +372,14 @@ private:
     StmtPtr parsePrint();
     StmtPtr parseSaveDatabase();
     StmtPtr parseLoadDatabase();
+    StmtPtr parseCreateIndex(bool unique);
+    StmtPtr parseDropIndex();
+    StmtPtr parseCreateUser();
+    StmtPtr parseDropUser();
+    StmtPtr parseGrant();
+    StmtPtr parseRevoke();
+    StmtPtr parseLogin();
+    StmtPtr parseLogout();
 
     PipelineStage parsePipelineStage();
 

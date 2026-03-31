@@ -18,6 +18,7 @@
 #include "dbParser.hpp"
 #include "storage.hpp"
 #include "wal.hpp"
+#include "logger.hpp"
 
 namespace epee {
 
@@ -30,11 +31,14 @@ public:
     void executeFile(const std::string& filename);
     void executeString(const std::string& source);
 
+    void setLogger(std::unique_ptr<Logger> logger) { logger_ = std::move(logger); }
+
 private:
     Database db_;
     Executor executor_;
     DbLexer lexer_;
     std::unique_ptr<WriteAheadLog> wal_;
+    std::unique_ptr<Logger> logger_;
     std::string dbPath_;
 
     void initPersistence(const std::string& dbPath);

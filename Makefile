@@ -26,12 +26,15 @@ COMPILER_SRCS = \
 DB_SRCS = \
     Compiler/src/database/value.cpp \
     Compiler/src/database/table.cpp \
+    Compiler/src/database/btree.cpp \
     Compiler/src/database/dbLexer.cpp \
     Compiler/src/database/dbParser.cpp \
     Compiler/src/database/executor.cpp \
     Compiler/src/database/repl.cpp \
     Compiler/src/database/storage.cpp \
-    Compiler/src/database/wal.cpp
+    Compiler/src/database/wal.cpp \
+    Compiler/src/database/security.cpp \
+    Compiler/src/database/logger.cpp
 
 # All source files
 ALL_SRCS = $(COMPILER_SRCS) $(DB_SRCS) Compiler/src/main.cpp
@@ -72,5 +75,8 @@ test: $(TARGET)
 	@echo ""
 	@echo "--- Test: New Language Features ---"
 	./$(TARGET) Compiler/input/TestDB5.ep
+	@echo ""
+	@echo "--- Test: Production Features (Persistence, Indexing, Security, Ops) ---"
+	./$(TARGET) Compiler/input/TestDB6.ep
 	@echo ""
 	@echo "=== All tests complete ==="

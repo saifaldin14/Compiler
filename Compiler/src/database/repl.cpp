@@ -217,6 +217,22 @@ void Repl::run() {
             printHelp();
             continue;
         }
+        if (lower == ".status" || lower == "status") {
+            std::cout << "\n  Épée Database Status\n";
+            std::cout << "  ══════════════════════\n";
+            auto tables = db_.showTables();
+            int totalRows = 0;
+            for (const auto& row : tables.rows)
+                totalRows += row[2].asInt();
+            std::cout << "  Tables: " << tables.rows.size() << "\n";
+            std::cout << "  Total rows: " << totalRows << "\n";
+            if (!dbPath_.empty())
+                std::cout << "  Database file: " << dbPath_ << "\n";
+            if (logger_ && logger_->isOpen())
+                std::cout << "  Log file: " << logger_->getFilepath() << "\n";
+            std::cout << std::endl;
+            continue;
+        }
 
         // Check if statement is complete (ends with ;)
         std::string input = line;
@@ -268,10 +284,13 @@ void Repl::executeString(const std::string& source) {
             QueryResult result = executor_.execute(stmt);
             if (!result.success) {
                 std::cerr << "Error: " << result.message << std::endl;
+                if (logger_) logger_->logQuery(source, false, result.message);
             } else if (!result.columnNames.empty() || !result.rows.empty()) {
                 std::cout << result.toPrettyTable();
+                if (logger_) logger_->logQuery(source, true);
             } else if (!result.message.empty()) {
                 std::cout << result.message << std::endl;
+                if (logger_) logger_->logQuery(source, true);
             }
         }
     } catch (const std::exception& e) {
