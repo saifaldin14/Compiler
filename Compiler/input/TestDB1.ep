@@ -1,0 +1,48 @@
+// ============================================================
+// TestDB1.ep - Basic Table Operations
+// Demonstrates: CREATE TABLE, INSERT, SELECT, PRINT
+// ============================================================
+
+// Create a users table
+create table users (
+    id int,
+    name string,
+    email string,
+    age int,
+    salary double,
+    active bool
+);
+
+// Insert data
+insert into users values (1, "Alice", "alice@example.com", 30, 75000.0, true);
+insert into users values (2, "Bob", "bob@example.com", 25, 55000.0, true);
+insert into users values (3, "Charlie", "charlie@example.com", 35, 90000.0, false);
+insert into users values (4, "Diana", "diana@example.com", 28, 65000.0, true);
+insert into users values (5, "Eve", "eve@example.com", 32, 82000.0, true);
+
+// Show all tables
+show tables;
+
+// Describe the users table schema
+describe users;
+
+// Select all rows
+select * from users;
+
+// Select specific columns
+select name, email, salary from users;
+
+// Select with WHERE clause
+select name, age, salary from users where age > 28;
+
+// Select with ORDER BY
+select name, salary from users orderby salary desc;
+
+// Select with LIMIT
+select name, age from users orderby age asc limit 3;
+
+// Select with DISTINCT
+select distinct active from users;
+
+// Print a message
+print "Basic table operations complete!";

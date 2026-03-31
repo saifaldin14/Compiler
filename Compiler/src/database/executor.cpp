@@ -479,7 +479,21 @@ QueryResult Executor::executePipeline(const PipelineStmt& stmt) {
     Table& table = db_->getTable(stmt.tableName);
     QueryResult current = table.selectAll();
 
-    for (const auto& stage : stmt.stages) {
+    for (size_t i = 0; i < stmt.stages.size(); i++) {
+        const auto& stage = stmt.stages[i];
+
+        // Combine GROUPBY + SELECT into a single groupAndAggregate call
+        if (stage.type == PipelineStage::Type::GROUPBY &&
+            i + 1 < stmt.stages.size() &&
+            stmt.stages[i + 1].type == PipelineStage::Type::SELECT) {
+            const auto& selectStage = stmt.stages[i + 1];
+            current = groupAndAggregate(current, stage.groupCols,
+                                        selectStage.columns, nullptr);
+            if (!current.success) return current;
+            i++; // skip the SELECT stage since we handled it
+            continue;
+        }
+
         current = applyPipelineStage(stage, current, stmt.tableName);
         if (!current.success) return current;
     }
