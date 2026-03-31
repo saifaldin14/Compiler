@@ -68,4 +68,7 @@ test: $(TARGET)
 	@echo "--- Test: Advanced Features ---"
 	./$(TARGET) Compiler/input/TestDB4.ep
 	@echo ""
+	@echo "--- Test: New Language Features ---"
+	./$(TARGET) Compiler/input/TestDB5.ep
+	@echo ""
 	@echo "=== All tests complete ==="

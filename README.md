@@ -1,29 +1,48 @@
-```
-     ██████╗ ██████╗ ██████╗ ██████╗
-    ██╔════╝ ██╔══██╗██╔════╝██╔════╝
-    █████╗   ██████╔╝█████╗  █████╗
-    ██╔══╝   ██╔═══╝ ██╔══╝  ██╔══╝
-    ███████╗ ██║     ███████╗███████╗
-    ╚══════╝ ╚═╝     ╚══════╝╚══════╝
-    The Pipeline-First Database Query Language
-```
+# Epee -- The Pipeline-First Database Query Language
 
-# Épée — The Pipeline-First Database Query Language
-
-> *Originally created by **Saif Al-Din Ali** as a compiler for a pseudocode-style language. Enhanced with a full-featured, pipeline-first database query engine.*
-
-[![C++17](https://img.shields.io/badge/C%2B%2B-17-blue.svg)](https://isocpp.org/)
-[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+Originally created by Saif Al-Din Ali as a compiler for a pseudocode-style
+language.  Enhanced with a full-featured, pipeline-first database query engine,
+an interactive REPL, and a growing library of built-in functions.
 
 ---
 
-## What is Épée?
+## Table of Contents
 
-**Épée** is a database query language built from the ground up around the **pipeline operator `|>`**. Instead of writing nested, inside-out SQL, Épée lets you compose queries as a left-to-right chain of transformations — the way you actually *think* about data.
+1. [Overview](#overview)
+2. [Building and Running](#building-and-running)
+3. [Pipeline Queries](#pipeline-queries)
+4. [Data Types](#data-types)
+5. [Schema Operations](#schema-operations)
+6. [Data Manipulation](#data-manipulation)
+7. [Pipeline Stages Reference](#pipeline-stages-reference)
+8. [Expressions and Operators](#expressions-and-operators)
+9. [CASE / WHEN Expressions](#case--when-expressions)
+10. [Aggregate Functions](#aggregate-functions)
+11. [Scalar Functions](#scalar-functions)
+12. [Predicate Expressions](#predicate-expressions)
+13. [Joins](#joins)
+14. [Grouping and Aggregation](#grouping-and-aggregation)
+15. [Transactions](#transactions)
+16. [Variables and Control Flow](#variables-and-control-flow)
+17. [User-Defined Functions](#user-defined-functions)
+18. [Interactive REPL](#interactive-repl)
+19. [Legacy Compiler Mode](#legacy-compiler-mode)
+20. [Project Structure](#project-structure)
 
-### SQL vs Épée — See the Difference
+---
 
-**Traditional SQL:**
+## Overview
+
+Epee is a database query language built around the pipeline operator `|>`.
+Queries are written as a left-to-right chain of transformations instead of
+the nested, inside-out structure found in SQL.  The engine runs entirely
+in-memory, supports transactions, and includes an interactive REPL for
+exploratory work.
+
+### SQL versus Epee
+
+Traditional SQL:
+
 ```sql
 SELECT name, salary * 12 AS annual_pay
   FROM employees
@@ -32,7 +51,8 @@ SELECT name, salary * 12 AS annual_pay
  LIMIT 5;
 ```
 
-**Épée:**
+The same query in Epee:
+
 ```
 employees
     |> where(department == "Engineering" and salary > 80000.0)
@@ -42,129 +62,85 @@ employees
     |> print;
 ```
 
-Each stage feeds its output into the next. No nesting. No subqueries. Just a clean, readable pipeline.
+Each stage reads left to right: start with the `employees` table, keep rows
+matching the condition, project two columns, sort them, take the first five,
+and print the result.
 
 ---
 
-## Table of Contents
+## Building and Running
 
-- [Quick Start](#quick-start)
-- [The Pipeline Operator](#the-pipeline-operator)
-- [Data Types](#data-types)
-- [DDL — Defining Your Schema](#ddl--defining-your-schema)
-- [DML — Manipulating Data](#dml--manipulating-data)
-- [Pipeline Stages](#pipeline-stages)
-- [JOINs](#joins)
-- [Aggregate Functions](#aggregate-functions)
-- [String Functions](#string-functions)
-- [Computed Columns & Aliases](#computed-columns--aliases)
-- [Predicates](#predicates)
-- [Transactions](#transactions)
-- [Imperative Features](#imperative-features)
-- [Comments](#comments)
-- [Interactive REPL](#interactive-repl)
-- [Architecture](#architecture)
-- [Project Structure](#project-structure)
-- [Legacy Compiler](#legacy-compiler)
-- [Running Tests](#running-tests)
-- [Author & Credits](#author--credits)
+Requirements: a C++17 compiler (g++ or clang++) and GNU Make.
 
----
-
-## Quick Start
-
-### Build
-
-```bash
-make            # Compile everything with g++ (C++17)
+```
+make            # build the binary
+make clean      # remove object files and the binary
+make test       # run all built-in test suites
 ```
 
-### Run
+Three execution modes:
 
-```bash
-./epee                        # Launch interactive REPL
-./epee queries.ep             # Execute a .ep query file
-./epee --compile program.ep   # Legacy compiler mode (lexer → parser → semantic → TAC)
-./epee --help                 # Show usage information
+```
+./epee                      # start the interactive REPL
+./epee queries.ep           # run a query file
+./epee --compile program.ep # run the legacy compiler pipeline
 ```
 
 ---
 
-## The Pipeline Operator
+## Pipeline Queries
 
-The **`|>`** operator is Épée's defining feature. It takes the result on the left and passes it as input to the stage on the right, creating a fluent chain of data transformations.
+A pipeline begins with a table name followed by one or more stages separated
+by `|>`.  Each stage transforms the result set from the previous stage.
 
 ```
 table_name
     |> stage1(...)
     |> stage2(...)
-    |> stage3(...)
+    |> ...
     |> print;
 ```
 
-### Why Pipelines?
+The final `print` stage outputs the result as a formatted ASCII table.  A
+pipeline that does not end with `print` still executes but produces no visible
+output (useful for `update` and `delete` pipelines).
 
-| Aspect | SQL | Épée Pipelines |
-|---|---|---|
-| Read order | Inside-out, bottom-up | Left-to-right, top-to-bottom |
-| Composability | Subqueries, CTEs | Just add another `\|>` stage |
-| Mental model | Declarative set algebra | Sequential data flow |
-
-### A Real-World Example
-
-Find the top 5 highest-paid engineers, compute their annual salary and bonus, and display the results:
+Stages can be written on a single line or across multiple lines for
+readability:
 
 ```
-employees
-    |> where(department == "Engineering" and salary > 80000.0)
-    |> select(name, title, salary, salary * 12 as annual_salary, salary * 0.1 as bonus)
-    |> orderby(annual_salary desc)
-    |> limit(5)
-    |> print;
-```
-
-Output is a pretty-printed ASCII table:
-
-```
-+----------+------------+----------+---------------+---------+
-| name     | title      | salary   | annual_salary | bonus   |
-+----------+------------+----------+---------------+---------+
-| Charlie  | Lead Dev   | 110000.0 | 1320000.0     | 11000.0 |
-| Alice    | Senior Dev | 95000.0  | 1140000.0     | 9500.0  |
-| Ivy      | Senior Dev | 92000.0  | 1104000.0     | 9200.0  |
-| Grace    | Mid Dev    | 85000.0  | 1020000.0     | 8500.0  |
-+----------+------------+----------+---------------+---------+
+employees |> where(salary > 50000.0) |> select(name, salary) |> print;
 ```
 
 ---
 
 ## Data Types
 
-| Type | Description | Example |
-|---|---|---|
-| `int` | Integer numbers | `42`, `-7`, `0` |
-| `double` | Floating-point numbers | `3.14`, `99000.0` |
-| `string` | Text (double-quoted) | `"hello world"` |
-| `bool` | Boolean values | `true`, `false` |
-| `null` | Null / missing value | `null` |
+| Type     | Literal examples          | Notes                              |
+|----------|---------------------------|------------------------------------|
+| `int`    | `42`, `-7`, `0`           | 32-bit signed integer              |
+| `double` | `3.14`, `-0.5`, `1e6`     | 64-bit floating point              |
+| `string` | `"hello"`, `"it's fine"`  | Double-quoted, supports `\"`, `\\` |
+| `bool`   | `true`, `false`           |                                    |
+| `null`   | `null`                    | The absence of a value             |
 
 ---
 
-## DDL — Defining Your Schema
+## Schema Operations
 
 ### CREATE TABLE
 
 ```
 create table employees (
-    id int,
-    name string,
-    department string,
-    salary double,
-    active bool
+    id      int primary key,
+    name    string not null,
+    email   string unique,
+    salary  double,
+    active  bool
 );
 ```
 
-Column constraints including `PRIMARY KEY`, `UNIQUE`, and `NOT NULL` are supported.
+Column constraints: `primary key`, `unique`, `not null`.
 
 ### DROP TABLE
 
@@ -178,114 +154,378 @@ drop table employees;
 show tables;
 ```
 
+Displays every table with its column count and row count.
+
 ### DESCRIBE
 
 ```
 describe employees;
 ```
 
-Displays the column names and their types for the given table.
+Shows the column names, types, nullability, primary key, and uniqueness
+for the named table.
 
 ---
 
-## DML — Manipulating Data
+## Data Manipulation
 
 ### INSERT
 
 ```
-insert into employees values (1, "Alice", "Engineering", 95000.0, true);
-insert into employees values (2, "Bob", "Marketing", 78000.0, true);
+insert into employees values (1, "Alice", "alice@co.com", 95000.0, true);
+```
+
+Multiple rows:
+
+```
+insert into employees values
+    (2, "Bob",   "bob@co.com",   78000.0, true),
+    (3, "Carol", "carol@co.com", 62000.0, false);
+```
+
+Named columns:
+
+```
+insert into employees (id, name, salary) values (4, "Dave", 55000.0);
 ```
 
 ### SELECT (SQL-style)
 
 ```
-// All rows
-select * from employees;
+select name, salary from employees where salary > 70000.0 orderby salary desc limit 5;
+```
 
-// Specific columns with filtering, sorting, and pagination
-select name, salary from employees
-    where salary > 80000.0
-    orderby salary desc
-    limit 5
-    offset 2;
-
-// Distinct values
+```
 select distinct department from employees;
-
-// Aggregation with GROUP BY and HAVING
-select department, count(*) as headcount, avg(salary) as avg_sal
-    from employees
-    groupby department;
 ```
 
-### UPDATE (pipeline-style)
-
 ```
-employees |> where(department == "Engineering") |> update(salary = salary * 1.1);
+select count(*), avg(salary) from employees;
 ```
 
-### DELETE (pipeline-style)
+### UPDATE (SQL-style)
 
 ```
-employees |> where(active == false) |> delete;
+update employees set salary = salary * 1.1 where active == true;
+```
+
+### DELETE (SQL-style)
+
+```
+delete from employees where active == false;
+```
+
+### Pipeline equivalents
+
+The same operations expressed as pipelines:
+
+```
+// SELECT
+employees
+    |> where(salary > 70000.0)
+    |> select(name, salary)
+    |> orderby(salary desc)
+    |> take(5)
+    |> print;
+
+// UPDATE
+employees
+    |> where(active == true)
+    |> update(salary = salary * 1.1);
+
+// DELETE
+employees
+    |> where(active == false)
+    |> delete;
 ```
 
 ---
 
-## Pipeline Stages
+## Pipeline Stages Reference
 
-Every stage receives a table as input and produces a table as output.
+### Complete list of pipeline stages
 
-| Stage | Description | Example |
-|---|---|---|
-| `where(cond)` | Filter rows by condition | `where(salary > 80000.0)` |
-| `select(cols)` | Project columns, compute expressions | `select(name, salary * 12 as annual)` |
-| `orderby(col dir)` | Sort results (`asc` or `desc`) | `orderby(salary desc)` |
-| `limit(n)` | Return at most *n* rows | `limit(10)` |
-| `offset(n)` | Skip the first *n* rows | `offset(5)` |
-| `groupby(cols)` | Group rows by column(s) | `groupby(department)` |
-| `having(cond)` | Filter groups after aggregation | `having(count(*) > 3)` |
-| `join(...)` | Join with another table | `join(departments on dept_id == departments.id)` |
-| `update(assignments)` | Update matching rows | `update(price = price * 0.9)` |
-| `delete` | Delete matching rows | *(no arguments)* |
-| `distinct` | Remove duplicate rows | *(no arguments)* |
-| `count` | Count rows and print the result | *(no arguments)* |
-| `print` | Output as formatted ASCII table | *(no arguments)* |
+| Stage                      | Description                                      |
+|----------------------------|--------------------------------------------------|
+| `where(condition)`         | Keep rows satisfying the condition                |
+| `select(columns...)`       | Project or compute columns (replaces column set)  |
+| `map(columns...)`          | Add computed columns to existing column set       |
+| `orderby(col asc/desc)`    | Sort by one or more columns                       |
+| `limit(n)` / `take(n)`     | Return at most n rows                             |
+| `offset(n)` / `skip(n)`    | Skip the first n rows                             |
+| `groupby(columns...)`      | Group rows (combine with a following `select`)    |
+| `having(condition)`        | Filter groups after aggregation                   |
+| `join(table on condition)` | Inner-join another table                          |
+| `distinct`                 | Remove duplicate rows                             |
+| `count`                    | Replace the result with a single count row        |
+| `update(col = expr, ...)`  | Modify matching rows in the underlying table      |
+| `delete`                   | Remove matching rows from the underlying table    |
+| `print`                    | Output the result as a formatted table            |
 
-### Chaining Example
+### select versus map
+
+`select` replaces the column set:
 
 ```
-products
-    |> where(category == "Electronics")
-    |> select(name, price, price * 0.9 as sale_price)
-    |> orderby(sale_price asc)
-    |> limit(10)
+products |> select(name, price) |> print;
+// result has exactly two columns: name, price
+```
+
+`map` appends new computed columns to the existing set:
+
+```
+products |> map(price * 1.1 as new_price) |> print;
+// result has all original columns plus new_price
+```
+
+### take and skip
+
+`take(n)` and `skip(n)` are aliases for `limit(n)` and `offset(n)`.
+
+```
+employees |> orderby(salary desc) |> skip(10) |> take(5) |> print;
+```
+
+---
+
+## Expressions and Operators
+
+### Arithmetic
+
+| Operator | Meaning        | Example            |
+|----------|----------------|--------------------|
+| `+`      | Addition       | `price + tax`      |
+| `-`      | Subtraction    | `total - discount` |
+| `*`      | Multiplication | `qty * price`      |
+| `/`      | Division       | `total / count`    |
+| `%`      | Modulo         | `id % 2`           |
+
+String concatenation: `"hello" + " world"` produces `"hello world"`.
+
+### Comparison
+
+| Operator     | Meaning                |
+|--------------|------------------------|
+| `==`         | Equal                  |
+| `<>` or `!=` | Not equal              |
+| `<`          | Less than              |
+| `>`          | Greater than           |
+| `<=`         | Less than or equal     |
+| `>=`         | Greater than or equal  |
+
+### Logical
+
+| Operator | Meaning                       |
+|----------|-------------------------------|
+| `and`    | Logical AND (short-circuit)   |
+| `or`     | Logical OR (short-circuit)    |
+| `not`    | Logical negation              |
+
+---
+
+## CASE / WHEN Expressions
+
+Conditional expressions with multiple branches:
+
+```
+select
+    name,
+    case
+        when salary > 100000.0 then "Senior"
+        when salary > 60000.0  then "Mid"
+        else "Junior"
+    end as level
+from employees;
+```
+
+Inside a pipeline:
+
+```
+employees
+    |> select(
+        name,
+        case
+            when salary > 100000.0 then "Senior"
+            when salary > 60000.0  then "Mid"
+            else "Junior"
+        end as level
+    )
+    |> print;
+```
+
+The `else` clause is optional.  If no `when` branch matches and there is no
+`else`, the expression evaluates to `null`.
+
+---
+
+## Aggregate Functions
+
+These functions operate over groups of rows (or the entire result set when
+there is no `groupby`).
+
+| Function     | Description                     |
+|--------------|---------------------------------|
+| `count(*)`   | Number of rows                  |
+| `count(col)` | Number of non-null values       |
+| `sum(col)`   | Sum of numeric values           |
+| `avg(col)`   | Average of numeric values       |
+| `min(col)`   | Minimum value                   |
+| `max(col)`   | Maximum value                   |
+
+Example:
+
+```
+orders
+    |> groupby(region)
+    |> select(region, count(*) as total, avg(amount) as avg_amount)
+    |> orderby(total desc)
     |> print;
 ```
 
 ---
 
-## JOINs
+## Scalar Functions
 
-Épée supports four join types, usable in both SQL-style and pipeline syntax.
+### String functions
 
-| Join Type | Description |
-|---|---|
-| `INNER JOIN` | Rows matching in both tables |
-| `LEFT JOIN` | All rows from left + matches from right |
-| `RIGHT JOIN` | All rows from right + matches from left |
-| `CROSS JOIN` | Cartesian product of both tables |
+| Function                                       | Description                           |
+|------------------------------------------------|---------------------------------------|
+| `upper(s)`                                     | Convert to uppercase                  |
+| `lower(s)`                                     | Convert to lowercase                  |
+| `length(s)`                                    | Number of characters                  |
+| `substr(s, start)` or `substr(s, start, len)`  | Extract substring                     |
+| `left(s, n)`                                   | First n characters                    |
+| `right(s, n)`                                  | Last n characters                     |
+| `trim(s)`                                      | Remove leading/trailing whitespace    |
+| `lpad(s, len, pad)`                            | Left-pad to target length             |
+| `rpad(s, len, pad)`                            | Right-pad to target length            |
+| `replace(s, old, new)`                         | Replace all occurrences               |
+| `reverse(s)`                                   | Reverse the string                    |
+| `repeat(s, n)`                                 | Repeat the string n times             |
+| `concat(a, b, ...)`                            | Concatenate values                    |
 
-### SQL-style JOIN
+Example:
 
 ```
-select employees.name, departments.name, employees.salary
+employees
+    |> select(
+        name,
+        upper(name) as shouting,
+        left(name, 1) as initial,
+        lpad(name, 12, ".") as padded,
+        reverse(name) as backwards
+    )
+    |> take(5)
+    |> print;
+```
+
+### Math functions
+
+| Function                    | Description                              |
+|-----------------------------|------------------------------------------|
+| `abs(n)`                    | Absolute value                           |
+| `round(n)`                  | Round to nearest integer                 |
+| `floor(n)`                  | Round down                               |
+| `ceil(n)`                   | Round up                                 |
+| `power(base, exp)`          | Raise base to the power of exp           |
+| `sqrt(n)`                   | Square root                              |
+| `log(n)` or `log(base, n)`  | Natural log, or log with custom base     |
+| `pi()`                      | The constant 3.14159...                  |
+| `random()`                  | Random double in the range [0.0, 1.0)    |
+
+Example:
+
+```
+products
+    |> select(name, price, round(sqrt(price)) as root, power(price, 2) as squared)
+    |> take(5)
+    |> print;
+```
+
+### Utility functions
+
+| Function              | Description                                        |
+|-----------------------|----------------------------------------------------|
+| `coalesce(a, b, ...)` | Return the first non-null argument                 |
+| `nullif(a, b)`        | Return null if a equals b, otherwise return a      |
+| `typeof(expr)`        | Return the type name as a string                   |
+| `cast(expr, "type")`  | Convert to the given type (int/double/string/bool) |
+| `iif(cond, t, f)`     | Inline if: return t when cond is true, else f      |
+| `now()`               | Current timestamp as a string                      |
+
+Example:
+
+```
+contacts
+    |> select(name, coalesce(phone, email, "N/A") as contact)
+    |> print;
+
+inventory
+    |> select(
+        product,
+        quantity,
+        iif(quantity > 100, "In Stock", "Low Stock") as availability,
+        typeof(price) as price_type
+    )
+    |> print;
+```
+
+---
+
+## Predicate Expressions
+
+### BETWEEN / NOT BETWEEN
+
+```
+products |> where(price between 10.0 and 100.0) |> print;
+products |> where(price not between 10.0 and 100.0) |> print;
+```
+
+### IN / NOT IN
+
+```
+products |> where(category in ("Electronics", "Books")) |> print;
+products |> where(category not in ("Electronics", "Books")) |> print;
+```
+
+### LIKE / NOT LIKE
+
+Pattern matching with `%` (any sequence of characters) and `_` (single
+character).  Matching is case-insensitive.
+
+```
+products |> where(name like "Laptop%") |> print;
+products |> where(name not like "%Pro%") |> print;
+```
+
+### IS NULL / IS NOT NULL
+
+```
+products |> where(description is null) |> print;
+products |> where(description is not null) |> print;
+```
+
+---
+
+## Joins
+
+Four join types are supported.
+
+### SQL-style joins
+
+```
+select employees.name, departments.name
     from employees
     inner join departments on employees.dept_id == departments.id;
+
+select employees.name, departments.name
+    from employees
+    left join departments on employees.dept_id == departments.id;
 ```
 
-### Pipeline-style JOIN
+Join types: `inner join`, `left join`, `right join`, `cross join`.
+
+### Pipeline joins
 
 ```
 employees
@@ -295,188 +535,170 @@ employees
     |> print;
 ```
 
+The pipeline join defaults to inner join.
+
 ---
 
-## Aggregate Functions
+## Grouping and Aggregation
 
-Use these in `select` or `having` clauses, typically combined with `groupby`.
-
-| Function | Description |
-|---|---|
-| `count(*)` | Count all rows |
-| `count(col)` | Count non-null values in a column |
-| `sum(col)` | Sum of a numeric column |
-| `avg(col)` | Average of a numeric column |
-| `min(col)` | Minimum value |
-| `max(col)` | Maximum value |
-
-### Example: Department Statistics
+Group rows and compute aggregates per group:
 
 ```
-employees
-    |> groupby(department)
-    |> select(department, count(*) as headcount, avg(salary) as avg_sal, sum(salary) as total_sal)
-    |> orderby(total_sal desc)
+orders
+    |> groupby(region)
+    |> select(region, count(*) as num, sum(total) as revenue)
+    |> orderby(revenue desc)
     |> print;
 ```
 
----
-
-## String Functions
-
-| Function | Description | Example |
-|---|---|---|
-| `upper(s)` | Convert to uppercase | `upper(name)` |
-| `lower(s)` | Convert to lowercase | `lower(department)` |
-| `length(s)` | String length | `length(name)` |
-| `substr(s, start, len)` | Extract substring | `substr(name, 1, 3)` |
-| `concat(a, b)` | Concatenate strings | `concat(first, last)` |
-| `trim(s)` | Remove leading/trailing whitespace | `trim(name)` |
-| `replace(s, old, new)` | Replace occurrences | `replace(name, "old", "new")` |
-
-### Example
+Use CASE inside a pipeline for dynamic bucketing:
 
 ```
-employees
-    |> select(upper(name) as upper_name, lower(department) as dept, length(name) as name_len)
-    |> orderby(name_len desc)
-    |> limit(5)
+products
+    |> select(
+        case
+            when price > 500.0  then "Premium"
+            when price > 100.0  then "Mid-range"
+            else "Budget"
+        end as tier,
+        price
+    )
+    |> groupby(tier)
+    |> select(tier, count(*) as items, avg(price) as avg_price)
     |> print;
 ```
 
----
-
-## Computed Columns & Aliases
-
-Create derived columns with expressions and name them with `as`:
+SQL-style syntax:
 
 ```
-employees
-    |> select(name, salary, salary * 12 as annual_pay, salary * 0.1 as bonus)
-    |> orderby(annual_pay desc)
-    |> limit(5)
-    |> print;
-```
-
-Computed columns support arithmetic (`+`, `-`, `*`, `/`), string functions, and aggregate functions.
-
----
-
-## Predicates
-
-### Comparison Operators
-
-`==`, `!=`, `>`, `<`, `>=`, `<=`
-
-### Logical Operators
-
-`and`, `or`, `not`
-
-### LIKE — Pattern Matching
-
-The `%` wildcard matches any sequence of characters:
-
-```
-products |> where(name like "%Pro%") |> select(name, price) |> print;
-```
-
-### BETWEEN — Range Queries
-
-```
-products |> where(price between 50.0 and 200.0) |> select(name, price) |> print;
-```
-
-### IN — Value Lists
-
-```
-employees |> where(department in ("Engineering", "Sales")) |> print;
-```
-
-### IS NULL / IS NOT NULL
-
-```
-employees |> where(manager is null) |> print;
-employees |> where(email is not null) |> print;
+select dept_id, count(*) as cnt, avg(salary) as avg_sal
+    from employees
+    groupby dept_id;
 ```
 
 ---
 
 ## Transactions
 
-Wrap multiple operations in an atomic transaction:
+Wrap a group of operations in a transaction.  Use `rollback` to undo changes
+if something goes wrong.
 
 ```
 begin;
     products |> where(category == "Electronics") |> update(price = price * 0.9);
-    products |> where(in_stock == false) |> delete;
 commit;
 ```
 
-Discard changes with `rollback;`:
-
 ```
 begin;
-    products |> where(price < 10.0) |> delete;
-rollback;  // Nothing was deleted
+    // something went wrong
+rollback;
 ```
 
 ---
 
-## Imperative Features
+## Variables and Control Flow
 
-Épée retains the imperative features from its compiler roots. Mix general-purpose programming with database queries in the same file.
-
-### Variables
+### Variable declaration and assignment
 
 ```
 int count;
-double total;
-string greeting;
-bool is_done;
-
 count = 42;
-total = 99.5;
-greeting = "Hello, Épée!";
-is_done = false;
+print count;
+
+string greeting;
+greeting = "hello";
+print greeting;
 ```
 
-### Control Flow
+Supported types: `int`, `double`, `string`, `bool`.
+
+### If / else
 
 ```
-if (count > 10) then
-    print "Large count";
+int x;
+x = 10;
+if x > 5 then
+    print "big";
 else
-    print "Small count";
+    print "small";
 fi;
 ```
 
-### While Loops
+### While loops
 
 ```
 int i;
 i = 0;
-while (i < 5) do
+while i < 5 do
     print i;
     i = i + 1;
-done;
+od;
 ```
 
-### Functions & Recursion
+---
+
+## User-Defined Functions
+
+Define reusable functions with typed parameters and return values.
+Recursion is supported.
 
 ```
-def int gcd(int a, int b)
-    if (a == b) then
-        return(a)
+def int factorial(int n)
+    if n <= 1 then
+        return 1;
     fi;
-    if (a > b) then
-        return(gcd(a - b, b))
-    else
-        return(gcd(a, b - a))
-    fi;
+    return n * factorial(n - 1);
 fed;
 
-print gcd(21, 15);
+print factorial(5);
 ```
+
+Functions can be called inside pipeline stages:
+
+```
+def double discount(double price, double pct)
+    return price * (1.0 - pct / 100.0);
+fed;
+
+products
+    |> select(name, price, discount(price, 15.0) as sale_price)
+    |> print;
+```
+
+---
+
+## Interactive REPL
+
+Start the REPL with `./epee` (no arguments).
+
+```
+$ ./epee
+    Epee v2.0 -- Pipeline-First Database Query Language
+    Type 'help' for commands, 'exit' to quit.
+
+epee> create table t (id int, name string);
+Table 't' created.
+
+epee> insert into t values (1, "Alice"), (2, "Bob");
+Inserted 2 row(s).
+
+epee> t |> print;
++----+-------+
+| id | name  |
++----+-------+
+|  1 | Alice |
+|  2 | Bob   |
++----+-------+
+2 row(s)
+
+epee> exit
+```
+
+Commands: `help`, `exit`, `quit`.
+
+Multi-line input is supported.  The REPL accumulates lines until a semicolon
+is found.
 
 ---
 
@@ -491,81 +713,17 @@ print gcd(21, 15);
 
 ---
 
-## Interactive REPL
+## Legacy Compiler Mode
 
-Launch the REPL with no arguments:
-
-```bash
-./epee
-```
+The original compiler pipeline processes a pseudocode language through lexical
+analysis, syntax tree construction, semantic analysis, and three-address code
+generation.  Activate it with:
 
 ```
-  ╔══════════════════════════════════════════╗
-  ║  Épée Database Query Language  v1.0     ║
-  ║  Type 'help' for commands, 'exit' to    ║
-  ║  quit.                                  ║
-  ╚══════════════════════════════════════════╝
-
-épée> create table demo (id int, name string);
-Table 'demo' created.
-
-épée> insert into demo values (1, "Alice");
-1 row inserted.
-
-épée> demo |> select(name) |> print;
-+-------+
-| name  |
-+-------+
-| Alice |
-+-------+
-
-épée> help
-épée> exit
+./epee --compile program.ep
 ```
 
-**REPL Commands:**
-- `help` — Show available commands and syntax reference
-- `exit` / `quit` — Exit the REPL
-- Multi-line statements are supported (terminate with `;`)
-
----
-
-## Architecture
-
-Épée is powered by **two independent pipelines** sharing a single entry point:
-
-```
-┌─────────────────────────────────────────────────────────┐
-│                      main.cpp                           │
-│                  (CLI & Mode Router)                    │
-└──────────┬──────────────────────────────┬───────────────┘
-           │                              │
-     ┌─────▼──────┐               ┌──────▼──────┐
-     │  Database   │               │   Legacy    │
-     │   Engine    │               │  Compiler   │
-     └─────┬──────┘               └──────┬──────┘
-           │                              │
-   ┌───────▼───────┐            ┌────────▼────────┐
-   │   DbLexer     │            │     Lexer       │
-   │  Tokenizer    │            │  (Tokenizer)    │
-   └───────┬───────┘            └────────┬────────┘
-   ┌───────▼───────┐            ┌────────▼────────┐
-   │   DbParser    │            │     Parser      │
-   │ (AST Builder) │            │ (Syntax Tree)   │
-   └───────┬───────┘            └────────┬────────┘
-   ┌───────▼───────┐            ┌────────▼────────┐
-   │   Executor    │            │    Analyzer     │
-   │ (Query Engine)│            │  (Semantics)    │
-   └───────┬───────┘            └────────┬────────┘
-   ┌───────▼───────┐            ┌────────▼────────┐
-   │  In-Memory    │            │ ThreeAddress    │
-   │   Storage     │            │    Code Gen     │
-   └───────────────┘            └─────────────────┘
-```
-
-**Database Engine:** `DbLexer` → `DbParser` → `Executor` with an in-memory columnar store. Supports the full query language, pipeline operator, transactions, and REPL.
-
-**Legacy Compiler:** `Lexer` → `Parser` → `Analyzer` → `ThreeAddressCode`. Compiles the original Épée pseudocode language into three-address intermediate code. Access via `--compile`.
+This mode is independent of the database engine.
 
 ---
 
@@ -573,91 +731,90 @@ Table 'demo' created.
 
 ```
 Compiler/
-├── Makefile                    # Build system
-├── README.md                   # This file
-├── epee                        # Compiled binary
-├── Compiler/
-│   ├── include/
-│   │   ├── database/           # Database engine headers
-│   │   │   ├── dbLexer.hpp
-│   │   │   ├── dbParser.hpp
-│   │   │   ├── executor.hpp
-│   │   │   ├── repl.hpp
-│   │   │   ├── table.hpp
-│   │   │   └── value.hpp
-│   │   ├── lexicalAnalysis/    # Compiler lexer headers
-│   │   ├── syntaxAnalysis/     # Compiler parser headers
-│   │   ├── semanticAnalysis/   # Semantic analyzer headers
-│   │   ├── intermediateCode/   # TAC generator headers
-│   │   └── tokens/             # Token type definitions
-│   ├── src/
-│   │   ├── main.cpp            # Entry point & CLI router
-│   │   ├── database/           # Database engine implementation
-│   │   │   ├── dbLexer.cpp
-│   │   │   ├── dbParser.cpp
-│   │   │   ├── executor.cpp
-│   │   │   ├── repl.cpp
-│   │   │   ├── table.cpp
-│   │   │   └── value.cpp
-│   │   ├── lexicalAnalysis/    # Compiler lexer implementation
-│   │   ├── syntaxAnalysis/     # Compiler parser implementation
-│   │   ├── semanticAnalysis/   # Semantic analysis implementation
-│   │   ├── intermediateCode/   # Code generation implementation
-│   │   └── tokens/             # Token utilities
-│   ├── input/                  # Test files (.ep)
-│   │   ├── TestDB1.ep          # Basic table operations
-│   │   ├── TestDB2.ep          # Pipeline queries
-│   │   ├── TestDB3.ep          # Joins and aggregations
-│   │   ├── TestDB4.ep          # Advanced features
-│   │   └── Test1–11.ep         # Legacy compiler tests
-│   └── output/                 # Generated output files
-└── Compiler.xcodeproj/         # Xcode project (macOS)
-```
-
----
-
-## Legacy Compiler
-
-The original Épée compiler is still accessible via `--compile`. It processes pseudocode-style programs through a full compilation pipeline:
-
-```bash
-./epee --compile Compiler/input/Test1.ep
-```
-
-**Pipeline:** Lexical Analysis → Syntax Analysis (FIRST/FOLLOW sets) → Semantic Analysis (scope, type checking) → Three-Address Code Generation
-
-**Output:** Symbol table and intermediate code files.
-
-```
-def int gcd(int a, int b)
-    if (a == b) then
-        return(a)
-    fi;
-    if (a > b) then
-        return(gcd(a - b, b))
-    else
-        return(gcd(a, b - a))
-    fi;
-fed;
-
-print gcd(21, 15);
+  include/
+    database/          -- database engine headers
+      value.hpp        -- variant value type (int/double/string/bool/null)
+      table.hpp        -- table, row, database, query result
+      dbLexer.hpp      -- lexer token types and scanner
+      dbParser.hpp     -- AST node types and recursive descent parser
+      executor.hpp     -- query executor
+      repl.hpp         -- interactive REPL
+    lexicalAnalysis/   -- legacy compiler lexer
+    syntaxAnalysis/    -- legacy compiler parser
+    semanticAnalysis/  -- legacy compiler semantic analyzer
+    intermediateCode/  -- three-address code generator
+    tokens/            -- token type definitions
+  src/
+    main.cpp           -- entry point (REPL / file / legacy mode)
+    database/          -- database engine implementation
+    lexicalAnalysis/   -- legacy compiler implementation
+    syntaxAnalysis/
+    semanticAnalysis/
+    intermediateCode/
+    tokens/
+  input/
+    TestDB1.ep         -- basic table operations
+    TestDB2.ep         -- pipeline queries
+    TestDB3.ep         -- joins and aggregations
+    TestDB4.ep         -- transactions, LIKE, BETWEEN, variables
+    TestDB5.ep         -- CASE/WHEN, new functions, map/take/skip
+    Test1-11.ep        -- legacy compiler tests
+Makefile               -- build rules
 ```
 
 ---
 
 ## Running Tests
 
-```bash
-make test    # Run all database test suites
+```
+make test
 ```
 
-This executes `TestDB1.ep` through `TestDB4.ep`, covering table operations, pipeline queries, joins, aggregations, transactions, and more.
+This executes `TestDB1.ep` through `TestDB5.ep`, covering table operations,
+pipeline queries, joins, aggregations, transactions, new functions, and CASE
+expressions.
 
 ---
 
-## Author & Credits
+## Quick Reference
 
-**Original Author:** [Saif Al-Din Ali](https://github.com/saifali96)
-- Designed and implemented the Épée language and compiler (lexer, parser, semantic analyzer, three-address code generator).
+```
+-- Schema
+create table T (col type [constraints], ...);
+drop table T;
+show tables;
+describe T;
 
-**Enhanced Version:** Extended with a pipeline-first database query engine featuring an interactive REPL, in-memory storage, JOINs, aggregations, transactions, string functions, and the signature `|>` pipeline operator.
+-- Insert
+insert into T values (...);
+
+-- Query (SQL-style)
+select cols from T where cond orderby col desc limit n;
+
+-- Query (pipeline)
+T |> where(cond) |> select(cols) |> orderby(col desc) |> take(n) |> print;
+
+-- Computed columns
+T |> map(price * 1.1 as new_price) |> print;
+
+-- Grouping
+T |> groupby(col) |> select(col, count(*) as n, avg(val) as mean) |> print;
+
+-- CASE expression
+T |> select(case when x > 0 then "pos" else "neg" end as sign) |> print;
+
+-- Update / Delete
+T |> where(cond) |> update(col = expr);
+T |> where(cond) |> delete;
+
+-- Transactions
+begin; ... commit;
+
+-- Variables and control flow
+int x; x = 10;
+if x > 5 then print x; fi;
+while x > 0 do x = x - 1; od;
+
+-- Functions
+def int f(int n) return n * 2; fed;
+```
