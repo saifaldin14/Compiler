@@ -81,6 +81,10 @@ QueryResult Executor::execute(const StmtPtr& stmt) {
             return executeReturn(*s);
         if (auto s = std::dynamic_pointer_cast<FuncCallStmt>(stmt))
             return executeFuncCall(*s);
+        if (auto s = std::dynamic_pointer_cast<SaveDatabaseStmt>(stmt))
+            return executeSaveDatabase(*s);
+        if (auto s = std::dynamic_pointer_cast<LoadDatabaseStmt>(stmt))
+            return executeLoadDatabase(*s);
 
         return QueryResult("Unknown statement type", false);
     } catch (const ReturnException&) {
@@ -1865,6 +1869,28 @@ QueryResult Executor::performJoin(const Table& leftTable, const Table& rightTabl
     }
 
     return result;
+}
+
+// ---------------------------------------------------------------------------
+// SAVE / LOAD DATABASE
+// ---------------------------------------------------------------------------
+
+QueryResult Executor::executeSaveDatabase(const SaveDatabaseStmt& stmt) {
+    try {
+        Storage::saveDatabase(*db_, stmt.filepath);
+        return QueryResult("Database saved to '" + stmt.filepath + "'");
+    } catch (const std::exception& e) {
+        return QueryResult(std::string("Save failed: ") + e.what(), false);
+    }
+}
+
+QueryResult Executor::executeLoadDatabase(const LoadDatabaseStmt& stmt) {
+    try {
+        Storage::loadDatabase(*db_, stmt.filepath);
+        return QueryResult("Database loaded from '" + stmt.filepath + "'");
+    } catch (const std::exception& e) {
+        return QueryResult(std::string("Load failed: ") + e.what(), false);
+    }
 }
 
 } // namespace epee

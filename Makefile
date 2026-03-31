@@ -29,7 +29,9 @@ DB_SRCS = \
     Compiler/src/database/dbLexer.cpp \
     Compiler/src/database/dbParser.cpp \
     Compiler/src/database/executor.cpp \
-    Compiler/src/database/repl.cpp
+    Compiler/src/database/repl.cpp \
+    Compiler/src/database/storage.cpp \
+    Compiler/src/database/wal.cpp
 
 # All source files
 ALL_SRCS = $(COMPILER_SRCS) $(DB_SRCS) Compiler/src/main.cpp

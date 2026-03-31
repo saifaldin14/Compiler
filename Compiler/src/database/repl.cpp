@@ -10,6 +10,70 @@ namespace epee {
 
 Repl::Repl() : executor_(db_) {}
 
+Repl::Repl(const std::string& dbPath) : executor_(db_) {
+    initPersistence(dbPath);
+}
+
+void Repl::initPersistence(const std::string& dbPath) {
+    dbPath_ = dbPath;
+
+    // Create WAL
+    std::string walPath = dbPath_ + ".wal";
+    wal_ = std::make_unique<WriteAheadLog>(walPath);
+
+    // If the .epd file exists, load it
+    std::ifstream check(dbPath_);
+    if (check.good()) {
+        check.close();
+        try {
+            Storage::loadDatabase(db_, dbPath_);
+        } catch (const std::exception& e) {
+            std::cerr << "Warning: Could not load database from '"
+                      << dbPath_ << "': " << e.what() << std::endl;
+        }
+    }
+
+    // Replay any WAL entries for crash recovery
+    if (wal_->hasEntries()) {
+        auto entries = wal_->recover();
+        if (!entries.empty()) {
+            std::cerr << "Recovering " << entries.size()
+                      << " statement(s) from WAL..." << std::endl;
+            for (const auto& sql : entries) {
+                try {
+                    lexer_.setSource(sql);
+                    auto tokens = lexer_.tokenize();
+                    DbParser parser(tokens);
+                    auto stmts = parser.parse();
+                    for (const auto& stmt : stmts) {
+                        executor_.execute(stmt);
+                    }
+                } catch (const std::exception& e) {
+                    std::cerr << "WAL replay error: " << e.what() << std::endl;
+                }
+            }
+        }
+        // After recovery, save and checkpoint
+        try {
+            Storage::saveDatabase(db_, dbPath_);
+        } catch (...) {}
+        wal_->checkpoint();
+    }
+}
+
+bool Repl::isMutatingStatement(const std::string& input) const {
+    std::string lower = input;
+    std::transform(lower.begin(), lower.end(), lower.begin(), ::tolower);
+    size_t start = lower.find_first_not_of(" \t\r\n");
+    if (start == std::string::npos) return false;
+    lower = lower.substr(start);
+    return lower.rfind("create", 0) == 0 ||
+           lower.rfind("drop", 0) == 0 ||
+           lower.rfind("insert", 0) == 0 ||
+           lower.rfind("update", 0) == 0 ||
+           lower.rfind("delete", 0) == 0;
+}
+
 void Repl::printBanner() {
     std::cout << R"(
   ╔═══════════════════════════════════════════════════════════╗
@@ -134,6 +198,16 @@ void Repl::run() {
         std::transform(lower.begin(), lower.end(), lower.begin(), ::tolower);
 
         if (lower == "exit" || lower == "quit" || lower == "\\q") {
+            // Auto-save on exit if persistence is configured
+            if (!dbPath_.empty()) {
+                try {
+                    Storage::saveDatabase(db_, dbPath_);
+                    if (wal_) wal_->checkpoint();
+                    std::cout << "Database saved to '" << dbPath_ << "'" << std::endl;
+                } catch (const std::exception& e) {
+                    std::cerr << "Warning: Auto-save failed: " << e.what() << std::endl;
+                }
+            }
             std::cout << "Goodbye!" << std::endl;
             break;
         }
@@ -181,6 +255,11 @@ void Repl::executeString(const std::string& source) {
             for (const auto& err : parser.getErrors())
                 std::cerr << "Parse Error: " << err << std::endl;
             return;
+        }
+
+        // Log mutating statements to WAL before executing
+        if (wal_ && isMutatingStatement(source)) {
+            wal_->logStatement(source);
         }
 
         for (const auto& stmt : statements) {

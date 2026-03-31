@@ -19,6 +19,7 @@
 #include "table.hpp"
 #include "dbParser.hpp"
 #include "value.hpp"
+#include "storage.hpp"
 
 namespace epee {
 
@@ -62,6 +63,8 @@ private:
     QueryResult executeFuncDef(const FuncDefStmt& stmt);
     QueryResult executeReturn(const ReturnStmt& stmt);
     QueryResult executeFuncCall(const FuncCallStmt& stmt);
+    QueryResult executeSaveDatabase(const SaveDatabaseStmt& stmt);
+    QueryResult executeLoadDatabase(const LoadDatabaseStmt& stmt);
 
     // Expression evaluation
     Value evaluate(const ExprPtr& expr, const Row& row = {},

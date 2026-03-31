@@ -71,6 +71,9 @@ enum class DbTokenType {
     // Keywords - CASE expression
     CASE, WHEN, END_KW,
 
+    // Keywords - Persistence
+    SAVE, LOAD, DATABASE,
+
     // Keywords - Pipeline aliases
     TAKE, SKIP_KW, MAP,
 

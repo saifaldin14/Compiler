@@ -114,6 +114,9 @@ std::string DbToken::typeToString() const {
         case DbTokenType::TAKE: return "TAKE";
         case DbTokenType::SKIP_KW: return "SKIP";
         case DbTokenType::MAP: return "MAP";
+        case DbTokenType::SAVE: return "SAVE";
+        case DbTokenType::LOAD: return "LOAD";
+        case DbTokenType::DATABASE: return "DATABASE";
         case DbTokenType::PLUS: return "PLUS";
         case DbTokenType::MINUS: return "MINUS";
         case DbTokenType::STAR: return "STAR";
@@ -284,6 +287,11 @@ void DbLexer::initKeywords() {
     keywords_["take"] = DbTokenType::TAKE;
     keywords_["skip"] = DbTokenType::SKIP_KW;
     keywords_["map"] = DbTokenType::MAP;
+
+    // Persistence
+    keywords_["save"] = DbTokenType::SAVE;
+    keywords_["load"] = DbTokenType::LOAD;
+    keywords_["database"] = DbTokenType::DATABASE;
 }
 
 char DbLexer::peek() const {

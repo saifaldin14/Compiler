@@ -352,6 +352,8 @@ public:
 
     bool inTransaction() const { return inTransaction_; }
 
+    const std::unordered_map<std::string, Table>& getAllTables() const { return tables_; }
+
 private:
     std::unordered_map<std::string, Table> tables_;
     bool inTransaction_ = false;

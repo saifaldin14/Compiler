@@ -35,11 +35,13 @@ void printUsage(const char* programName) {
     cout << "Usage:" << endl;
     cout << "  " << programName << "                    Start interactive REPL" << endl;
     cout << "  " << programName << " <file.ep>          Execute a query file" << endl;
+    cout << "  " << programName << " --db <file.epd>    Start REPL with persistence" << endl;
     cout << "  " << programName << " --compile <file>   Legacy compiler mode" << endl;
     cout << "  " << programName << " --help             Show this help" << endl;
     cout << endl;
     cout << "Examples:" << endl;
     cout << "  " << programName << " queries.ep" << endl;
+    cout << "  " << programName << " --db mydata.epd" << endl;
     cout << "  " << programName << " --compile program.ep" << endl;
     cout << endl;
 }
@@ -94,6 +96,9 @@ int main(int argc, char* argv[]) {
         string filename = argv[2];
         if (flag == "--compile" || flag == "-c") {
             runLegacyCompiler(filename);
+        } else if (flag == "--db") {
+            epee::Repl repl(filename);
+            repl.run();
         } else {
             printUsage(argv[0]);
             return 1;

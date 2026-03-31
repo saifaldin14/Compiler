@@ -260,6 +260,14 @@ struct FuncCallStmt : Statement {
     std::vector<ExprPtr> args;
 };
 
+struct SaveDatabaseStmt : Statement {
+    std::string filepath;
+};
+
+struct LoadDatabaseStmt : Statement {
+    std::string filepath;
+};
+
 // The Parser
 class DbParser {
 public:
@@ -308,6 +316,8 @@ private:
     StmtPtr parseFuncDef();
     StmtPtr parseReturn();
     StmtPtr parsePrint();
+    StmtPtr parseSaveDatabase();
+    StmtPtr parseLoadDatabase();
 
     PipelineStage parsePipelineStage();
 

@@ -100,6 +100,8 @@ StmtPtr DbParser::parseStatement() {
         case DbTokenType::ROLLBACK:  return parseRollback();
         case DbTokenType::SHOW:      return parseShowTables();
         case DbTokenType::DESCRIBE:  return parseDescribe();
+        case DbTokenType::SAVE:      return parseSaveDatabase();
+        case DbTokenType::LOAD:      return parseLoadDatabase();
         case DbTokenType::IF:        return parseIf();
         case DbTokenType::WHILE:     return parseWhile();
         case DbTokenType::DEF:       return parseFuncDef();
@@ -568,6 +570,24 @@ StmtPtr DbParser::parsePrint() {
     auto stmt = std::make_shared<PrintStmt>();
     stmt->expr = parseExpression();
     expect(DbTokenType::SEMICOLON, "Expected ';' after PRINT");
+    return stmt;
+}
+
+StmtPtr DbParser::parseSaveDatabase() {
+    advance(); // SAVE
+    expect(DbTokenType::DATABASE, "Expected 'DATABASE' after 'SAVE'");
+    auto stmt = std::make_shared<SaveDatabaseStmt>();
+    stmt->filepath = expect(DbTokenType::STRING_LIT, "Expected file path string").value;
+    expect(DbTokenType::SEMICOLON, "Expected ';' after SAVE DATABASE");
+    return stmt;
+}
+
+StmtPtr DbParser::parseLoadDatabase() {
+    advance(); // LOAD
+    expect(DbTokenType::DATABASE, "Expected 'DATABASE' after 'LOAD'");
+    auto stmt = std::make_shared<LoadDatabaseStmt>();
+    stmt->filepath = expect(DbTokenType::STRING_LIT, "Expected file path string").value;
+    expect(DbTokenType::SEMICOLON, "Expected ';' after LOAD DATABASE");
     return stmt;
 }
 
