@@ -41,4 +41,6 @@ TokenType TokenType::COMP = TokenType("comparison");
 TokenType TokenType::TERM = TokenType("terminal");
 TokenType TokenType::END = TokenType("end");
 TokenType TokenType::ERR = TokenType("error");
+TokenType TokenType::STRING = TokenType("string");
+TokenType TokenType::PIPE = TokenType("pipe");
 
