@@ -56,7 +56,9 @@ void Repl::initPersistence(const std::string& dbPath) {
         // After recovery, save and checkpoint
         try {
             Storage::saveDatabase(db_, dbPath_);
-        } catch (...) {}
+        } catch (...) {
+            // Best-effort save during recovery; failure is non-fatal
+        }
         wal_->checkpoint();
     }
 }

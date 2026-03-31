@@ -21,6 +21,9 @@ bool Storage::validatePath(const std::string& filepath) {
 }
 
 void Storage::writeString(std::ofstream& out, const std::string& s) {
+    if (s.size() > UINT32_MAX) {
+        throw std::runtime_error("String too large for serialization");
+    }
     uint32_t len = static_cast<uint32_t>(s.size());
     out.write(reinterpret_cast<const char*>(&len), sizeof(len));
     if (len > 0) {
@@ -32,7 +35,7 @@ std::string Storage::readString(std::ifstream& in) {
     uint32_t len = 0;
     in.read(reinterpret_cast<char*>(&len), sizeof(len));
     if (!in.good()) throw std::runtime_error("Unexpected end of file reading string length");
-    if (len > 10 * 1024 * 1024) throw std::runtime_error("String length exceeds safety limit");
+    if (len > MAX_STRING_LENGTH) throw std::runtime_error("String length exceeds safety limit");
     std::string s(len, '\0');
     if (len > 0) {
         in.read(&s[0], len);

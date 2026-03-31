@@ -21,8 +21,9 @@ public:
     static bool loadDatabase(Database& db, const std::string& filepath);
 
 private:
-    static constexpr const char* MAGIC = "EPED";
+    static constexpr const char* MAGIC = "EPED";  // Épée PErsistence Data
     static constexpr uint32_t VERSION = 1;
+    static constexpr uint32_t MAX_STRING_LENGTH = 10 * 1024 * 1024;  // 10MB
 
     static void writeString(std::ofstream& out, const std::string& s);
     static std::string readString(std::ifstream& in);
