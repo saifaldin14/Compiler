@@ -19,3 +19,4 @@
 
 # Output files
 Compiler/output/*.txt
+error.txt
