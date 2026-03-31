@@ -225,4 +225,3 @@ void TransitionTableStates<ValueType>::updateValue(string name, ValueType value)
 template class TransitionTableStates<double>;
 template class TransitionTableStates<int>;
 template class TransitionTableStates<const char*>;
-template class TransitionTableStates<char>;

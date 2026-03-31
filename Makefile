@@ -8,6 +8,9 @@ COMPILER_SRCS = \
     Compiler/src/tokens/number.cpp \
     Compiler/src/tokens/fileReader.cpp \
     Compiler/src/lexicalAnalysis/lexer.cpp \
+    Compiler/src/lexicalAnalysis/transitionTableStates.cpp \
+    Compiler/src/lexicalAnalysis/transitionTableNode.cpp \
+    Compiler/src/lexicalAnalysis/transitionTableEntry.cpp \
     Compiler/src/syntaxAnalysis/parser.cpp \
     Compiler/src/syntaxAnalysis/syntaxTree.cpp \
     Compiler/src/syntaxAnalysis/syntaxTreeNode.cpp \

@@ -15,6 +15,7 @@
 #include <cstdlib>
 #include <sstream>
 #include <fstream>
+#include <algorithm>
 #include <stdexcept>
 #ifdef __APPLE__
 #include <execinfo.h>

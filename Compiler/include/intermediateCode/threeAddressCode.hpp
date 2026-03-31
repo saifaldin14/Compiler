@@ -20,6 +20,8 @@
 #include <execinfo.h>
 #endif
 #include <unordered_map>
+#include <algorithm>
+#include <deque>
 #include "../tokens/token.hpp"
 #include "../semanticAnalysis/scopeVariable.hpp"
 #include "./saveToken.hpp"

@@ -46,8 +46,5 @@ private:
     TransitionTableEntry<ValueType> transitionTableEntry;
 };
 
-#include "../../src/lexicalAnalysis/transitionTableNode.cpp"
-#include "../../src/lexicalAnalysis/transitionTableEntry.cpp"
-
 #endif /* transitionTableStates_hpp */
 
