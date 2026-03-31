@@ -995,6 +995,10 @@ Value Executor::evaluate(const ExprPtr& expr, const Row& row,
         // Check for user-defined function first
         auto fit = functions_.find(fc->name);
         if (fit != functions_.end()) {
+            // User-defined function call within const evaluate():
+            // The header declares evaluate() as const, but calling user-defined
+            // functions requires modifying variables_ for parameter binding.
+            // We save/restore state to maintain logical const-ness.
             const auto& funcDef = fit->second;
             auto savedVars = variables_;
             auto& mutVars = const_cast<std::unordered_map<std::string, Value>&>(variables_);
@@ -1356,7 +1360,7 @@ void Executor::sortResult(QueryResult& result,
 // ---------------------------------------------------------------------------
 
 // File-local helper: evaluate expression with aggregate support in group context
-static Value evaluateGroupExprHelper(const Executor* exec, const ExprPtr& expr,
+static Value evaluateGroupExprHelper(const ExprPtr& expr,
                                       const std::vector<Row>& groupRows,
                                       const std::vector<std::string>& colNames);
 
@@ -1417,7 +1421,7 @@ QueryResult Executor::groupAndAggregate(QueryResult& input,
                 // We need a row context — use the first row of the group
                 // but aggregates should operate over groupRows
                 // Create a temporary row for the having evaluation
-                Value hv = evaluateGroupExprHelper(this, havingClause, groupRows, colNames);
+                Value hv = evaluateGroupExprHelper(havingClause, groupRows, colNames);
                 if (!hv.asBool()) continue;
             }
 
@@ -1447,10 +1451,9 @@ QueryResult Executor::groupAndAggregate(QueryResult& input,
 }
 
 // File-local helper implementation
-static Value evaluateGroupExprHelper(const Executor* exec, const ExprPtr& expr,
+static Value evaluateGroupExprHelper(const ExprPtr& expr,
                                       const std::vector<Row>& groupRows,
                                       const std::vector<std::string>& colNames) {
-    (void)exec; // exec is used indirectly below via evaluate
 
     if (!expr) return Value();
 
@@ -1540,8 +1543,8 @@ static Value evaluateGroupExprHelper(const Executor* exec, const ExprPtr& expr,
     }
 
     if (auto bin = std::dynamic_pointer_cast<BinaryExpr>(expr)) {
-        Value left = evaluateGroupExprHelper(exec, bin->left, groupRows, colNames);
-        Value right = evaluateGroupExprHelper(exec, bin->right, groupRows, colNames);
+        Value left = evaluateGroupExprHelper(bin->left, groupRows, colNames);
+        Value right = evaluateGroupExprHelper(bin->right, groupRows, colNames);
 
         if (bin->op == "and") return Value(left.asBool() && right.asBool());
         if (bin->op == "or")  return Value(left.asBool() || right.asBool());
@@ -1559,7 +1562,7 @@ static Value evaluateGroupExprHelper(const Executor* exec, const ExprPtr& expr,
     }
 
     if (auto un = std::dynamic_pointer_cast<UnaryExpr>(expr)) {
-        Value val = evaluateGroupExprHelper(exec, un->operand, groupRows, colNames);
+        Value val = evaluateGroupExprHelper(un->operand, groupRows, colNames);
         if (un->op == "-") return -val;
         if (un->op == "not" || un->op == "!") return Value(!val.asBool());
     }
